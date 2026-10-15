@@ -22,21 +22,21 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/redis/go-redis/v9"
 
-	"github.com/yurythx/projeto-nexus/internal/platform/auth"
-	"github.com/yurythx/projeto-nexus/internal/platform/branding"
-	"github.com/yurythx/projeto-nexus/internal/platform/config"
-	"github.com/yurythx/projeto-nexus/internal/platform/iam"
-	"github.com/yurythx/projeto-nexus/internal/platform/idempotency"
-	"github.com/yurythx/projeto-nexus/internal/platform/kernel"
-	"github.com/yurythx/projeto-nexus/internal/platform/keycloakconfig"
-	"github.com/yurythx/projeto-nexus/internal/platform/lgpd"
-	"github.com/yurythx/projeto-nexus/internal/platform/outbox"
-	"github.com/yurythx/projeto-nexus/internal/platform/passwords"
-	"github.com/yurythx/projeto-nexus/internal/platform/ratelimit"
-	"github.com/yurythx/projeto-nexus/internal/platform/secretcrypto"
-	"github.com/yurythx/projeto-nexus/internal/platform/storage/storagetest"
-	"github.com/yurythx/projeto-nexus/internal/platform/transparency"
-	"github.com/yurythx/projeto-nexus/internal/platform/ws"
+	"github.com/yurythx/sismarq/internal/platform/auth"
+	"github.com/yurythx/sismarq/internal/platform/branding"
+	"github.com/yurythx/sismarq/internal/platform/config"
+	"github.com/yurythx/sismarq/internal/platform/iam"
+	"github.com/yurythx/sismarq/internal/platform/idempotency"
+	"github.com/yurythx/sismarq/internal/platform/kernel"
+	"github.com/yurythx/sismarq/internal/platform/keycloakconfig"
+	"github.com/yurythx/sismarq/internal/platform/lgpd"
+	"github.com/yurythx/sismarq/internal/platform/outbox"
+	"github.com/yurythx/sismarq/internal/platform/passwords"
+	"github.com/yurythx/sismarq/internal/platform/ratelimit"
+	"github.com/yurythx/sismarq/internal/platform/secretcrypto"
+	"github.com/yurythx/sismarq/internal/platform/storage/storagetest"
+	"github.com/yurythx/sismarq/internal/platform/transparency"
+	"github.com/yurythx/sismarq/internal/platform/ws"
 )
 
 // testDeps monta um Dependencies real (Postgres de teste + Redis em
@@ -159,7 +159,7 @@ func TestRouterMountsEveryPluginAndEnforcesAuthAndGuard(t *testing.T) {
 	}
 
 	// 4) Autenticação obrigatória e IAM resolvendo o admin.
-	if rec := do(http.MethodGet, "/api/v1/blog/posts", "", ""); rec.Code != http.StatusUnauthorized {
+	if rec := do(http.MethodGet, "/api/v1/notificacoes", "", ""); rec.Code != http.StatusUnauthorized {
 		t.Fatalf("sem token deveria ser 401, veio %d", rec.Code)
 	}
 	if rec := do(http.MethodGet, "/api/v1/me", token, ""); rec.Code != http.StatusOK || !strings.Contains(rec.Body.String(), `"*"`) {

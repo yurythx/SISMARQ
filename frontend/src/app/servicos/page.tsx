@@ -10,13 +10,13 @@ import { ServicosCatalogClient } from "./ServicosCatalogClient";
 export const dynamic = "force-dynamic";
 
 const description =
-  "Catálogo completo de soluções tecnológicas e serviços especializados de infraestrutura, comunicação, automação e segurança.";
+  "Serviços do Arquivo Público Municipal de Rondonópolis: acesso aos documentos, Tabela de Temporalidade, avaliação e eliminação, recolhimento e arquivos privados (Lei Municipal nº 10.301/2019).";
 
 export const metadata: Metadata = {
-  title: "Catálogo de Serviços",
+  title: "Carta de Serviços do Arquivo Público",
   description,
   alternates: { canonical: `${APP_URL}/servicos` },
-  openGraph: { title: "Catálogo de Serviços", description, type: "website", url: `${APP_URL}/servicos` },
+  openGraph: { title: "Carta de Serviços do Arquivo Público", description, type: "website", url: `${APP_URL}/servicos` },
 };
 
 export default async function ServicosPage() {
@@ -32,9 +32,9 @@ export default async function ServicosPage() {
     <PublicShell>
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 py-12">
         <div className="flex flex-col gap-3">
-          <p className="dateline">Catálogo Especializado</p>
+          <p className="dateline">Carta de serviços</p>
           <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            Soluções & Serviços de TI
+            Serviços do Arquivo Público Municipal
           </h1>
           <p className="max-w-3xl text-base text-muted">{description}</p>
         </div>

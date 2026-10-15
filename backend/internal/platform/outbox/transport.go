@@ -6,8 +6,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	"github.com/yurythx/projeto-nexus/internal/platform/auth"
-	"github.com/yurythx/projeto-nexus/pkg/httputil"
+	"github.com/yurythx/sismarq/internal/platform/auth"
+	"github.com/yurythx/sismarq/pkg/httputil"
 )
 
 // StatsHandlers expõe a contagem de outbox_events por status ao painel

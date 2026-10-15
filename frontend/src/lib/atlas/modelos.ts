@@ -1,4 +1,4 @@
-import type { UUID } from "@/lib/nexus/types";
+import type { UUID } from "@/lib/sismarq/types";
 
 /** Formatos aceitos na biblioteca (o backend confere o conteúdo). */
 export const FORMATOS_MODELO = ".docx,.odt,.pdf,.doc,.rtf,.xlsx,.ods";

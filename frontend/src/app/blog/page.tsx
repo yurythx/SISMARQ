@@ -2,14 +2,13 @@ import type { Metadata } from "next";
 
 import { PublicShell } from "@/components/layout/PublicShell";
 import { listPublicPosts } from "@/lib/blog/publicBlog";
-import { listPublishedServices } from "@/lib/catalog/catalog";
 import { APP_URL } from "@/lib/env";
 import { PublicBlogListClient } from "./PublicBlogListClient";
 
 export const dynamic = "force-dynamic";
 
 const description =
-  "Artigos aprofundados, novidades e análises técnicas sobre as principais soluções de infraestrutura, automação, comunicação e segurança.";
+  "Notícias e orientações do Arquivo Público Municipal sobre a Lei nº 10.301/2019, a Tabela de Temporalidade, a avaliação e a eliminação de documentos e o acesso ao acervo.";
 
 export const metadata: Metadata = {
   title: "Blog & Novidades",
@@ -24,19 +23,7 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogPublicPage() {
-  const [posts, services] = await Promise.all([
-    listPublicPosts("", "", 1, 100).catch(() => []),
-    listPublishedServices().catch(() => []),
-  ]);
-
-  const publishedSlugs = new Set(services.map((s) => s.slug));
-  const filteredPosts = posts.filter((post) => {
-    if (post.slug.startsWith("artigo-")) {
-      const serviceSlug = post.slug.replace(/^artigo-/, "");
-      return services.length === 0 || publishedSlugs.has(serviceSlug);
-    }
-    return true;
-  });
+  const posts = await listPublicPosts("", "", 1, 100).catch(() => []);
 
   return (
     <PublicShell>
@@ -49,7 +36,7 @@ export default async function BlogPublicPage() {
           <p className="max-w-3xl text-base text-muted">{description}</p>
         </div>
 
-        <PublicBlogListClient initialPosts={filteredPosts} />
+        <PublicBlogListClient initialPosts={posts} />
       </div>
     </PublicShell>
   );

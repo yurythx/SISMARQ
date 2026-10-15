@@ -4,13 +4,13 @@ import { Download, ExternalLink, Upload } from "lucide-react";
 import Link from "next/link";
 import { useId, useState } from "react";
 
-import { useAction } from "@/components/nexus/useAction";
+import { useAction } from "@/components/sismarq/useAction";
 import { Button, buttonClass } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { apiClient } from "@/lib/api/client";
 import { useApiQuery } from "@/lib/api/swr";
 import { FORMATOS_MODELO, MAX_MODELO_BYTES, extensao, urlArquivoModelo } from "@/lib/atlas/modelos";
-import type { EtapaDocumento, ModeloDocumento, UUID, Workflow } from "@/lib/nexus/types";
+import type { EtapaDocumento, ModeloDocumento, UUID, Workflow } from "@/lib/sismarq/types";
 
 /** Modelos ativos da série da TTDD do procedimento: valem para a peça
  * que não tem modelo próprio. */

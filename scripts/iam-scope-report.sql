@@ -38,7 +38,10 @@ escopo AS (
         'files:manage',
         'iam:manage',
         'users:read',
-        'users:manage'
+        'users:manage',
+        'acervo:read',
+        'acervo:manage',
+        'acervo:bloqueio'
     ]) AS perm
 )
 SELECT c.origem, c.quem, c.perfil,

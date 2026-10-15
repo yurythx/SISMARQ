@@ -1,6 +1,6 @@
-# Projeto Nexus — Plataforma Enterprise Base Governamental
+# SISMARQ — Plataforma Enterprise Base Governamental
 
-O **Projeto Nexus** é uma plataforma corporativa modular construída segundo o padrão de **Arquitetura Microkernel (Plug-in Architecture)** em Go (Backend) e Next.js App Router (Frontend), desenvolvida para servir como **base enterprise genérica em estrita conformidade com as normas do Governo Federal Brasileiro** (SGD/MGI, e-MAG 2.0, DSGov, LGPD, Gov.br e OWASP) para o rápido desenvolvimento e desacoplamento de novos módulos de negócio municipais e estaduais.
+O **SISMARQ** é uma plataforma corporativa modular construída segundo o padrão de **Arquitetura Microkernel (Plug-in Architecture)** em Go (Backend) e Next.js App Router (Frontend), desenvolvida para servir como **base enterprise genérica em estrita conformidade com as normas do Governo Federal Brasileiro** (SGD/MGI, e-MAG 2.0, DSGov, LGPD, Gov.br e OWASP) para o rápido desenvolvimento e desacoplamento de novos módulos de negócio municipais e estaduais.
 
 Ele fornece um **Core System (Kernel)** robusto com infraestrutura pronta de segurança HTTP, mensageria, outbox transacional, autenticação via **Keycloak dedicado com federação do Active Directory** (e fallback local RS256), mascaramento PII, auditoria imutável com cadeia de hash, busca full-text em PostgreSQL e um Design System governamental oficial (DSGov / e-MAG).
 
@@ -8,7 +8,7 @@ Ele fornece um **Core System (Kernel)** robusto com infraestrutura pronta de seg
 
 ## 🏛️ Conformidade Governamental (SGD/MGI) & Recursos Globais
 
-O Projeto Nexus foi construído sobre os 5 eixos de conformidade da Secretaria de Governo Digital (SGD/MGI). O estado de cada requisito, com a evidência (código, teste ou pendência), está no [Dossiê de Conformidade](docs/DOSSIE_CONFORMIDADE.md) e no [Roadmap](docs/ROADMAP_CONFORMIDADE.md); a declaração de acessibilidade, no [VPAT](docs/VPAT.md). Conformidade formal depende de avaliação do órgão contratante.
+O SISMARQ foi construído sobre os 5 eixos de conformidade da Secretaria de Governo Digital (SGD/MGI). O estado de cada requisito, com a evidência (código, teste ou pendência), está no [Dossiê de Conformidade](docs/DOSSIE_CONFORMIDADE.md) e no [Roadmap](docs/ROADMAP_CONFORMIDADE.md); a declaração de acessibilidade, no [VPAT](docs/VPAT.md). Conformidade formal depende de avaliação do órgão contratante.
 
 1. **Módulo 1: Segurança HTTP & Headers Defensivos (Go):** Headers OWASP (`HSTS`, `CSP com Nonce`, `X-Frame DENY`, `X-Content-Type nosniff`), rate-limiting e timeouts de servidor anti-DoS.
 2. **Módulo 2: Privacidade & LGPD (Go):** Mascaramento nativo de PII (`slog.LogValuer` em CPF, e-mail, telefone) e rastreabilidade correlacionada (`X-Request-ID`).
@@ -31,7 +31,7 @@ O Projeto Nexus foi construído sobre os 5 eixos de conformidade da Secretaria d
 - **Auditoria Imutável:** Registros de auditoria append-only protegidos no nível do PostgreSQL.
 - **WebSocket Server:** Broker WebSocket para retransmissão de notificações em tempo real aos plug-ins.
 - **Object Storage (MinIO S3):** Armazenamento de arquivos via URLs pré-assinadas.
-- **Busca Full-Text Nativa:** Indexação e busca otimizada no PostgreSQL via `tsvector` e `pg_trgm`.
+- **Busca:** índice da Busca Global no **Typesense** para o conteúdo público (hoje, o Atlas), com carga pelo worker e volta automática ao PostgreSQL (`tsvector` e `pg_trgm`) se ele falhar; os módulos com permissão por usuário buscam no PostgreSQL ([ADR 031](docs/adr/031-sismarq-e-typesense.md)).
 
 ---
 
@@ -88,6 +88,7 @@ O Projeto Nexus foi construído sobre os 5 eixos de conformidade da Secretaria d
 | Busca Global | Plug-in | `/busca` (campo `#global-search`, Alt+3) | — |
 | Signum | Plug-in | `/signum` | `/verificar/{id}` |
 | Trâmite | Plug-in | `/tramite` | — |
+| Acervo | Plug-in | `/acervo` (unidades de arquivamento nas três idades da Lei 10.301/2019: classificação pela TTDD, prazos de guarda, painel do que transferir, avaliar ou recolher, localização física e bloqueio judicial — [ADR 032](docs/adr/032-acervo-unidades-de-arquivamento.md)) | — |
 | Atlas | Plug-in | `/atlas` (procedimentos SEI, TTDD oficial com vigência e histórico, assistente sobre fluxos (do início ao fim) e TTDD com `atlas:read`, biblioteca de modelos de documento com versões, gestão — procedimentos, versões, modelos e atualização da TTDD — com `atlas:manage`) | API pública `GET /api/v1/atlas/ttdd` (e `/estrutura`, `/exportar`, `/{codigo}/historico`), `/workflows` e `/modelos` (com `/{id}/arquivo`) |
 
 Os plug-ins são ativados e desativados em runtime em **Configurações → Módulos**: o menu, as páginas públicas e o sitemap acompanham o estado do Kernel. A tela mostra o grafo de dependências (hoje, **Trâmite depende de Signum**): desligar um módulo pede para desligar antes quem depende dele, e ligar pede para ligar antes as dependências.
@@ -126,14 +127,17 @@ make seed-admin
 ```
 
 ### 5. Acessar a Aplicação
-- **Frontend (Painel Nexus):** [http://localhost:3002](http://localhost:3002)
+- **Frontend (Painel SISMARQ):** [http://localhost:3002](http://localhost:3002)
 - **API Healthcheck:** [http://localhost:8002/health](http://localhost:8002/health)
+
+### Roadmap do SISMARQ
+O caminho até o sistema oficial do Arquivo Público Municipal (Lei 10.301/2019, TTDD oficial e o artigo em `docs/SISMARQ/`), com fases, base legal e matriz de rastreabilidade: [`docs/ROADMAP_SISMARQ.md`](docs/ROADMAP_SISMARQ.md).
 
 ### Regras de negócio
 Estrutura organizacional (entidades, unidades, departamentos), perfis, lotações, onde o escopo vale, o público-alvo e as regras de cada módulo: [`docs/REGRAS_DE_NEGOCIO.md`](docs/REGRAS_DE_NEGOCIO.md). As decisões estão nos ADRs ([`docs/adr/`](docs/adr/README.md)) — em especial o [013](docs/adr/013-permissao-com-escopo-e-heranca.md) (escopo) e o [014](docs/adr/014-publico-alvo.md) (público-alvo).
 
 ### Serviços obrigatórios e opcionais
-A stack mínima (`docker-compose.yml`) é PostgreSQL, RabbitMQ, Redis, MinIO, API, worker e frontend — a busca de todos os módulos (inclusive o Atlas) é a full-text do PostgreSQL. São **opcionais**, por overlay no `COMPOSE_FILE`: Keycloak de teste (`docker-compose.keycloak.yml`), HTTPS com Caddy (`docker-compose.https.yml`, recomendado em qualquer rede) e IA local (`docker-compose.ia.yml`, Ollama, serviço `ia-local`). Sem Keycloak vale o login local. A IA do assistente do Atlas é configurada na tela **Configurações → Inteligência artificial** (IA local ou fornecedores como OpenAI, Azure, Gemini, Claude, com a chave cifrada); sem IA, o assistente responde com a síntese canônica dos procedimentos.
+A stack mínima (`docker-compose.yml`) é PostgreSQL, RabbitMQ, Redis, MinIO, Typesense, API, worker e frontend. O Typesense é o índice da Busca Global para o conteúdo público (o Atlas); os demais módulos, e o Atlas quando o índice falha, buscam na full-text do PostgreSQL. O `.env` precisa de `TYPESENSE_API_KEY` (o `scripts/deploy.sh` gera). São **opcionais**, por overlay no `COMPOSE_FILE`: Keycloak de teste (`docker-compose.keycloak.yml`), HTTPS com Caddy (`docker-compose.https.yml`, recomendado em qualquer rede) e IA local (`docker-compose.ia.yml`, Ollama, serviço `ia-local`). Sem Keycloak vale o login local. A IA do assistente do Atlas é configurada na tela **Configurações → Inteligência artificial** (IA local ou fornecedores como OpenAI, Azure, Gemini, Claude, com a chave cifrada); sem IA, o assistente responde com a síntese canônica dos procedimentos.
 
 ### Deploy em servidor
 `./scripts/deploy.sh <ip-ou-dns>` gera `.env` com segredos fortes, a chave RSA e sobe a stack em produção; depois `make prod-seed-admin`. HTTPS com o Caddy como única entrada (`scripts/enable-https.sh`), Keycloak de teste com uma prefeitura fictícia (`make demo-keycloak`, `make demo-popular`), cenários ponta a ponta (`make demo-test`) e backup diário (`scripts/backup.sh`): ordem completa em [`docs/DEPLOY.md`](docs/DEPLOY.md). O servidor de teste (limites, verificação e incidentes) está em [`docs/SERVIDOR_TESTE.md`](docs/SERVIDOR_TESTE.md).

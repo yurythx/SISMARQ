@@ -5,11 +5,11 @@ import { Building, Building2, Mail, MapPin, MessagesSquare, Phone, Search } from
 import { useMemo, useState } from "react";
 
 import { ScopePicker } from "@/components/iam/ScopePicker";
-import { SectionTabsInline } from "@/components/nexus/SectionTabsInline";
-import { DataState } from "@/components/nexus/DataState";
-import { PageHeader } from "@/components/nexus/PageHeader";
-import { Pagination } from "@/components/nexus/Pagination";
-import { useAction } from "@/components/nexus/useAction";
+import { SectionTabsInline } from "@/components/sismarq/SectionTabsInline";
+import { DataState } from "@/components/sismarq/DataState";
+import { PageHeader } from "@/components/sismarq/PageHeader";
+import { Pagination } from "@/components/sismarq/Pagination";
+import { useAction } from "@/components/sismarq/useAction";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -17,8 +17,8 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { apiClient } from "@/lib/api/client";
 import { useApiPage, useApiQuery, withQuery } from "@/lib/api/swr";
-import { useNexus } from "@/lib/nexus/NexusProvider";
-import type { ChatRoom, Person, ScopeRef, Sector } from "@/lib/nexus/types";
+import { useSismarq } from "@/lib/sismarq/SismarqProvider";
+import type { ChatRoom, Person, ScopeRef, Sector } from "@/lib/sismarq/types";
 
 function initials(name: string) {
   return name
@@ -30,7 +30,7 @@ function initials(name: string) {
 }
 
 function People() {
-  const { enabled, me } = useNexus();
+  const { enabled, me } = useSismarq();
   const router = useRouter();
   const { run } = useAction();
   const [q, setQ] = useState("");
@@ -158,7 +158,7 @@ function Sectors() {
                 Estrutura Organizacional & Lotações
               </p>
               <p className="text-xs text-muted max-w-2xl">
-                O Nexus organiza as lotações em 3 níveis: <strong>Entidades</strong> (Secretarias e Órgãos mantenedores), <strong>Unidades</strong> (Escolas, Postos de Saúde e Sedes) e <strong>Departamentos</strong> (divisões internas como RH, DTI e Protocolo).
+                O SISMARQ organiza as lotações em 3 níveis: <strong>Entidades</strong> (Secretarias e Órgãos mantenedores), <strong>Unidades</strong> (Escolas, Postos de Saúde e Sedes) e <strong>Departamentos</strong> (divisões internas como RH, DTI e Protocolo).
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2 pt-2 sm:pt-0">

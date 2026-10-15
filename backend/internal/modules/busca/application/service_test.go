@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yurythx/projeto-nexus/internal/platform/auth"
-	"github.com/yurythx/projeto-nexus/internal/platform/search"
+	"github.com/yurythx/sismarq/internal/platform/auth"
+	"github.com/yurythx/sismarq/internal/platform/search"
 )
 
 type fakeProvider struct {
@@ -113,5 +113,62 @@ func TestSearchTruncatesFiltersAndDefaultsLimit(t *testing.T) {
 	}
 	if gotA != 0 || gotB != 50 || len(resp.Modules) != 1 || resp.Modules[0] != "wiki" || len(resp.Results) != 30 {
 		t.Fatalf("filtro por módulo falhou: a=%d b=%d modules=%v n=%d", gotA, gotB, resp.Modules, len(resp.Results))
+	}
+}
+
+// indexedProvider alimenta o índice; o Search dele é a busca do Postgres.
+type indexedProvider struct{ fakeProvider }
+
+func (indexedProvider) Documents(context.Context, func(search.Document) error) error { return nil }
+
+type fakeIndex struct {
+	results []search.Result
+	err     error
+	modules []string
+}
+
+func (f *fakeIndex) Search(_ context.Context, _ string, modules []string, _ int) ([]search.Result, error) {
+	f.modules = modules
+	return f.results, f.err
+}
+
+func TestSearchUsaOIndiceEVoltaAoPostgres(t *testing.T) {
+	providers := []search.Provider{
+		indexedProvider{fakeProvider{module: "atlas", score: 0.3}},
+		fakeProvider{module: "wiki", score: 0.2},
+	}
+	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
+	ctx := context.Background()
+
+	// Índice responde pelo Atlas; a Wiki segue no Postgres.
+	idx := &fakeIndex{results: []search.Result{{Module: "atlas", Title: "do índice", Score: 1}}}
+	svc := NewService(func() []search.Provider { return providers }, logger).WithIndex(idx)
+	resp, err := svc.Search(ctx, auth.Identity{}, "ata", "", 10)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(idx.modules) != 1 || idx.modules[0] != "atlas" || len(resp.Results) != 2 || resp.Results[0].Title != "do índice" {
+		t.Fatalf("índice só para os módulos indexados: modules=%v results=%+v", idx.modules, resp.Results)
+	}
+	if len(resp.Modules) != 2 {
+		t.Fatalf("os dois módulos foram consultados: %v", resp.Modules)
+	}
+
+	// Índice fora do ar ou vazio: o Atlas volta ao Postgres.
+	for _, idx := range []*fakeIndex{{err: errors.New("fora")}, {}} {
+		svc := NewService(func() []search.Provider { return providers }, logger).WithIndex(idx)
+		resp, err := svc.Search(ctx, auth.Identity{}, "ata", "", 10)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(resp.Results) != 2 || resp.Results[0].Module != "atlas" || resp.Results[0].Title != "ata" || len(resp.Degraded) != 0 {
+			t.Fatalf("fallback ao Postgres (%v): %+v", idx.err, resp)
+		}
+	}
+
+	// Sem índice ligado, o Indexer é um provider como os outros.
+	resp, err = NewService(func() []search.Provider { return providers }, logger).Search(ctx, auth.Identity{}, "ata", "atlas", 10)
+	if err != nil || len(resp.Results) != 1 || resp.Results[0].Title != "ata" {
+		t.Fatalf("sem índice: %+v %v", resp, err)
 	}
 }

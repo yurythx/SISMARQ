@@ -6,7 +6,7 @@ import { destinacao, fase } from "@/components/atlas/labels";
 import { PublicShell } from "@/components/layout/PublicShell";
 import { publicGet, publicGetOr } from "@/lib/api/publicServer";
 import { APP_URL } from "@/lib/env";
-import type { ClassificacaoTTDD, EstruturaTTDD } from "@/lib/nexus/types";
+import type { ClassificacaoTTDD, EstruturaTTDD } from "@/lib/sismarq/types";
 
 const description =
   "Tabela de Temporalidade e Destinação de Documentos (TTDD) oficial: por quanto tempo cada documento é guardado e o que acontece depois.";

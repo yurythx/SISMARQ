@@ -4,9 +4,9 @@ import { Download, ShieldCheck, UserX } from "lucide-react";
 import { useState, type FormEvent } from "react";
 
 import { ScopePicker } from "@/components/iam/ScopePicker";
-import { ConfirmButton } from "@/components/nexus/ConfirmButton";
-import { PageHeader } from "@/components/nexus/PageHeader";
-import { fmtDateTime, useAction } from "@/components/nexus/useAction";
+import { ConfirmButton } from "@/components/sismarq/ConfirmButton";
+import { PageHeader } from "@/components/sismarq/PageHeader";
+import { fmtDateTime, useAction } from "@/components/sismarq/useAction";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
@@ -14,8 +14,8 @@ import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { apiClient } from "@/lib/api/client";
 import { useApiQuery } from "@/lib/api/swr";
-import { useNexus } from "@/lib/nexus/NexusProvider";
-import type { Person, ScopeRef } from "@/lib/nexus/types";
+import { useSismarq } from "@/lib/sismarq/SismarqProvider";
+import type { Person, ScopeRef } from "@/lib/sismarq/types";
 
 interface DSR {
   id: string;
@@ -77,7 +77,7 @@ function DirectoryProfile() {
 }
 
 export default function PerfilPage() {
-  const { me, enabled } = useNexus();
+  const { me, enabled } = useSismarq();
   const requests = useApiQuery<DSR[]>("v1/lgpd/minhas-solicitacoes");
   const { run } = useAction();
   const pendingErasure = (requests.data ?? []).some((r) => r.kind === "erasure" && (r.status === "pending" || r.status === "processing"));

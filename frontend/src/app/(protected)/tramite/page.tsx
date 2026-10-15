@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 import { Archive, ExternalLink, FolderKanban, Plus, Search } from "lucide-react";
 import { useState, type FormEvent } from "react";
 
-import { DataState } from "@/components/nexus/DataState";
-import { PageHeader } from "@/components/nexus/PageHeader";
-import { Pagination } from "@/components/nexus/Pagination";
-import { fmtDateTime, useAction } from "@/components/nexus/useAction";
+import { DataState } from "@/components/sismarq/DataState";
+import { PageHeader } from "@/components/sismarq/PageHeader";
+import { Pagination } from "@/components/sismarq/Pagination";
+import { fmtDateTime, useAction } from "@/components/sismarq/useAction";
 import { PROCESSO_STATUS, SIGILO } from "@/components/tramite/labels";
 import { Badge } from "@/components/ui/Badge";
 import { Button, buttonClass } from "@/components/ui/Button";
@@ -26,8 +26,8 @@ import {
 import { Textarea } from "@/components/ui/Textarea";
 import { apiClient } from "@/lib/api/client";
 import { useApiPage, useApiQuery, withQuery } from "@/lib/api/swr";
-import { useNexus } from "@/lib/nexus/NexusProvider";
-import type { OrgTree, Processo, TramiteTipo, Workflow } from "@/lib/nexus/types";
+import { useSismarq } from "@/lib/sismarq/SismarqProvider";
+import type { OrgTree, Processo, TramiteTipo, Workflow } from "@/lib/sismarq/types";
 
 function useUnidadeOptions() {
   const tree = useApiQuery<OrgTree[]>("v1/iam/org-tree");
@@ -41,7 +41,7 @@ function useUnidadeOptions() {
 }
 
 function AbrirProcesso({ onDone }: { onDone: (p: Processo) => void }) {
-  const { me } = useNexus();
+  const { me } = useSismarq();
   const tipos = useApiQuery<TramiteTipo[]>("v1/tramite/tipos");
   const unidades = useUnidadeOptions();
   const { run, pending } = useAction();
@@ -153,7 +153,7 @@ function AbrirProcesso({ onDone }: { onDone: (p: Processo) => void }) {
 }
 
 export default function TramitePage() {
-  const { can } = useNexus();
+  const { can } = useSismarq();
   const router = useRouter();
   const [q, setQ] = useState("");
   const [filters, setFilters] = useState({ q: "", status: "", minha_caixa: true });

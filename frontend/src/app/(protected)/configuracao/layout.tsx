@@ -4,13 +4,13 @@ import type { ReactNode } from "react";
 
 import { SectionTabs } from "@/components/layout/SectionTabs";
 import { CONFIG_TABS, visibleTabs } from "@/lib/nav/sectionTabs";
-import { useNexus } from "@/lib/nexus/NexusProvider";
+import { useSismarq } from "@/lib/sismarq/SismarqProvider";
 
 // Sub-navegação de /configuracao: cada aba só aparece para quem tem a
 // permissão correspondente (e, no caso do Egress, com o plugin ativo).
 // Esconder a aba é só UX — cada rota da API revalida a permissão (A01).
 export default function ConfiguracaoLayout({ children }: { children: ReactNode }) {
-  const { can, canGlobal, enabled } = useNexus();
+  const { can, canGlobal, enabled } = useSismarq();
   const tabs = visibleTabs(CONFIG_TABS, can, enabled, canGlobal);
 
   return (

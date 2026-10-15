@@ -12,7 +12,7 @@ import {
 } from "react";
 
 import { ModalShell } from "@/components/ui/ModalShell";
-import { useNexus } from "@/lib/nexus/NexusProvider";
+import { useSismarq } from "@/lib/sismarq/SismarqProvider";
 
 import { AssistentePanel } from "./AssistentePanel";
 
@@ -30,7 +30,7 @@ export const useAssistente = () => useContext(Ctx);
 /** Assistente do Atlas em gaveta lateral, disponível em todas as páginas do
  * módulo (botão flutuante + "Perguntar sobre…" de cada página). */
 export function AssistenteProvider({ children }: { children: ReactNode }) {
-  const { can } = useNexus();
+  const { can } = useSismarq();
   const disponivel = can("atlas:read");
   const [aberto, setAberto] = useState(false);
   const [pergunta, setPergunta] = useState("");

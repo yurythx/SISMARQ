@@ -6,9 +6,9 @@ import { Suspense, useId, useMemo, useState } from "react";
 
 import { EnvioEmLote } from "@/components/atlas/EnvioEmLote";
 import { Trilha } from "@/components/atlas/Trilha";
-import { DataState } from "@/components/nexus/DataState";
-import { PageHeader } from "@/components/nexus/PageHeader";
-import { fmtBytes, fmtDate, useAction } from "@/components/nexus/useAction";
+import { DataState } from "@/components/sismarq/DataState";
+import { PageHeader } from "@/components/sismarq/PageHeader";
+import { fmtBytes, fmtDate, useAction } from "@/components/sismarq/useAction";
 import { Badge } from "@/components/ui/Badge";
 import { Button, buttonClass } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
@@ -18,8 +18,8 @@ import { Toggle } from "@/components/ui/Toggle";
 import { apiClient } from "@/lib/api/client";
 import { useApiQuery } from "@/lib/api/swr";
 import { FORMATOS_MODELO, MAX_MODELO_BYTES, extensao, urlArquivoModelo } from "@/lib/atlas/modelos";
-import { useNexus } from "@/lib/nexus/NexusProvider";
-import type { ModeloDocumento } from "@/lib/nexus/types";
+import { useSismarq } from "@/lib/sismarq/SismarqProvider";
+import type { ModeloDocumento } from "@/lib/sismarq/types";
 
 type Edicao =
   | { tipo: "novo" }
@@ -295,7 +295,7 @@ function CartaoModelo({
  * as peças dos procedimentos apontam para um modelo, e publicar uma nova
  * versão aqui vale para todos os fluxos que o usam. */
 function Biblioteca() {
-  const { can } = useNexus();
+  const { can } = useSismarq();
   const canManage = can("atlas:manage");
   const id = useId();
   const lista = useApiQuery<ModeloDocumento[]>(

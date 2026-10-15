@@ -196,5 +196,5 @@ infra-apply: ## Provisiona a VM 201 KVM no Proxmox e gera o inventário
 infra-destroy: ## Destroi a infraestrutura no Proxmox
 	cd deploy/infra/terraform && terraform destroy
 
-infra-deploy: ## Executa o playbook Ansible para configurar Docker e subir o Nexus
+infra-deploy: ## Executa o playbook Ansible para configurar Docker e subir o SISMARQ
 	cd deploy/infra/ansible && ansible-playbook site.yml

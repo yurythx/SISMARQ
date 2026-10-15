@@ -5,8 +5,8 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/yurythx/projeto-nexus/internal/modules/atlas/domain"
-	"github.com/yurythx/projeto-nexus/internal/platform/iaconfig"
+	"github.com/yurythx/sismarq/internal/modules/atlas/domain"
+	"github.com/yurythx/sismarq/internal/platform/iaconfig"
 )
 
 // promptSistema fixa o objetivo (o acervo do Atlas: fluxos homologados e

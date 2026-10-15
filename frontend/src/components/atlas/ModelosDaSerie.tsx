@@ -4,8 +4,8 @@ import { Download, FileText, Link2, Upload, X } from "lucide-react";
 import Link from "next/link";
 import { useId, useState } from "react";
 
-import { DataState } from "@/components/nexus/DataState";
-import { fmtBytes, useAction } from "@/components/nexus/useAction";
+import { DataState } from "@/components/sismarq/DataState";
+import { fmtBytes, useAction } from "@/components/sismarq/useAction";
 import { Badge } from "@/components/ui/Badge";
 import { Button, buttonClass } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -13,8 +13,8 @@ import { Select } from "@/components/ui/Select";
 import { apiClient } from "@/lib/api/client";
 import { useApiQuery } from "@/lib/api/swr";
 import { FORMATOS_MODELO, MAX_MODELO_BYTES, extensao, urlArquivoModelo } from "@/lib/atlas/modelos";
-import { useNexus } from "@/lib/nexus/NexusProvider";
-import type { ModeloDocumento } from "@/lib/nexus/types";
+import { useSismarq } from "@/lib/sismarq/SismarqProvider";
+import type { ModeloDocumento } from "@/lib/sismarq/types";
 
 /** Gestão (atlas:manage): ligar um modelo da biblioteca à série ou enviar
  * um arquivo, que vira um modelo novo já ligado. */
@@ -150,7 +150,7 @@ export function ModelosDaSerie({
   descritor: string;
   vigente: boolean;
 }) {
-  const { can } = useNexus();
+  const { can } = useSismarq();
   const { run, pending } = useAction();
   const gestao = can("atlas:manage") && vigente;
   const lista = useApiQuery<ModeloDocumento[]>(

@@ -9,7 +9,7 @@ import { RelatedPosts } from "@/components/blog/RelatedPosts";
 import { SocialShareBar } from "@/components/blog/SocialShareBar";
 import { TableOfContents } from "@/components/blog/TableOfContents";
 import { PublicShell } from "@/components/layout/PublicShell";
-import { Markdown } from "@/components/nexus/Markdown";
+import { Markdown } from "@/components/sismarq/Markdown";
 import { getPublicPost, listPublicPosts } from "@/lib/blog/publicBlog";
 import { APP_URL } from "@/lib/env";
 
@@ -67,12 +67,11 @@ export default async function PublicPostPage({ params }: Props) {
   const words = (post.body || "").split(/\s+/).length;
   const readTime = `${Math.max(1, Math.ceil(words / 200))} min de leitura`;
   const postUrl = `${APP_URL}/blog/${post.slug}`;
-  const possibleServiceSlug = post.slug.replace(/^artigo-/, "");
 
-  // Schema.org JSON-LD para SEO técnico (TechArticle / BlogPosting)
+  // Schema.org JSON-LD para SEO técnico (BlogPosting)
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "TechArticle",
+    "@type": "BlogPosting",
     headline: post.title,
     description: post.summary,
     image: post.cover_url ? [post.cover_url] : undefined,
@@ -80,11 +79,11 @@ export default async function PublicPostPage({ params }: Props) {
     dateModified: post.updated_at,
     author: {
       "@type": "Organization",
-      name: post.author_name || "Nexus Editorial",
+      name: post.author_name || "Arquivo Público Municipal",
     },
     publisher: {
       "@type": "Organization",
-      name: "Projeto Nexus",
+      name: "SISMARQ",
       url: APP_URL,
     },
     mainEntityOfPage: {
@@ -177,32 +176,28 @@ export default async function PublicPostPage({ params }: Props) {
               </div>
             )}
 
-            {/* CTA Contextual para o Catálogo */}
+            {/* Para onde seguir */}
             <div className="mt-12 rounded-xl border border-accent/20 bg-accent/5 p-6 sm:p-8">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex flex-col gap-1">
-                  <span className="text-xs font-bold uppercase tracking-wider text-accent">
-                    Implementação & Serviços Gerenciados
-                  </span>
-                  <h3 className="text-lg font-bold text-foreground">
-                    Deseja implantar esta solução na sua organização?
-                  </h3>
+                  <span className="text-xs font-bold uppercase tracking-wider text-accent">Arquivo Público Municipal</span>
+                  <h3 className="text-lg font-bold text-foreground">Precisa de um serviço do Arquivo?</h3>
                   <p className="text-sm text-muted">
-                    Nossa equipe técnica cuida do planejamento, provisionamento, segurança e suporte contínuo.
+                    Veja a carta de serviços ou consulte a Tabela de Temporalidade em vigor.
                   </p>
                 </div>
                 <div className="flex shrink-0 items-center gap-3 pt-2 sm:pt-0">
                   <Link
-                    href={`/servicos/${possibleServiceSlug}`}
+                    href="/servicos"
                     className="inline-flex items-center justify-center rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground shadow-xs transition-colors hover:bg-accent/90"
                   >
-                    Ver no Catálogo
+                    Carta de serviços
                   </Link>
                   <Link
-                    href="/contato"
+                    href="/temporalidade"
                     className="inline-flex items-center justify-center rounded-lg border border-surface-border bg-surface px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-surface-2"
                   >
-                    Fale Conosco
+                    Temporalidade
                   </Link>
                 </div>
               </div>

@@ -41,14 +41,14 @@ Referência funcional da plataforma. Serve para quem **implanta e administra**
 | Tipo | Módulos | Pode desligar? |
 |---|---|---|
 | Núcleo | IAM & Usuários, Auditoria | Não |
-| Plug-ins | Mercúrio, Egress, Blog, Catálogo, Contato, Diretório, Agenda, Arquivos, Wiki, Busca, Signum, Trâmite, Atlas, Módulo Modelo | Sim, em Configurações → Módulos (`modules:manage`) |
+| Plug-ins | Mercúrio, Egress, Blog, Catálogo, Contato, Diretório, Agenda, Arquivos, Wiki, Busca, Signum, Trâmite, Atlas, Acervo, Módulo Modelo | Sim, em Configurações → Módulos (`modules:manage`) |
 
 - Desligar um módulo tem efeito imediato, sem reiniciar:
   - as rotas dele respondem `404 MODULE_DISABLED`;
   - ele some do menu, do site público, do sitemap e da busca;
   - as assinaturas de tempo real dele caem;
   - os workers e consumidores de fila dele param.
-- **Dependências:** o Trâmite depende do Signum. Não é possível desligar o
+- **Dependências:** o Trâmite depende do Signum e o Acervo depende do Atlas (a TTDD). Não é possível desligar o
   Signum com o Trâmite ligado, nem ligar o Trâmite com o Signum desligado.
   A tela mostra esse grafo.
 - **Módulos públicos** (Catálogo, Contato, Diretório, Agenda e Signum) têm

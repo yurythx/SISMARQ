@@ -23,9 +23,9 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/yurythx/projeto-nexus/internal/platform/config"
-	"github.com/yurythx/projeto-nexus/internal/platform/database"
-	"github.com/yurythx/projeto-nexus/internal/platform/secretcrypto"
+	"github.com/yurythx/sismarq/internal/platform/config"
+	"github.com/yurythx/sismarq/internal/platform/database"
+	"github.com/yurythx/sismarq/internal/platform/secretcrypto"
 )
 
 // Settings é o estado persistido (e já decifrado, quando lido por Get)

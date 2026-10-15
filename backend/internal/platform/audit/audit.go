@@ -1,4 +1,4 @@
-// Package audit grava e consulta a trilha de auditoria imutável do Nexus
+// Package audit grava e consulta a trilha de auditoria imutável do SISMARQ
 // (Core — nunca desativável).
 //
 // Cada registro carrega a proveniência completa exigida pela skill (§5):

@@ -32,8 +32,8 @@ vi.mock("@/components/monitoring/PlatformMonitoringDashboard", () => ({ Platform
 vi.mock("@/components/settings/BrandingSettingsForm", () => ({ BrandingSettingsForm: () => <p>branding</p> }));
 
 import { BrandingProvider } from "@/components/branding/BrandingContext";
-import { SectionTabsInline } from "@/components/nexus/SectionTabsInline";
-import { Pagination } from "@/components/nexus/Pagination";
+import { SectionTabsInline } from "@/components/sismarq/SectionTabsInline";
+import { Pagination } from "@/components/sismarq/Pagination";
 import { Spinner } from "@/components/ui/Spinner";
 import { getServerBranding } from "@/lib/branding/server";
 import { identityRoutes, mockBackend, moduleStatus, renderApp } from "@/test/backend";
@@ -73,7 +73,7 @@ describe("layouts de servidor", () => {
     expect(JSON.stringify(html.props.children)).toContain("--primary:#003366");
 
     publicGetOr.mockResolvedValue(null);
-    expect(await generateMetadata()).toMatchObject({ title: { default: "Projeto Nexus" } });
+    expect(await generateMetadata()).toMatchObject({ title: { default: "SISMARQ" } });
     cookieJar.values = { "nexus-theme": "roxo" };
     const plain = (await RootLayout({ children: null })) as unknown as { props: Record<string, unknown> };
     expect(plain.props["data-theme"]).toBeUndefined();
@@ -110,7 +110,7 @@ describe("layouts de servidor", () => {
 
   it("getServerBranding com e sem API", async () => {
     publicGetOr.mockResolvedValueOnce({ app_name: "", org_name: "Órgão", app_description: "d", support_email: "e", support_phone: "p" });
-    expect(await getServerBranding()).toEqual({ appName: "Projeto Nexus", appDescription: "d", orgName: "Órgão", supportEmail: "e", supportPhone: "p" });
+    expect(await getServerBranding()).toEqual({ appName: "SISMARQ", appDescription: "d", orgName: "Órgão", supportEmail: "e", supportPhone: "p" });
     publicGetOr.mockResolvedValueOnce(null);
     expect(await getServerBranding()).toMatchObject({ orgName: "Organização", supportEmail: "" });
   });

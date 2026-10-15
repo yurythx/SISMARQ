@@ -4,7 +4,7 @@ import { Users } from "lucide-react";
 
 import { Badge } from "@/components/ui/Badge";
 import { useApiQuery } from "@/lib/api/swr";
-import type { OrgTree, Publico } from "@/lib/nexus/types";
+import type { OrgTree, Publico } from "@/lib/sismarq/types";
 
 export const TODOS: Publico = { entidades: [], unidades: [] };
 

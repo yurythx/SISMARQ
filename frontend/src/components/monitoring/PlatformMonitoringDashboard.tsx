@@ -24,7 +24,7 @@ import { StatusIndicator } from "@/components/ui/StatusIndicator";
 import { useConnectionState } from "@/components/layout/ConnectionStateContext";
 import { CONNECTION_LABEL, CONNECTION_TONE } from "@/lib/websocket/connectionCopy";
 import { apiClient } from "@/lib/api/client";
-import { useNexus } from "@/lib/nexus/NexusProvider";
+import { useSismarq } from "@/lib/sismarq/SismarqProvider";
 
 import { OutboxRequeueButton } from "./OutboxRequeueButton";
 import { LoadTestTab } from "./LoadTestTab";
@@ -89,7 +89,7 @@ export function PlatformMonitoringDashboard() {
     }
   );
 
-  const { can } = useNexus();
+  const { can } = useSismarq();
   const { data: outboxStats, mutate: refreshOutbox } = useSWR<OutboxStatsResponse>(
     "v1/monitoring/outbox-stats",
     (path: string) => apiClient.get<OutboxStatsResponse>(path).then((res) => res.data),
@@ -398,7 +398,7 @@ export function PlatformMonitoringDashboard() {
         </Card>
       </section>
 
-      {/* Grid de Serviços do Nexus */}
+      {/* Grid de Serviços do SISMARQ */}
       <section className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <div>

@@ -6,7 +6,7 @@ import { ChecklistDocumentos } from "@/components/atlas/LinhaDoTempo";
 import { ModelosDaSerie } from "@/components/atlas/ModelosDaSerie";
 import { NovoProcedimentoForm } from "@/components/atlas/NovoProcedimentoForm";
 import { extensao, sugerirModelo, urlArquivoModelo } from "@/lib/atlas/modelos";
-import type { Etapa, ModeloDocumento } from "@/lib/nexus/types";
+import type { Etapa, ModeloDocumento } from "@/lib/sismarq/types";
 import { identityRoutes, mockBackend, page, renderApp } from "@/test/backend";
 import { resetNavigation } from "@/test/navigation";
 

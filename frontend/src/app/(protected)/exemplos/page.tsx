@@ -3,16 +3,16 @@
 import { Plus } from "lucide-react";
 import type { FormEvent } from "react";
 
-import { DataState } from "@/components/nexus/DataState";
-import { PageHeader } from "@/components/nexus/PageHeader";
-import { fmtDateTime, useAction } from "@/components/nexus/useAction";
+import { DataState } from "@/components/sismarq/DataState";
+import { PageHeader } from "@/components/sismarq/PageHeader";
+import { fmtDateTime, useAction } from "@/components/sismarq/useAction";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { apiClient } from "@/lib/api/client";
 import { useApiQuery } from "@/lib/api/swr";
-import { useNexus } from "@/lib/nexus/NexusProvider";
+import { useSismarq } from "@/lib/sismarq/SismarqProvider";
 
 interface ExampleItem {
   id: string;
@@ -29,7 +29,7 @@ interface ExampleItem {
  * API revalida no middleware (A01).
  */
 export default function ExemplosPage() {
-  const { can } = useNexus();
+  const { can } = useSismarq();
   const list = useApiQuery<ExampleItem[]>("v1/examples");
   const { run, pending } = useAction();
 

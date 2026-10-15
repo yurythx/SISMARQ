@@ -8,8 +8,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/yurythx/projeto-nexus/internal/modules/signum/domain"
-	"github.com/yurythx/projeto-nexus/internal/platform/database"
+	"github.com/yurythx/sismarq/internal/modules/signum/domain"
+	"github.com/yurythx/sismarq/internal/platform/database"
 )
 
 // Repository implementa domain.Repository.

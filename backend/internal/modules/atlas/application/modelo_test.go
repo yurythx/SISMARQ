@@ -14,14 +14,14 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 
-	apperrors "github.com/yurythx/projeto-nexus/internal/domain/errors"
-	"github.com/yurythx/projeto-nexus/internal/modules/atlas/application"
-	"github.com/yurythx/projeto-nexus/internal/modules/atlas/domain"
-	"github.com/yurythx/projeto-nexus/internal/modules/atlas/infrastructure"
-	"github.com/yurythx/projeto-nexus/internal/modules/atlas/transport"
-	"github.com/yurythx/projeto-nexus/internal/platform/auth"
-	"github.com/yurythx/projeto-nexus/internal/platform/database/dbtest"
-	"github.com/yurythx/projeto-nexus/internal/platform/storage/storagetest"
+	apperrors "github.com/yurythx/sismarq/internal/domain/errors"
+	"github.com/yurythx/sismarq/internal/modules/atlas/application"
+	"github.com/yurythx/sismarq/internal/modules/atlas/domain"
+	"github.com/yurythx/sismarq/internal/modules/atlas/infrastructure"
+	"github.com/yurythx/sismarq/internal/modules/atlas/transport"
+	"github.com/yurythx/sismarq/internal/platform/auth"
+	"github.com/yurythx/sismarq/internal/platform/database/dbtest"
+	"github.com/yurythx/sismarq/internal/platform/storage/storagetest"
 )
 
 const bucket = "atlas-teste"

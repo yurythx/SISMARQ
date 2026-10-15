@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/Button";
-import type { PageMeta } from "@/lib/nexus/types";
+import type { PageMeta } from "@/lib/sismarq/types";
 
 export function Pagination({ meta, onPage }: { meta?: PageMeta; onPage: (page: number) => void }) {
   if (!meta || meta.total_pages <= 1) return null;

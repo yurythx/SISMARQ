@@ -1,4 +1,4 @@
-import type { ClassificacaoTTDD } from "@/lib/nexus/types";
+import type { ClassificacaoTTDD } from "@/lib/sismarq/types";
 
 type Prazos = Pick<
   ClassificacaoTTDD,

@@ -10,12 +10,12 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	apperrors "github.com/yurythx/projeto-nexus/internal/domain/errors"
-	"github.com/yurythx/projeto-nexus/internal/domain/pagination"
-	"github.com/yurythx/projeto-nexus/internal/modules/example/domain"
-	"github.com/yurythx/projeto-nexus/internal/platform/audit"
-	"github.com/yurythx/projeto-nexus/internal/platform/database"
-	"github.com/yurythx/projeto-nexus/internal/platform/outbox"
+	apperrors "github.com/yurythx/sismarq/internal/domain/errors"
+	"github.com/yurythx/sismarq/internal/domain/pagination"
+	"github.com/yurythx/sismarq/internal/modules/example/domain"
+	"github.com/yurythx/sismarq/internal/platform/audit"
+	"github.com/yurythx/sismarq/internal/platform/database"
+	"github.com/yurythx/sismarq/internal/platform/outbox"
 )
 
 // EventItemCreated é emitido (via Outbox) ao criar um item — já roteado em

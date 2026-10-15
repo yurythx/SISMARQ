@@ -8,10 +8,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
-	"github.com/yurythx/projeto-nexus/internal/modules/iam/domain"
-	"github.com/yurythx/projeto-nexus/internal/platform/audit"
-	"github.com/yurythx/projeto-nexus/internal/platform/auth"
-	"github.com/yurythx/projeto-nexus/internal/platform/modkit"
+	"github.com/yurythx/sismarq/internal/modules/iam/domain"
+	"github.com/yurythx/sismarq/internal/platform/audit"
+	"github.com/yurythx/sismarq/internal/platform/auth"
+	"github.com/yurythx/sismarq/internal/platform/modkit"
 )
 
 // ------------------------------------------------------------ estrutura org.

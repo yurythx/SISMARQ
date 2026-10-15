@@ -14,29 +14,32 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/redis/go-redis/v9"
 
-	"github.com/yurythx/projeto-nexus/internal/domain/events"
-	"github.com/yurythx/projeto-nexus/internal/platform/auth"
-	"github.com/yurythx/projeto-nexus/internal/platform/branding"
-	"github.com/yurythx/projeto-nexus/internal/platform/config"
-	"github.com/yurythx/projeto-nexus/internal/platform/database"
-	"github.com/yurythx/projeto-nexus/internal/platform/httpserver"
-	"github.com/yurythx/projeto-nexus/internal/platform/iam"
-	"github.com/yurythx/projeto-nexus/internal/platform/idempotency"
-	"github.com/yurythx/projeto-nexus/internal/platform/kernel"
-	"github.com/yurythx/projeto-nexus/internal/platform/keycloakconfig"
-	"github.com/yurythx/projeto-nexus/internal/platform/lgpd"
-	"github.com/yurythx/projeto-nexus/internal/platform/logging"
-	"github.com/yurythx/projeto-nexus/internal/platform/messaging"
-	"github.com/yurythx/projeto-nexus/internal/platform/metrics"
-	"github.com/yurythx/projeto-nexus/internal/platform/notificacoes"
-	"github.com/yurythx/projeto-nexus/internal/platform/outbox"
-	"github.com/yurythx/projeto-nexus/internal/platform/ratelimit"
-	"github.com/yurythx/projeto-nexus/internal/platform/redisx"
-	"github.com/yurythx/projeto-nexus/internal/platform/secretcrypto"
-	"github.com/yurythx/projeto-nexus/internal/platform/storage"
-	"github.com/yurythx/projeto-nexus/internal/platform/telemetry"
-	"github.com/yurythx/projeto-nexus/internal/platform/transparency"
-	"github.com/yurythx/projeto-nexus/internal/platform/ws"
+	"github.com/yurythx/sismarq/internal/domain/events"
+	"github.com/yurythx/sismarq/internal/platform/auth"
+	"github.com/yurythx/sismarq/internal/platform/branding"
+	"github.com/yurythx/sismarq/internal/platform/config"
+	"github.com/yurythx/sismarq/internal/platform/database"
+	"github.com/yurythx/sismarq/internal/platform/httpserver"
+	"github.com/yurythx/sismarq/internal/platform/iam"
+	"github.com/yurythx/sismarq/internal/platform/idempotency"
+	"github.com/yurythx/sismarq/internal/platform/kernel"
+	"github.com/yurythx/sismarq/internal/platform/keycloakconfig"
+	"github.com/yurythx/sismarq/internal/platform/lgpd"
+	"github.com/yurythx/sismarq/internal/platform/logging"
+	"github.com/yurythx/sismarq/internal/platform/messaging"
+	"github.com/yurythx/sismarq/internal/platform/metrics"
+	"github.com/yurythx/sismarq/internal/platform/notificacoes"
+	"github.com/yurythx/sismarq/internal/platform/outbox"
+	"github.com/yurythx/sismarq/internal/platform/ratelimit"
+	"github.com/yurythx/sismarq/internal/platform/redisx"
+	"github.com/yurythx/sismarq/internal/platform/search"
+	"github.com/yurythx/sismarq/internal/platform/searchindex"
+	"github.com/yurythx/sismarq/internal/platform/secretcrypto"
+	"github.com/yurythx/sismarq/internal/platform/storage"
+	"github.com/yurythx/sismarq/internal/platform/telemetry"
+	"github.com/yurythx/sismarq/internal/platform/transparency"
+	"github.com/yurythx/sismarq/internal/platform/typesense"
+	"github.com/yurythx/sismarq/internal/platform/ws"
 )
 
 // OutboxSource identifica este backend no campo Source de todo evento.
@@ -77,6 +80,7 @@ type Dependencies struct {
 	Branding       *branding.Store
 	LGPD           *lgpd.Service
 	Transparency   *transparency.Service
+	SearchIndex    *searchindex.Engine // índice da Busca Global (ADR 031); nil sem TYPESENSE_URL
 	TrustedProxies []*net.IPNet
 	Kernel         *kernel.Kernel
 
@@ -185,6 +189,11 @@ func build(ctx context.Context, cfg *config.Config, component string) (*Dependen
 			WithPolicy("ip:", ratelimit.LockoutPolicy{Threshold: cfg.LoginLockoutIPThreshold, Base: time.Minute, Max: time.Hour, Window: time.Hour}),
 	}
 
+	if ts := cfg.Typesense; ts.Enabled() {
+		d.SearchIndex = searchindex.New(typesense.New(ts.URL, ts.APIKey, ts.Timeout), ts.Collection, ts.SyncInterval, logger,
+			func() []search.Indexer { return searchindex.Indexers(d.Kernel.SearchProviders()) })
+	}
+
 	// ---- Kernel: registro dos plugins, estado e topologia ----
 	d.Kernel = kernel.New(kernel.NewPostgresStore(d.DB, logger), logger)
 	registerPlugins(d)
@@ -194,7 +203,11 @@ func build(ctx context.Context, cfg *config.Config, component string) (*Dependen
 	d.Transparency = transparency.NewService(d.DB, logger, d.moduleInfo)
 	wireWebSocket(d)
 
-	if err := declareTopology(d.Messaging, append(messaging.PlatformQueues(), d.Kernel.Queues()...)); err != nil {
+	queues := append(messaging.PlatformQueues(), d.Kernel.Queues()...)
+	if d.SearchIndex != nil {
+		queues = append(queues, searchindex.Queue(d.indexedModules()))
+	}
+	if err := declareTopology(d.Messaging, queues); err != nil {
 		return fail("declare rabbitmq topology", err)
 	}
 	return d, nil
@@ -209,6 +222,19 @@ func declareTopology(conn *messaging.Connection, queues []messaging.QueueSpec) e
 	}
 	defer func() { _ = ch.Close() }()
 	return messaging.DeclareTopology(ch, queues)
+}
+
+// indexedModules lista os plugins registrados (ativos ou não) que alimentam
+// o índice da busca — os eventos deles disparam a recarga.
+func (d *Dependencies) indexedModules() []string {
+	var out []string
+	for _, p := range d.Kernel.Plugins() {
+		sp, ok := p.(kernel.SearchProvider)
+		if ok && len(searchindex.Indexers(sp.SearchProviders())) > 0 {
+			out = append(out, p.Manifest().Key)
+		}
+	}
+	return out
 }
 
 func (d *Dependencies) moduleInfo() []transparency.ModuleInfo {

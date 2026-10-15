@@ -2,8 +2,8 @@
 
 import { RotateCcw } from "lucide-react";
 
-import { ConfirmButton } from "@/components/nexus/ConfirmButton";
-import { useAction } from "@/components/nexus/useAction";
+import { ConfirmButton } from "@/components/sismarq/ConfirmButton";
+import { useAction } from "@/components/sismarq/useAction";
 import { apiClient } from "@/lib/api/client";
 
 /** Devolve à fila os eventos do outbox que esgotaram as tentativas

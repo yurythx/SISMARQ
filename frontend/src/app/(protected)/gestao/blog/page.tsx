@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { Pencil, Pin, Plus } from "lucide-react";
 import { useState } from "react";
-import { DataState } from "@/components/nexus/DataState";
-import { PageHeader } from "@/components/nexus/PageHeader";
-import { Pagination } from "@/components/nexus/Pagination";
-import { fmtDate } from "@/components/nexus/useAction";
+import { DataState } from "@/components/sismarq/DataState";
+import { PageHeader } from "@/components/sismarq/PageHeader";
+import { Pagination } from "@/components/sismarq/Pagination";
+import { fmtDate } from "@/components/sismarq/useAction";
 import { PublicoBadge } from "@/components/iam/PublicoAlvo";
 import { Badge } from "@/components/ui/Badge";
 import { Button, buttonClass } from "@/components/ui/Button";
@@ -14,13 +14,13 @@ import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { useApiPage, withQuery } from "@/lib/api/swr";
-import { useNexus } from "@/lib/nexus/NexusProvider";
-import type { Post } from "@/lib/nexus/types";
+import { useSismarq } from "@/lib/sismarq/SismarqProvider";
+import type { Post } from "@/lib/sismarq/types";
 
 const STATUS_LABEL: Record<Post["status"], string> = { draft: "Rascunho", published: "Publicado", archived: "Arquivado" };
 
 export default function BlogPage() {
-  const { can } = useNexus();
+  const { can } = useSismarq();
   const manage = can("blog:manage");
   const [q, setQ] = useState("");
   const [query, setQuery] = useState("");
@@ -118,7 +118,7 @@ export default function BlogPage() {
                             <Pencil size={12} aria-hidden="true" /> Gerenciar / Editar
                           </span>
                         ) : (
-                          <span className="text-muted">por {p.author_name || "Nexus"}</span>
+                          <span className="text-muted">por {p.author_name || "SISMARQ"}</span>
                         )}
                         {manage && p.author_name && (
                           <span className="text-muted text-[11px]">por {p.author_name}</span>

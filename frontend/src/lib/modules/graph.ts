@@ -1,4 +1,4 @@
-import type { ModuleStatus } from "@/lib/nexus/types";
+import type { ModuleStatus } from "@/lib/sismarq/types";
 
 export type NodeStatus = "core" | "active" | "waiting" | "inactive";
 

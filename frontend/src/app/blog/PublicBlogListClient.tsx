@@ -6,7 +6,7 @@ import { ArrowRight, Calendar, Clock, Newspaper, Rss, Search, X } from "lucide-r
 
 import { BlogCoverImage } from "@/components/blog/BlogCoverImage";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
-import type { Post } from "@/lib/nexus/types";
+import type { Post } from "@/lib/sismarq/types";
 
 interface PublicBlogListClientProps {
   initialPosts: Post[];
@@ -19,11 +19,11 @@ export function PublicBlogListClient({ initialPosts }: PublicBlogListClientProps
   const tags = useMemo(() => {
     return [
       "Todos",
-      "Infraestrutura",
-      "Automação",
-      "Segurança",
-      "Comunicação",
-      "Gestão de TI",
+      "Temporalidade",
+      "Eliminação",
+      "Comissões",
+      "Digitalização",
+      "Acesso",
     ];
   }, []);
 
@@ -88,7 +88,7 @@ export function PublicBlogListClient({ initialPosts }: PublicBlogListClientProps
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar por artigos, tecnologias, empresas..."
+              placeholder="Buscar por assunto, artigo da lei ou termo..."
               className="w-full min-h-[44px] rounded-lg border border-surface-border bg-surface-1 py-2.5 pl-10 pr-9 text-sm text-foreground placeholder:text-muted focus:border-accent focus:outline-hidden focus:ring-1 focus:ring-accent"
             />
             {search && (

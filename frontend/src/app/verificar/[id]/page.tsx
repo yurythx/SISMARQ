@@ -5,7 +5,7 @@ import { CheckCircle2, ShieldCheck, XCircle } from "lucide-react";
 import { PublicShell } from "@/components/layout/PublicShell";
 import { VerifyDocument } from "@/components/public/VerifyDocument";
 import { PublicApiError, publicGet } from "@/lib/api/publicServer";
-import type { Verification } from "@/lib/nexus/types";
+import type { Verification } from "@/lib/sismarq/types";
 
 import { CertificateActions } from "@/components/public/CertificateActions";
 
@@ -150,7 +150,7 @@ export default async function VerificarPage({ params }: { params: Promise<{ id: 
         {/* Respaldo Jurídico para Auditoria */}
         <div className="rounded-xl border border-surface-border/60 bg-surface-subtle/50 p-4 text-xs text-muted leading-relaxed">
           <p>
-            <strong>Nota de Fé Pública:</strong> Este registro atesta que o documento com o hash criptográfico acima foi submetido à cerimônia de assinatura eletrônica do Projeto Nexus, com carimbo de tempo inviolável e custódia em trilha de auditoria encadeada.
+            <strong>Nota de Fé Pública:</strong> Este registro atesta que o documento com o hash criptográfico acima foi submetido à cerimônia de assinatura eletrônica do SISMARQ, com carimbo de tempo inviolável e custódia em trilha de auditoria encadeada.
           </p>
         </div>
       </div>

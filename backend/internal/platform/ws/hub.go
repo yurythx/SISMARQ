@@ -1,4 +1,4 @@
-// Package ws implementa o servidor WebSocket do Nexus.
+// Package ws implementa o servidor WebSocket do SISMARQ.
 //
 // Modelo de tópicos: cada cliente assina tópicos ("mercurio:room:<id>",
 // "user:<id>", "broadcast"). Toda publicação passa pelo backplane Redis
@@ -24,8 +24,8 @@ import (
 
 	"github.com/redis/go-redis/v9"
 
-	"github.com/yurythx/projeto-nexus/internal/platform/metrics"
-	"github.com/yurythx/projeto-nexus/internal/platform/redisx"
+	"github.com/yurythx/sismarq/internal/platform/metrics"
+	"github.com/yurythx/sismarq/internal/platform/redisx"
 )
 
 // TopicBroadcast é assinado automaticamente por todo cliente.

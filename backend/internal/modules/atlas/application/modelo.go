@@ -13,13 +13,13 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
-	apperrors "github.com/yurythx/projeto-nexus/internal/domain/errors"
-	"github.com/yurythx/projeto-nexus/internal/modules/atlas/domain"
-	"github.com/yurythx/projeto-nexus/internal/platform/audit"
-	"github.com/yurythx/projeto-nexus/internal/platform/auth"
-	"github.com/yurythx/projeto-nexus/internal/platform/database"
-	"github.com/yurythx/projeto-nexus/internal/platform/notificacoes"
-	"github.com/yurythx/projeto-nexus/internal/platform/storage"
+	apperrors "github.com/yurythx/sismarq/internal/domain/errors"
+	"github.com/yurythx/sismarq/internal/modules/atlas/domain"
+	"github.com/yurythx/sismarq/internal/platform/audit"
+	"github.com/yurythx/sismarq/internal/platform/auth"
+	"github.com/yurythx/sismarq/internal/platform/database"
+	"github.com/yurythx/sismarq/internal/platform/notificacoes"
+	"github.com/yurythx/sismarq/internal/platform/storage"
 )
 
 // Biblioteca de modelos de documento (ADR 024). O arquivo de cada versão

@@ -1,4 +1,4 @@
-// Command migrate aplica as migrations do Nexus (goose, SQL embutido).
+// Command migrate aplica as migrations do SISMARQ (goose, SQL embutido).
 //
 //	migrate up | down | down-to <versão> | status | redo | version| down | status | redo | version
 //
@@ -16,8 +16,8 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/pressly/goose/v3"
 
-	"github.com/yurythx/projeto-nexus/internal/platform/config"
-	"github.com/yurythx/projeto-nexus/migrations"
+	"github.com/yurythx/sismarq/internal/platform/config"
+	"github.com/yurythx/sismarq/migrations"
 )
 
 func main() {

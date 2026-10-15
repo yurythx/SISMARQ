@@ -6,7 +6,7 @@ import { useId, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { ApiError, apiClient } from "@/lib/api/client";
 import { FORMATOS_MODELO, MAX_MODELO_BYTES, nomeDoArquivo } from "@/lib/atlas/modelos";
-import type { ModeloDocumento } from "@/lib/nexus/types";
+import type { ModeloDocumento } from "@/lib/sismarq/types";
 
 interface Resultado {
   arquivo: string;

@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 
-import { DataState } from "@/components/nexus/DataState";
-import { PageHeader } from "@/components/nexus/PageHeader";
-import { fmtDateTime, useAction } from "@/components/nexus/useAction";
+import { DataState } from "@/components/sismarq/DataState";
+import { PageHeader } from "@/components/sismarq/PageHeader";
+import { fmtDateTime, useAction } from "@/components/sismarq/useAction";
 import type { NotificacaoServidor } from "@/components/notifications/NotificationHistoryProvider";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";

@@ -1,4 +1,4 @@
-// Formato + padrões do branding white-label do Projeto Nexus.
+// Formato + padrões do branding white-label do SISMARQ.
 //
 // Duas origens se combinam:
 //  - identidade da organização (nome, órgão, contatos, logo e design
@@ -8,7 +8,7 @@
 //    de fonte e-MAG) — persistidas no cookie `nexus-branding` deste
 //    navegador.
 
-import type { Branding } from "@/lib/nexus/types";
+import type { Branding } from "@/lib/sismarq/types";
 
 export interface SystemBrandingConfig {
   appName: string;
@@ -27,8 +27,8 @@ export interface SystemBrandingConfig {
 }
 
 export const DEFAULT_BRANDING: SystemBrandingConfig = {
-  appName: "Projeto Nexus",
-  appDescription: "Plataforma corporativa modular",
+  appName: "SISMARQ",
+  appDescription: "Sistema Municipal de Arquivos — Arquivo Público Municipal de Rondonópolis",
   orgName: "Organização",
   logoUrl: "",
   faviconUrl: "",

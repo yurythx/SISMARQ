@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { hasPermission } from "@/lib/nexus/permissions";
+import { hasPermission } from "@/lib/sismarq/permissions";
 
 import { CONFIG_TABS, visibleTabs } from "./sectionTabs";
 

@@ -12,8 +12,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Dialog } from "@/components/ui/Dialog";
 import { useToast } from "@/components/notifications/ToastProvider";
 import { apiClient, ApiError } from "@/lib/api/client";
-import { useNexus } from "@/lib/nexus/NexusProvider";
-import type { Branding } from "@/lib/nexus/types";
+import { useSismarq } from "@/lib/sismarq/SismarqProvider";
+import type { Branding } from "@/lib/sismarq/types";
 import { safeResourceUrl } from "@/lib/security/safe-url";
 
 import { refreshBranding } from "./brandingActions";
@@ -37,7 +37,7 @@ function toApi(c: SystemBrandingConfig): Omit<Branding, "updated_at"> {
 export function BrandingSettingsForm() {
   const { branding, updateBranding } = useBranding();
   const { showToast } = useToast();
-  const { can } = useNexus();
+  const { can } = useSismarq();
   const canManage = can("branding:manage");
   const [saving, setSaving] = useState(false);
 
@@ -208,7 +208,7 @@ export function BrandingSettingsForm() {
                 ) : (
                   <div className="flex items-center gap-2 text-muted">
                     <ShieldCheck className="h-6 w-6 text-primary" aria-hidden="true" />
-                    <span className="text-xs font-semibold">{form.appName || "Projeto Nexus"}</span>
+                    <span className="text-xs font-semibold">{form.appName || "SISMARQ"}</span>
                     <span className="text-[10px] text-muted">(fallback vetorial)</span>
                   </div>
                 )}

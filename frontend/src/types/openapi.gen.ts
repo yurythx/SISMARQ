@@ -4,6 +4,198 @@
  */
 
 export interface paths {
+    "/api/v1/acervo/bloqueios/{id}/liberar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Liberar bloqueio judicial
+         * @description Encerra o bloqueio, com o motivo. Bloqueio já liberado: 409.
+         */
+        post: operations["postAcervoBloqueiosIdLiberar"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/acervo/locais": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Listar locais físicos
+         * @description Hierarquia física do acervo (prédio > depósito > … > prateleira), com o caminho de cada local.
+         */
+        get: operations["getAcervoLocais"];
+        put?: never;
+        /**
+         * Criar local físico
+         * @description Só o Arquivo Público (acervo:central, concessão global).
+         */
+        post: operations["postAcervoLocais"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/acervo/locais/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Alterar local físico
+         * @description Renomeia, move ou desativa um local; ciclos na hierarquia são recusados (422). Só acervo:central.
+         */
+        put: operations["putAcervoLocaisId"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/acervo/painel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Painel de situações
+         * @description Conta as unidades por situação (no corrente, transferir, no intermediário, avaliar eliminação, recolher, aguardando evento, bloqueada…), no escopo de quem pede.
+         */
+        get: operations["getAcervoPainel"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/acervo/unidades": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Listar unidades de arquivamento
+         * @description Lista as unidades de arquivamento no escopo de quem pede (acervo:read). Filtros: q (número, código, assunto), fase, situacao, codigo (prefixo do código de classificação) e unidade_id.
+         */
+        get: operations["getAcervoUnidades"];
+        put?: never;
+        /**
+         * Cadastrar unidade de arquivamento
+         * @description Cadastra na fase corrente (Lei 10.301/2019, art. 18). A série precisa estar em vigor na TTDD; a destinação vem dela (art. 28). Exige acervo:manage na unidade produtora. Datas em AAAA-MM-DD.
+         */
+        post: operations["postAcervoUnidades"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/acervo/unidades/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ficha da unidade de arquivamento
+         * @description Dados, prazos calculados pela TTDD (arts. 29 e 30), série, bloqueios judiciais, histórico e o que quem pede pode fazer. Fora do escopo de leitura: 404.
+         */
+        get: operations["getAcervoUnidadesId"];
+        /**
+         * Alterar unidade de arquivamento
+         * @description Altera descrição, classificação, datas, evento, acesso e unidade dona. Eliminada não muda (art. 38); permanente não é reclassificada (arts. 20 e 42) — 409.
+         */
+        put: operations["putAcervoUnidadesId"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/acervo/unidades/{id}/bloqueios": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Registrar bloqueio judicial
+         * @description Retém a unidade por ação judicial (arts. 32, II, e 44): enquanto ativo, nada a elimina. Exige acervo:bloqueio na unidade.
+         */
+        post: operations["postAcervoUnidadesIdBloqueios"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/acervo/unidades/{id}/local": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Localizar a unidade
+         * @description Põe a unidade num local físico do Arquivo (local_id nulo a retira), com a posição.
+         */
+        put: operations["putAcervoUnidadesIdLocal"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/acervo/unidades/{id}/transferir": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Transferir ao arquivo intermediário
+         * @description Leva a unidade do arquivo corrente ao intermediário do órgão, só com o prazo corrente cumprido (art. 29). Fora do prazo ou aguardando a data do evento: 409.
+         */
+        post: operations["postAcervoUnidadesIdTransferir"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/branding": {
         parameters: {
             query?: never;
@@ -917,6 +1109,46 @@ export interface paths {
          * @description Não invalida o token (stateless — o JWT vale até expirar); o frontend descarta o cookie de sessão do seu lado. O papel deste endpoint é deixar em `audit_logs` o evento de logout (§49). Idempotente.
          */
         post: operations["authLogout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/blog/admin/posts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Listar publicações para gestão
+         * @description Publicações de qualquer estado que quem pede gerencia (blog:manage no escopo).
+         */
+        get: operations["getBlogAdminPosts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/blog/admin/posts/{ref}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Obter publicação para gestão
+         * @description Publicação por id ou slug, para edição (blog:manage no escopo).
+         */
+        get: operations["getBlogAdminPostsRef"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -3417,6 +3649,201 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AcervoBloquearRequest: {
+            motivo?: string;
+            processo: string;
+        };
+        AcervoBloqueio: {
+            /** Format: date-time */
+            criado_em: string;
+            /** Format: uuid */
+            criado_por: string | null;
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            liberado_em: string | null;
+            /** Format: uuid */
+            liberado_por: string | null;
+            motivo: string;
+            motivo_liberacao: string;
+            processo: string;
+            /** Format: uuid */
+            unidade_arquivamento_id: string;
+        };
+        AcervoDetalhe: {
+            assunto: string;
+            bloqueios: components["schemas"]["AcervoBloqueio"][];
+            codigo_classificacao: string;
+            /** Format: date-time */
+            contas_aprovadas_em: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: uuid */
+            created_by: string | null;
+            /** Format: date-time */
+            data_evento: string | null;
+            /** Format: date-time */
+            data_final: string;
+            /** Format: date-time */
+            data_inicial: string;
+            /** @enum {string} */
+            destinacao: "ELIMINACAO" | "GUARDA_PERMANENTE" | "INDEFINIDA";
+            especificacao: string;
+            /** @enum {string} */
+            fase: "CORRENTE" | "ELIMINADO" | "INTERMEDIARIA" | "PERMANENTE";
+            /** Format: date-time */
+            fim_corrente: string | null;
+            /** Format: date-time */
+            fim_intermediaria: string | null;
+            hipotese_legal: string;
+            /** Format: uuid */
+            id: string;
+            local_caminho: string;
+            /** Format: uuid */
+            local_id: string | null;
+            movimentacoes: components["schemas"]["AcervoMovimentacao"][];
+            /** @enum {string} */
+            nivel_acesso: "PUBLICO" | "RESTRITO" | "SIGILOSO";
+            numero: string;
+            observacoes: string;
+            pode: components["schemas"]["AcervoPermissoes"];
+            posicao: string;
+            prazos: components["schemas"]["AcervoPrazos"];
+            quantidade: number;
+            serie: components["schemas"]["AcervoSerieResumo"];
+            situacao: string;
+            /** @enum {string} */
+            tipo: "CAIXA" | "DOCUMENTO" | "DOSSIE" | "LIVRO" | "MAPA" | "OUTRO" | "PASTA" | "PROCESSO";
+            /** Format: uuid */
+            unidade_id: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        AcervoLiberarRequest: {
+            motivo: string;
+        };
+        AcervoLocal: {
+            ativo: boolean;
+            caminho: string;
+            /** Format: uuid */
+            id: string;
+            nome: string;
+            /** Format: uuid */
+            parent_id: string | null;
+            /** @enum {string} */
+            tipo: "CORREDOR" | "DEPOSITO" | "ESTANTE" | "PRATELEIRA" | "PREDIO" | "SALA";
+        };
+        AcervoLocalRequest: {
+            ativo?: boolean | null;
+            nome: string;
+            /** Format: uuid */
+            parent_id?: string | null;
+            tipo: string;
+        };
+        AcervoLocalizarRequest: {
+            /** Format: uuid */
+            local_id?: string | null;
+            posicao?: string;
+        };
+        AcervoMovimentacao: {
+            descricao: string;
+            /** Format: date-time */
+            em: string;
+            /** @enum {string|null} */
+            fase_de: "CORRENTE" | "ELIMINADO" | "INTERMEDIARIA" | "PERMANENTE" | null;
+            /** @enum {string|null} */
+            fase_para: "CORRENTE" | "ELIMINADO" | "INTERMEDIARIA" | "PERMANENTE" | null;
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            por: string | null;
+            tipo: string;
+        };
+        AcervoPermissoes: {
+            bloquear: boolean;
+            gerir: boolean;
+        };
+        AcervoPrazos: {
+            /** Format: date-time */
+            fim_corrente: string | null;
+            /** Format: date-time */
+            fim_intermediaria: string | null;
+            regra_corrente: string;
+            regra_intermediaria: string;
+            situacao: string;
+        };
+        AcervoSerieResumo: {
+            codigo: string;
+            descritor: string;
+            destinacao: string;
+            vigente: boolean;
+        };
+        AcervoTransferirRequest: {
+            observacao?: string;
+        };
+        AcervoUnidadeLista: {
+            assunto: string;
+            codigo_classificacao: string;
+            /** Format: date-time */
+            contas_aprovadas_em: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: uuid */
+            created_by: string | null;
+            /** Format: date-time */
+            data_evento: string | null;
+            /** Format: date-time */
+            data_final: string;
+            /** Format: date-time */
+            data_inicial: string;
+            /** @enum {string} */
+            destinacao: "ELIMINACAO" | "GUARDA_PERMANENTE" | "INDEFINIDA";
+            especificacao: string;
+            /** @enum {string} */
+            fase: "CORRENTE" | "ELIMINADO" | "INTERMEDIARIA" | "PERMANENTE";
+            /** Format: date-time */
+            fim_corrente: string | null;
+            /** Format: date-time */
+            fim_intermediaria: string | null;
+            hipotese_legal: string;
+            /** Format: uuid */
+            id: string;
+            local_caminho: string;
+            /** Format: uuid */
+            local_id: string | null;
+            /** @enum {string} */
+            nivel_acesso: "PUBLICO" | "RESTRITO" | "SIGILOSO";
+            numero: string;
+            observacoes: string;
+            posicao: string;
+            quantidade: number;
+            situacao: string;
+            /** @enum {string} */
+            tipo: "CAIXA" | "DOCUMENTO" | "DOSSIE" | "LIVRO" | "MAPA" | "OUTRO" | "PASTA" | "PROCESSO";
+            /** Format: uuid */
+            unidade_id: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        AcervoUnidadeRequest: {
+            assunto?: string;
+            codigo_classificacao: string;
+            contas_aprovadas_em?: string;
+            data_evento?: string;
+            data_final: string;
+            data_inicial: string;
+            especificacao?: string;
+            hipotese_legal?: string;
+            /** Format: uuid */
+            local_id?: string | null;
+            nivel_acesso?: string;
+            observacoes?: string;
+            posicao?: string;
+            quantidade?: number;
+            tipo: string;
+            /** Format: uuid */
+            unidade_id: string;
+        };
         AtlasAlterarModeloRequest: {
             ativo?: boolean;
             descricao?: string;
@@ -5408,6 +5835,441 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    postAcervoBloqueiosIdLiberar: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
+                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
+                 */
+                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AcervoLiberarRequest"];
+            };
+        };
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoDetalhe"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    getAcervoLocais: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoLocal"][];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    postAcervoLocais: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
+                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
+                 */
+                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AcervoLocalRequest"];
+            };
+        };
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoLocal"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    putAcervoLocaisId: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
+                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
+                 */
+                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AcervoLocalRequest"];
+            };
+        };
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoLocal"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    getAcervoPainel: {
+        parameters: {
+            query?: {
+                unidade_id?: string;
+                q?: string;
+                fase?: string;
+                situacao?: string;
+                codigo?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: {
+                            [key: string]: number;
+                        };
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    getAcervoUnidades: {
+        parameters: {
+            query?: {
+                page?: components["parameters"]["Page"];
+                page_size?: components["parameters"]["PageSize"];
+                unidade_id?: string;
+                q?: string;
+                fase?: string;
+                situacao?: string;
+                codigo?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Página de itens em `data`, paginação em `meta`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoUnidadeLista"][];
+                        meta?: components["schemas"]["PaginationMeta"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    postAcervoUnidades: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
+                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
+                 */
+                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AcervoUnidadeRequest"];
+            };
+        };
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoDetalhe"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    getAcervoUnidadesId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoDetalhe"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    putAcervoUnidadesId: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
+                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
+                 */
+                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AcervoUnidadeRequest"];
+            };
+        };
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoDetalhe"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    postAcervoUnidadesIdBloqueios: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
+                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
+                 */
+                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AcervoBloquearRequest"];
+            };
+        };
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoDetalhe"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    putAcervoUnidadesIdLocal: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
+                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
+                 */
+                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AcervoLocalizarRequest"];
+            };
+        };
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoDetalhe"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    postAcervoUnidadesIdTransferir: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
+                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
+                 */
+                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AcervoTransferirRequest"];
+            };
+        };
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoDetalhe"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
     putAdminBranding: {
         parameters: {
             query?: never;
@@ -7100,6 +7962,69 @@ export interface operations {
                 content?: never;
             };
             401: components["responses"]["Unauthorized"];
+        };
+    };
+    getBlogAdminPosts: {
+        parameters: {
+            query?: {
+                page?: components["parameters"]["Page"];
+                page_size?: components["parameters"]["PageSize"];
+                status?: string;
+                kind?: string;
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Página de itens em `data`, paginação em `meta`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["BlogPost"][];
+                        meta?: components["schemas"]["PaginationMeta"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    getBlogAdminPostsRef: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ref: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["BlogPost"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
         };
     };
     getBlogPosts: {

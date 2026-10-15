@@ -3,16 +3,16 @@
 import { Pencil } from "lucide-react";
 import { useState, type FormEvent } from "react";
 
-import { useAction } from "@/components/nexus/useAction";
+import { useAction } from "@/components/sismarq/useAction";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { apiClient } from "@/lib/api/client";
 import { useApiQuery } from "@/lib/api/swr";
-import { useNexus } from "@/lib/nexus/NexusProvider";
-import { departamentosGeridos } from "@/lib/nexus/permissions";
-import type { ChatRoom, OrgTree } from "@/lib/nexus/types";
+import { useSismarq } from "@/lib/sismarq/SismarqProvider";
+import { departamentosGeridos } from "@/lib/sismarq/permissions";
+import type { ChatRoom, OrgTree } from "@/lib/sismarq/types";
 
 /** Canais globais e salas departamentais (mapeadas a um departamento e/ou
  * grupo do AD — os membros são resolvidos pelo IAM). */
@@ -21,7 +21,7 @@ export function RoomsAdmin({ rooms, onChanged }: { rooms: ChatRoom[]; onChanged:
   const { run, pending } = useAction();
   const [edit, setEdit] = useState<ChatRoom | null>(null);
   const [kind, setKind] = useState<"global" | "department">("global");
-  const { me } = useNexus();
+  const { me } = useSismarq();
   // Moderação com escopo (ADR 013): só os departamentos cobertos; canal
   // global (e sala só por grupo) é da moderação global.
   const geridos = departamentosGeridos(me, tree.data, "mercurio:manage");

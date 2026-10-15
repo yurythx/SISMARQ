@@ -7,7 +7,7 @@ import { useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { ApiError, apiClient } from "@/lib/api/client";
-import type { AtlasFonte, AtlasResposta } from "@/lib/nexus/types";
+import type { AtlasFonte, AtlasResposta } from "@/lib/sismarq/types";
 
 type Mensagem =
   | { id: number; autor: "usuario"; texto: string }

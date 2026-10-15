@@ -1,9 +1,9 @@
 apiVersion: 1
 
 providers:
-  - name: "Projeto Nexus Dashboards"
+  - name: "SISMARQ Dashboards"
     orgId: 1
-    folder: "Nexus"
+    folder: "SISMARQ"
     type: file
     disableDeletion: false
     editable: true

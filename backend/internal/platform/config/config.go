@@ -1,4 +1,4 @@
-// Package config carrega e valida a configuração do Projeto Nexus a partir
+// Package config carrega e valida a configuração do SISMARQ a partir
 // de variáveis de ambiente. Configuração obrigatória ausente faz Load
 // retornar um erro imediatamente (fail fast) em vez de deixar a aplicação
 // subir num estado parcialmente configurado — é preferível o processo nem
@@ -172,6 +172,21 @@ type AtlasConfig struct {
 	ChatRateLimit RateLimitConfig
 }
 
+// TypesenseConfig liga o índice da Busca Global (ADR 031). URL vazia =
+// sem índice: a busca fica toda no Postgres.
+type TypesenseConfig struct {
+	URL    string
+	APIKey string
+	// Collection: mudar o schema pede um nome novo (a coleção nova recebe
+	// a carga completa).
+	Collection   string
+	Timeout      time.Duration
+	SyncInterval time.Duration
+}
+
+// Enabled informa se o índice está configurado.
+func (t TypesenseConfig) Enabled() bool { return t.URL != "" }
+
 // SignumConfig parametriza a cerimônia de assinatura eletrônica.
 type SignumConfig struct {
 	ChallengeTTL time.Duration
@@ -239,6 +254,7 @@ type Config struct {
 	Worker    WorkerConfig
 	Egress    EgressConfig
 	Atlas     AtlasConfig
+	Typesense TypesenseConfig
 	Signum    SignumConfig
 	Upload    UploadConfig
 
@@ -476,6 +492,13 @@ func Load() (*Config, error) {
 				MaxRequests:   l.intVal("ATLAS_CHAT_RATE_LIMIT_MAX", false, 10),
 			},
 		},
+		Typesense: TypesenseConfig{
+			URL:          l.str("TYPESENSE_URL", false, ""),
+			APIKey:       l.secret("TYPESENSE_API_KEY", false, ""),
+			Collection:   l.str("TYPESENSE_COLLECTION", false, "sismarq_busca_v1"),
+			Timeout:      l.durationVal("TYPESENSE_TIMEOUT", 2*time.Second),
+			SyncInterval: l.durationVal("TYPESENSE_SYNC_INTERVAL", 10*time.Minute),
+		},
 		Signum: SignumConfig{
 			ChallengeTTL: l.durationVal("SIGNUM_CHALLENGE_TTL", 5*time.Minute),
 		},
@@ -506,6 +529,20 @@ func Load() (*Config, error) {
 	if raw := cfg.Atlas.AIEndpoint; raw != "" {
 		if u, err := url.Parse(raw); err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" || u.User != nil {
 			return nil, fmt.Errorf("config: ATLAS_AI_ENDPOINT deve ser uma URL http(s) sem credenciais embutidas (use ATLAS_AI_API_KEY), veio %q", raw)
+		}
+	}
+
+	// Typesense (ADR 015 → 031): a chave nunca tem default — com o índice
+	// ligado, ela é obrigatória e forte.
+	if ts := cfg.Typesense; ts.Enabled() {
+		if u, err := url.Parse(ts.URL); err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" || u.User != nil {
+			return nil, fmt.Errorf("config: TYPESENSE_URL deve ser uma URL http(s) sem credenciais embutidas (use TYPESENSE_API_KEY), veio %q", ts.URL)
+		}
+		if len(ts.APIKey) < 16 {
+			return nil, fmt.Errorf("config: TYPESENSE_API_KEY (ou _FILE) é obrigatória com TYPESENSE_URL e precisa de ao menos 16 caracteres")
+		}
+		if ts.Timeout <= 0 || ts.SyncInterval < time.Minute {
+			return nil, fmt.Errorf("config: TYPESENSE_TIMEOUT deve ser positivo e TYPESENSE_SYNC_INTERVAL de ao menos 1m")
 		}
 	}
 
@@ -560,6 +597,9 @@ func Load() (*Config, error) {
 		if cfg.Security.ConfigEncryptionKey == insecureConfigEncryptionKey {
 			weak = append(weak, "CONFIG_ENCRYPTION_KEY")
 		}
+		if cfg.Typesense.APIKey == exampleTypesenseKey {
+			weak = append(weak, "TYPESENSE_API_KEY")
+		}
 		if cfg.Egress.AllowPrivateNetworks {
 			weak = append(weak, "EGRESS_ALLOW_PRIVATE_NETWORKS (proteção anti-SSRF desligada)")
 		}
@@ -587,6 +627,7 @@ const (
 	exampleDBPassword       = "dev-change-this-db-password"
 	exampleRabbitMQPassword = "dev-change-this-rabbitmq-password"
 	exampleRedisPassword    = "dev-change-this-redis-password"
+	exampleTypesenseKey     = "dev-change-this-typesense-key"
 
 	// insecureConfigEncryptionKey é uma chave AES-256 FIXA e PÚBLICA (só
 	// para o processo conseguir subir em dev/test sem exigir mais uma

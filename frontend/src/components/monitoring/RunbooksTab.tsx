@@ -104,7 +104,7 @@ export function RunbooksTab() {
             <div>
               <CardTitle className="text-xl">Disaster Recovery (DR) & Procedimentos de Restauração</CardTitle>
               <CardDescription>
-                Diretrizes de recuperação a frio (Cold Standby) e garantia de continuidade de negócio do Projeto Nexus.
+                Diretrizes de recuperação a frio (Cold Standby) e garantia de continuidade de negócio do SISMARQ.
               </CardDescription>
             </div>
           </div>

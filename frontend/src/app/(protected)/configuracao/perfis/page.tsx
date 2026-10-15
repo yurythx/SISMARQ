@@ -3,9 +3,9 @@
 import { Pencil, Plus, ShieldCheck, Trash2 } from "lucide-react";
 import { useState, type FormEvent } from "react";
 
-import { ConfirmButton } from "@/components/nexus/ConfirmButton";
-import { DataState } from "@/components/nexus/DataState";
-import { useAction } from "@/components/nexus/useAction";
+import { ConfirmButton } from "@/components/sismarq/ConfirmButton";
+import { DataState } from "@/components/sismarq/DataState";
+import { useAction } from "@/components/sismarq/useAction";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { apiClient } from "@/lib/api/client";
 import { useApiQuery } from "@/lib/api/swr";
-import type { Perfil, PermissionGroup } from "@/lib/nexus/types";
+import type { Perfil, PermissionGroup } from "@/lib/sismarq/types";
 
 /** Formulário de Perfil: as permissões vêm do catálogo que cada plug-in
  * declara no seu Manifest (GET /iam/permissions) — nada de decorar

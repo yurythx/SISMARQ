@@ -9,10 +9,10 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 
-	"github.com/yurythx/projeto-nexus/internal/domain/pagination"
-	"github.com/yurythx/projeto-nexus/internal/modules/iam/domain"
-	"github.com/yurythx/projeto-nexus/internal/platform/database"
-	"github.com/yurythx/projeto-nexus/internal/platform/database/dbtest"
+	"github.com/yurythx/sismarq/internal/domain/pagination"
+	"github.com/yurythx/sismarq/internal/modules/iam/domain"
+	"github.com/yurythx/sismarq/internal/platform/database"
+	"github.com/yurythx/sismarq/internal/platform/database/dbtest"
 )
 
 func TestRepositoryPropagatesDatabaseErrors(t *testing.T) {

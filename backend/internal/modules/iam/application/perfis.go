@@ -8,11 +8,11 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
-	apperrors "github.com/yurythx/projeto-nexus/internal/domain/errors"
-	"github.com/yurythx/projeto-nexus/internal/modules/iam/domain"
-	"github.com/yurythx/projeto-nexus/internal/platform/audit"
-	"github.com/yurythx/projeto-nexus/internal/platform/auth"
-	"github.com/yurythx/projeto-nexus/internal/platform/modkit"
+	apperrors "github.com/yurythx/sismarq/internal/domain/errors"
+	"github.com/yurythx/sismarq/internal/modules/iam/domain"
+	"github.com/yurythx/sismarq/internal/platform/audit"
+	"github.com/yurythx/sismarq/internal/platform/auth"
+	"github.com/yurythx/sismarq/internal/platform/modkit"
 )
 
 // ------------------------------------------------------------------ perfis

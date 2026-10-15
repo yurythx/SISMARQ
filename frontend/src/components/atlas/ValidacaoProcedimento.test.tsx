@@ -2,7 +2,7 @@ import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { Workflow } from "@/lib/nexus/types";
+import type { Workflow } from "@/lib/sismarq/types";
 import { identityRoutes, mockBackend, renderApp } from "@/test/backend";
 import { resetNavigation } from "@/test/navigation";
 

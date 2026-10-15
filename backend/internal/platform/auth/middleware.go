@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"strings"
 
-	apperrors "github.com/yurythx/projeto-nexus/internal/domain/errors"
-	"github.com/yurythx/projeto-nexus/internal/platform/logging"
-	"github.com/yurythx/projeto-nexus/pkg/httputil"
+	apperrors "github.com/yurythx/sismarq/internal/domain/errors"
+	"github.com/yurythx/sismarq/internal/platform/logging"
+	"github.com/yurythx/sismarq/pkg/httputil"
 )
 
 // Enricher completa uma Identity recém-verificada — o IAM resolve ali o

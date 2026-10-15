@@ -20,10 +20,10 @@ import {
 import { useState, type FormEvent } from "react";
 
 import { UserPicker, type PickedUser } from "@/components/iam/UserPicker";
-import { ConfirmButton } from "@/components/nexus/ConfirmButton";
-import { DataState } from "@/components/nexus/DataState";
-import { Markdown } from "@/components/nexus/Markdown";
-import { fmtBytes, fmtDateTime, useAction } from "@/components/nexus/useAction";
+import { ConfirmButton } from "@/components/sismarq/ConfirmButton";
+import { DataState } from "@/components/sismarq/DataState";
+import { Markdown } from "@/components/sismarq/Markdown";
+import { fmtBytes, fmtDateTime, useAction } from "@/components/sismarq/useAction";
 import { DOC_STATUS, PROCESSO_STATUS, SIGILO } from "@/components/tramite/labels";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -36,9 +36,9 @@ import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
 import { apiClient } from "@/lib/api/client";
 import { useApiQuery } from "@/lib/api/swr";
-import { useNexus } from "@/lib/nexus/NexusProvider";
-import type { Documento, OrgTree, ProcessoView, UploadTicket } from "@/lib/nexus/types";
-import { mimeOf, putToTicket } from "@/lib/nexus/upload";
+import { useSismarq } from "@/lib/sismarq/SismarqProvider";
+import type { Documento, OrgTree, ProcessoView, UploadTicket } from "@/lib/sismarq/types";
+import { mimeOf, putToTicket } from "@/lib/sismarq/upload";
 
 type Acao = "tramitar" | "concluir" | "arquivar" | "reabrir";
 const ACAO: Record<Acao, { title: string; path: string; ok: string }> = {
@@ -364,7 +364,7 @@ function DocumentoView({ id }: { id: string }) {
 
 export default function ProcessoPage() {
   const { id } = useParams<{ id: string }>();
-  const { can } = useNexus();
+  const { can } = useSismarq();
   const proc = useApiQuery<ProcessoView>(`v1/tramite/processos/${id}`);
   const { run, pending } = useAction();
   const [acao, setAcao] = useState<Acao | null>(null);

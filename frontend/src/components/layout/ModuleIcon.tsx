@@ -1,4 +1,5 @@
 import {
+  Archive,
   BookOpen,
   Box,
   Briefcase,
@@ -25,6 +26,7 @@ import type { ComponentType } from "react";
 // Ícone de cada módulo a partir do Manifest.Icon (nome lucide) do Kernel.
 const ICONS: Record<string, ComponentType<LucideProps>> = {
   users: Users,
+  archive: Archive,
   "shield-check": ShieldCheck,
   "messages-square": MessagesSquare,
   send: Send,

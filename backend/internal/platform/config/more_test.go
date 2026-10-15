@@ -125,3 +125,45 @@ func TestAtlasAIEndpoint(t *testing.T) {
 		t.Fatalf("configuração do Atlas: %+v %v", cfg.Atlas, err)
 	}
 }
+
+// Typesense (ADR 031): desligado sem URL; com URL, chave forte obrigatória
+// (sem default) e prazos válidos.
+func TestTypesense(t *testing.T) {
+	setRequiredEnv(t)
+	cfg, err := Load()
+	if err != nil || cfg.Typesense.Enabled() || cfg.Typesense.Collection != "sismarq_busca_v1" {
+		t.Fatalf("sem TYPESENSE_URL o índice fica desligado: %+v %v", cfg.Typesense, err)
+	}
+	casos := map[string]map[string]string{
+		"URL sem esquema http":   {"TYPESENSE_URL": "ftp://busca:8108", "TYPESENSE_API_KEY": "chave-forte-0123456789"},
+		"URL com credenciais":    {"TYPESENSE_URL": "http://u:s@busca:8108", "TYPESENSE_API_KEY": "chave-forte-0123456789"},
+		"sem chave":              {"TYPESENSE_URL": "http://busca:8108"},
+		"chave curta":            {"TYPESENSE_URL": "http://busca:8108", "TYPESENSE_API_KEY": "curta"},
+		"timeout zero":           {"TYPESENSE_URL": "http://busca:8108", "TYPESENSE_API_KEY": "chave-forte-0123456789", "TYPESENSE_TIMEOUT": "0s"},
+		"intervalo curto demais": {"TYPESENSE_URL": "http://busca:8108", "TYPESENSE_API_KEY": "chave-forte-0123456789", "TYPESENSE_SYNC_INTERVAL": "5s"},
+	}
+	for nome, env := range casos {
+		t.Run(nome, func(t *testing.T) {
+			setRequiredEnv(t)
+			for k, v := range env {
+				t.Setenv(k, v)
+			}
+			if _, err := Load(); err == nil || !strings.Contains(err.Error(), "TYPESENSE") {
+				t.Fatalf("aceito: %v", err)
+			}
+		})
+	}
+	setRequiredEnv(t)
+	t.Setenv("TYPESENSE_URL", "http://busca:8108")
+	t.Setenv("TYPESENSE_API_KEY", "chave-forte-0123456789")
+	cfg, err = Load()
+	if err != nil || !cfg.Typesense.Enabled() || cfg.Typesense.Timeout != 2*time.Second || cfg.Typesense.SyncInterval != 10*time.Minute {
+		t.Fatalf("configuração válida: %+v %v", cfg.Typesense, err)
+	}
+	// A chave de .env.example é pública: produção recusa.
+	t.Setenv("TYPESENSE_API_KEY", exampleTypesenseKey)
+	t.Setenv("APP_ENV", "production")
+	if _, err := Load(); err == nil || !strings.Contains(err.Error(), "TYPESENSE_API_KEY") {
+		t.Fatalf("produção com a chave de exemplo: %v", err)
+	}
+}

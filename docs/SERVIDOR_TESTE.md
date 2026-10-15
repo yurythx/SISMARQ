@@ -19,7 +19,7 @@ volumes ou dados deles (`docker volume ls` mostra todos juntos).
 
 ## Implantação
 
-- Checkout: `/root/Projetos/Projeto-Nexus` (origin `Projeto-Nexus`).
+- Checkout: `/root/Projetos/Projeto-Nexus` (origin `SISMARQ`).
 - `.env`: `COMPOSE_PROJECT_NAME=projeto-nexus`,
   `COMPOSE_FILE=docker-compose.yml:docker-compose.keycloak.yml:docker-compose.https.yml`,
   `HOST_BIND=127.0.0.1` (só o Caddy fica exposto na rede).
@@ -31,7 +31,7 @@ volumes ou dados deles (`docker volume ls` mostra todos juntos).
 
 | Endereço | O que é |
 |---|---|
-| `https://192.168.1.42` | Nexus (frontend) e **WebSocket** de notificações (`wss://…/ws`) |
+| `https://192.168.1.42` | SISMARQ (frontend) e **WebSocket** de notificações (`wss://…/ws`) |
 | `https://192.168.1.42:8443` | API direta (health, integrações) |
 | `https://192.168.1.42:9443` | MinIO (URLs de download/envio de arquivos) |
 | `https://192.168.1.42:8543` | Keycloak de teste |
@@ -126,7 +126,7 @@ modelo `qwen2.5:1.5b`, limite de 2,5 GB e 3 CPUs):
 ### Carga do host Proxmox
 
 O `uptime` dentro do contêiner mostra a carga **do host** (load average
-~115–130 em 2026-10-03), não a do Nexus: só 2 processos do contêiner
+~115–130 em 2026-10-03), não a do SISMARQ: só 2 processos do contêiner
 estavam bloqueados enquanto o `vmstat` mostrava ~100. O host já estava
 carregado antes dos testes de IA — vale verificar o que mais roda nele.
 
@@ -138,5 +138,5 @@ carregado antes dos testes de IA — vale verificar o que mais roda nele.
 
 ## Segurança pendente
 
-- Trocar a senha de `root` do servidor e a do `admin` local do Nexus
+- Trocar a senha de `root` do servidor e a do `admin` local do SISMARQ
   (`make prod-seed-admin` redefine a do admin).

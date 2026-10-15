@@ -13,8 +13,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	"github.com/yurythx/projeto-nexus/internal/platform/database/dbtest"
-	"github.com/yurythx/projeto-nexus/internal/platform/lgpd"
+	"github.com/yurythx/sismarq/internal/platform/database/dbtest"
+	"github.com/yurythx/sismarq/internal/platform/lgpd"
 )
 
 type allow struct{}

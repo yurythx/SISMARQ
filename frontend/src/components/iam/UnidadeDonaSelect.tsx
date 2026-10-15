@@ -2,9 +2,9 @@
 
 import { Select } from "@/components/ui/Select";
 import { useApiQuery } from "@/lib/api/swr";
-import { useNexus } from "@/lib/nexus/NexusProvider";
-import { unidadesGeridas, unidadesLotadas } from "@/lib/nexus/permissions";
-import type { OrgTree } from "@/lib/nexus/types";
+import { useSismarq } from "@/lib/sismarq/SismarqProvider";
+import { unidadesGeridas, unidadesLotadas } from "@/lib/sismarq/permissions";
+import type { OrgTree } from "@/lib/sismarq/types";
 
 /** Unidade dona de um conteúdo (ADR 013): oferece só as unidades em que a
  * pessoa tem a permissão de gestão; "institucional" (sem dono) só para a
@@ -34,7 +34,7 @@ export function UnidadeDonaSelect({
   optional?: boolean;
   placeholder?: string;
 }) {
-  const { me } = useNexus();
+  const { me } = useSismarq();
   const tree = useApiQuery<OrgTree[]>("v1/iam/org-tree");
   const geridas = unidadesGeridas(me, tree.data, permission);
   const oferecidas = new Set(geridas.unidades);

@@ -1,4 +1,4 @@
-import type { Documento, Processo } from "@/lib/nexus/types";
+import type { Documento, Processo } from "@/lib/sismarq/types";
 
 type Tone = "neutral" | "success" | "warning" | "danger" | "info";
 

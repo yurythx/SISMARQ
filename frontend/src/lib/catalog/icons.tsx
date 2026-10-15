@@ -1,5 +1,14 @@
 import {
   Archive,
+  ArrowRightLeft,
+  CalendarClock,
+  FileSearch,
+  FileX,
+  GraduationCap,
+  Landmark,
+  ListTree,
+  Package,
+  ScanLine,
   Baby,
   BookOpen,
   Boxes,
@@ -44,6 +53,15 @@ import type { ComponentType } from "react";
 // escolhido pelo gestor). Nome desconhecido cai no ícone genérico.
 const ICONS: Record<string, ComponentType<LucideProps>> = {
   archive: Archive,
+  "arrow-right-left": ArrowRightLeft,
+  "calendar-clock": CalendarClock,
+  "file-search": FileSearch,
+  "file-x": FileX,
+  "graduation-cap": GraduationCap,
+  landmark: Landmark,
+  "list-tree": ListTree,
+  package: Package,
+  "scan-line": ScanLine,
   baby: Baby,
   "book-open": BookOpen,
   boxes: Boxes,
@@ -95,8 +113,8 @@ export function getCategoryIconStyles(category?: string | null): {
 } {
   const cat = (category || "").toLowerCase();
 
-  // 1. Comunicação & Mensageria (WhatsApp, Chatwoot, Evolution)
-  if (cat.includes("comunicação") || cat.includes("comunicacao") || cat.includes("mensageria")) {
+  // 1. Acesso à informação
+  if (cat.includes("acesso")) {
     return {
       badge: "bg-emerald-500/15 border border-emerald-600/30 text-emerald-800 dark:bg-emerald-500/20 dark:border-emerald-400/50 dark:text-emerald-300 shadow-xs",
       icon: "text-emerald-700 dark:text-emerald-300",
@@ -104,8 +122,8 @@ export function getCategoryIconStyles(category?: string | null): {
     };
   }
 
-  // 2. Automação & DevOps (n8n, Ansible)
-  if (cat.includes("automação") || cat.includes("automacao") || cat.includes("integração")) {
+  // 2. Orientação e capacitação
+  if (cat.includes("orientação") || cat.includes("orientacao") || cat.includes("capacitação")) {
     return {
       badge: "bg-violet-500/15 border border-violet-600/30 text-violet-800 dark:bg-violet-500/20 dark:border-violet-400/50 dark:text-violet-300 shadow-xs",
       icon: "text-violet-700 dark:text-violet-300",
@@ -113,8 +131,8 @@ export function getCategoryIconStyles(category?: string | null): {
     };
   }
 
-  // 3. Segurança & Identidade (Keycloak, Tailscale, CrowdSec)
-  if (cat.includes("segurança") || cat.includes("seguranca") || cat.includes("identidade")) {
+  // 3. Avaliação e eliminação
+  if (cat.includes("avaliação") || cat.includes("avaliacao") || cat.includes("eliminação")) {
     return {
       badge: "bg-rose-500/15 border border-rose-600/30 text-rose-800 dark:bg-rose-500/20 dark:border-rose-400/50 dark:text-rose-300 shadow-xs",
       icon: "text-rose-700 dark:text-rose-300",
@@ -122,8 +140,8 @@ export function getCategoryIconStyles(category?: string | null): {
     };
   }
 
-  // 4. Gestão de TI & Monitoramento (GLPI, Zabbix)
-  if (cat.includes("gestão") || cat.includes("gestao") || cat.includes("monitoramento")) {
+  // 4. Gestão de documentos (corrente e intermediária)
+  if (cat.includes("gestão") || cat.includes("gestao")) {
     return {
       badge: "bg-amber-500/15 border border-amber-600/30 text-amber-900 dark:bg-amber-500/20 dark:border-amber-400/50 dark:text-amber-300 shadow-xs",
       icon: "text-amber-800 dark:text-amber-300",
@@ -131,8 +149,8 @@ export function getCategoryIconStyles(category?: string | null): {
     };
   }
 
-  // 5. Acesso Remoto, Redes & Física (RustDesk, Samba, Windows Server, Redes, Cabeamento)
-  if (cat.includes("acesso") || cat.includes("redes") || cat.includes("física") || cat.includes("fisica") || cat.includes("hardware")) {
+  // 5. Recolhimento e guarda permanente
+  if (cat.includes("recolhimento") || cat.includes("guarda")) {
     return {
       badge: "bg-cyan-500/15 border border-cyan-600/30 text-cyan-800 dark:bg-cyan-500/20 dark:border-cyan-400/50 dark:text-cyan-300 shadow-xs",
       icon: "text-cyan-700 dark:text-cyan-300",
@@ -140,8 +158,8 @@ export function getCategoryIconStyles(category?: string | null): {
     };
   }
 
-  // 6. Produtividade & CRM (Twenty CRM, Papermark, Plone)
-  if (cat.includes("produtividade") || cat.includes("crm") || cat.includes("documentos")) {
+  // 6. Arquivos privados de interesse público
+  if (cat.includes("privad")) {
     return {
       badge: "bg-indigo-500/15 border border-indigo-600/30 text-indigo-800 dark:bg-indigo-500/20 dark:border-indigo-400/50 dark:text-indigo-300 shadow-xs",
       icon: "text-indigo-700 dark:text-indigo-300",
@@ -149,7 +167,7 @@ export function getCategoryIconStyles(category?: string | null): {
     };
   }
 
-  // 7. Padrão: Infraestrutura, Nuvem & Storages (Proxmox, TrueNAS, Nextcloud, aaPanel, Terraform)
+  // 7. Padrão
   return {
     badge: "bg-blue-500/15 border border-blue-600/30 text-blue-900 dark:bg-blue-500/20 dark:border-blue-400/50 dark:text-blue-300 shadow-xs",
     icon: "text-blue-700 dark:text-blue-300",

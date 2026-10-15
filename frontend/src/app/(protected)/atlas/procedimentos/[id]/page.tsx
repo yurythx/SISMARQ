@@ -22,15 +22,15 @@ import { NovoProcedimentoForm } from "@/components/atlas/NovoProcedimentoForm";
 import { SeloVigencia } from "@/components/atlas/SeloVigencia";
 import { Trilha } from "@/components/atlas/Trilha";
 import { destinacao, fase, NIVEL_ACESSO, revogacao } from "@/components/atlas/labels";
-import { DataState } from "@/components/nexus/DataState";
-import { useAction } from "@/components/nexus/useAction";
+import { DataState } from "@/components/sismarq/DataState";
+import { useAction } from "@/components/sismarq/useAction";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { apiClient } from "@/lib/api/client";
 import { useApiPage, useApiQuery, withQuery } from "@/lib/api/swr";
-import { useNexus } from "@/lib/nexus/NexusProvider";
-import type { ClassificacaoTTDD, Workflow } from "@/lib/nexus/types";
+import { useSismarq } from "@/lib/sismarq/SismarqProvider";
+import type { ClassificacaoTTDD, Workflow } from "@/lib/sismarq/types";
 
 const cartao = "rounded-lg border border-surface-border bg-surface p-5";
 
@@ -139,7 +139,7 @@ function Versoes({ codigo, atual }: { codigo: string; atual: string }) {
  * também mostra os desativados, e pode ativar/desativar. */
 export default function ProcedimentoPage() {
   const { id } = useParams<{ id: string }>();
-  const { can } = useNexus();
+  const { can } = useSismarq();
   const canManage = can("atlas:manage");
   const path = `v1/atlas/${canManage ? "admin/" : ""}workflows/${encodeURIComponent(id)}`;
   const detail = useApiQuery<Workflow>(path);

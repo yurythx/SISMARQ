@@ -100,7 +100,7 @@ export function GovFooter() {
           <p>
             © {year} {branding.orgName}
           </p>
-          <p>Plataforma construída sobre o Projeto Nexus · Padrão Digital de Governo (DSGov)</p>
+          <p>Plataforma construída sobre o SISMARQ · Padrão Digital de Governo (DSGov)</p>
         </div>
       </div>
     </footer>

@@ -30,11 +30,11 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	apperrors "github.com/yurythx/projeto-nexus/internal/domain/errors"
-	"github.com/yurythx/projeto-nexus/internal/platform/database"
-	"github.com/yurythx/projeto-nexus/internal/platform/httpserver"
-	"github.com/yurythx/projeto-nexus/internal/platform/lgpd"
-	"github.com/yurythx/projeto-nexus/pkg/httputil"
+	apperrors "github.com/yurythx/sismarq/internal/domain/errors"
+	"github.com/yurythx/sismarq/internal/platform/database"
+	"github.com/yurythx/sismarq/internal/platform/httpserver"
+	"github.com/yurythx/sismarq/internal/platform/lgpd"
+	"github.com/yurythx/sismarq/pkg/httputil"
 )
 
 // ModuleInfo é a visão pública de um módulo.

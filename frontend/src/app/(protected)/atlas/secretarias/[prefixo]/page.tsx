@@ -14,13 +14,13 @@ import {
   useProcedimentosDaSecretaria,
 } from "@/components/atlas/secretaria";
 import { WorkflowList } from "@/components/atlas/WorkflowList";
-import { DataState } from "@/components/nexus/DataState";
-import { PageHeader } from "@/components/nexus/PageHeader";
+import { DataState } from "@/components/sismarq/DataState";
+import { PageHeader } from "@/components/sismarq/PageHeader";
 import { buttonClass } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { useApiQuery, withQuery } from "@/lib/api/swr";
-import { useNexus } from "@/lib/nexus/NexusProvider";
-import type { CoberturaAtlas, ProcedimentosOrgao } from "@/lib/nexus/types";
+import { useSismarq } from "@/lib/sismarq/SismarqProvider";
+import type { CoberturaAtlas, ProcedimentosOrgao } from "@/lib/sismarq/types";
 
 /** Subfunções da secretaria com processo na TTDD e nenhum procedimento. */
 function Lacunas({ prefixo }: { prefixo: string }) {
@@ -60,7 +60,7 @@ function Secretaria() {
   const { prefixo } = useParams<{ prefixo: string }>();
   const params = useSearchParams();
   const router = useRouter();
-  const { can } = useNexus();
+  const { can } = useSismarq();
   const gestao = can("atlas:manage");
   const situacao = gestao ? (params.get("situacao") ?? "") : "";
   const funcao = funcaoDaSecretaria(prefixo, params.get("funcao"));

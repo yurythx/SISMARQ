@@ -16,13 +16,13 @@ import {
   visaoValida,
   type Visao,
 } from "@/components/atlas/organograma/organograma";
-import { DataState } from "@/components/nexus/DataState";
-import { PageHeader } from "@/components/nexus/PageHeader";
+import { DataState } from "@/components/sismarq/DataState";
+import { PageHeader } from "@/components/sismarq/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { useApiQuery, withQuery } from "@/lib/api/swr";
-import { useNexus } from "@/lib/nexus/NexusProvider";
-import type { ContagemOrganograma, OrgaoOrganograma } from "@/lib/nexus/types";
+import { useSismarq } from "@/lib/sismarq/SismarqProvider";
+import type { ContagemOrganograma, OrgaoOrganograma } from "@/lib/sismarq/types";
 
 /** Orientação da página impressa de cada visualização. */
 const PAPEL: Record<Visao, "landscape" | "portrait"> = {
@@ -100,7 +100,7 @@ function exportarOrganogramaCSV(orgaos: OrgaoOrganograma[]) {
 function Organograma() {
   const params = useSearchParams();
   const router = useRouter();
-  const { can } = useNexus();
+  const { can } = useSismarq();
   const gestao = can("atlas:manage");
   const visao = visaoValida(params.get("visao"));
   const orgao = params.get("orgao") ?? "";

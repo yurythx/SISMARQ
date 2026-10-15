@@ -4,7 +4,7 @@ import type {
   NivelAcesso,
   OrgaoTTDD,
   TipoAssinatura,
-} from "@/lib/nexus/types";
+} from "@/lib/sismarq/types";
 
 type Tone = "neutral" | "success" | "warning" | "danger" | "info";
 

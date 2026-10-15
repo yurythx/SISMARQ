@@ -7,12 +7,12 @@ import { ModuleIcon } from "@/components/layout/ModuleIcon";
 import { Badge } from "@/components/ui/Badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { useNexus } from "@/lib/nexus/NexusProvider";
+import { useSismarq } from "@/lib/sismarq/SismarqProvider";
 
 /** Módulos ativos no Kernel neste instante (GET /system/modules) — a
  * grade acompanha ativação/desativação em runtime sem recarregar. */
 export function ModulesGrid() {
-  const { modules, loading } = useNexus();
+  const { modules, loading } = useSismarq();
 
   if (loading && modules.length === 0) {
     return (

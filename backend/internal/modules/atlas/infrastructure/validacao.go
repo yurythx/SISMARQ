@@ -5,8 +5,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/yurythx/projeto-nexus/internal/modules/atlas/domain"
-	"github.com/yurythx/projeto-nexus/internal/platform/database"
+	"github.com/yurythx/sismarq/internal/modules/atlas/domain"
+	"github.com/yurythx/sismarq/internal/platform/database"
 )
 
 // Validação dos procedimentos (ADR 028).

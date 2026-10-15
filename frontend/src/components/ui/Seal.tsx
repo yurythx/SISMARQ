@@ -1,4 +1,4 @@
-// Selo circular — o elemento de assinatura do Projeto Nexus (§ redesenho
+// Selo circular — o elemento de assinatura do SISMARQ (§ redesenho
 // 2026-08). Um carimbo de repartição: anéis concêntricos, borda pontilhada,
 // dizeres curvos e um miolo com o monograma da marca sobre os dizeres de
 // documento oficial. Aparece como marca d'água discreta no painel de login
@@ -29,7 +29,7 @@ export function Seal({
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       role={decorative ? undefined : "img"}
-      aria-label={decorative ? undefined : "Selo do Projeto Nexus"}
+      aria-label={decorative ? undefined : "Selo do SISMARQ"}
       aria-hidden={decorative || undefined}
       focusable="false"
       className={`shrink-0 ${className}`}
@@ -76,7 +76,7 @@ export function Seal({
         </textPath>
       </text>
 
-      {/* Miolo: monograma "N" de Nexus sobre os dizeres de documento oficial. */}
+      {/* Miolo: monograma "N" de SISMARQ sobre os dizeres de documento oficial. */}
       <text
         x="100"
         y="99"

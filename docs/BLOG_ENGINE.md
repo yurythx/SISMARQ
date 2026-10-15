@@ -1,4 +1,4 @@
-# Nexus Blog Engine — Arquitetura Editorial, SEO Técnico e Gestão de Mídia
+# SISMARQ Blog Engine — Arquitetura Editorial, SEO Técnico e Gestão de Mídia
 
 > **Status:** Ativo / Em Produção  
 > **Padrão Arquitetural:** Go Clean Architecture (Backend) + Next.js SSR / React 19 (Frontend) + MinIO S3 Object Storage  
@@ -8,7 +8,7 @@
 
 ## 1. Visão Geral
 
-O módulo **Blog & Novidades** do Projeto Nexus foi projetado para operar como um motor de autoridade técnica, aquisição orgânica de tráfego (SEO técnico) e conversão de serviços gerenciados, inspirado nos padrões editoriais e de engenharia de plataformas como **Cloudflare, GitHub Engineering, Stripe e Vercel**.
+O módulo **Blog & Novidades** do SISMARQ foi projetado para operar como um motor de autoridade técnica, aquisição orgânica de tráfego (SEO técnico) e conversão de serviços gerenciados, inspirado nos padrões editoriais e de engenharia de plataformas como **Cloudflare, GitHub Engineering, Stripe e Vercel**.
 
 ### Pilares Fundamentais:
 1. **Desempenho e Segurança:** Todo conteúdo é armazenado como Markdown puro no PostgreSQL, sem execução de HTML inseguro (zero vetor XSS) e com carregamento via Server-Side Rendering (SSR).
@@ -75,7 +75,7 @@ O editor visual no painel de gestão (`/gestao/blog`) utiliza a suíte modular *
 
 ## 4. Parser Markdown Seguro & Recursos Avançados
 
-O componente [`Markdown.tsx`](frontend/src/components/nexus/Markdown.tsx) renderiza texto sem recorrer a `dangerouslySetInnerHTML`, criando diretamente a árvore de componentes React com segurança contra XSS:
+O componente [`Markdown.tsx`](frontend/src/components/sismarq/Markdown.tsx) renderiza texto sem recorrer a `dangerouslySetInnerHTML`, criando diretamente a árvore de componentes React com segurança contra XSS:
 
 ### 4.1. Âncoras Automáticas nos Cabeçalhos
 Todo `##` e `###` gera um identificador unificado via [`slugifyHeading`](frontend/src/lib/blog/slugify.ts):
@@ -133,11 +133,11 @@ Toda página de artigo público injeta automaticamente o esquema `TechArticle`:
   "dateModified": "2026-10-11T17:09:11Z",
   "author": {
     "@type": "Organization",
-    "name": "Nexus Editorial"
+    "name": "SISMARQ Editorial"
   },
   "publisher": {
     "@type": "Organization",
-    "name": "Projeto Nexus",
+    "name": "SISMARQ",
     "url": "https://..."
   }
 }

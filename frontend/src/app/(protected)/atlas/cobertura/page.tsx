@@ -3,12 +3,12 @@
 import Link from "next/link";
 
 import { Trilha } from "@/components/atlas/Trilha";
-import { DataState } from "@/components/nexus/DataState";
-import { PageHeader } from "@/components/nexus/PageHeader";
+import { DataState } from "@/components/sismarq/DataState";
+import { PageHeader } from "@/components/sismarq/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { useApiQuery } from "@/lib/api/swr";
-import { useNexus } from "@/lib/nexus/NexusProvider";
-import type { CoberturaAtlas } from "@/lib/nexus/types";
+import { useSismarq } from "@/lib/sismarq/SismarqProvider";
+import type { CoberturaAtlas } from "@/lib/sismarq/types";
 
 const pct = (parte: number, todo: number) => (todo ? Math.round((parte / todo) * 100) : 0);
 
@@ -55,7 +55,7 @@ function Numero({
 /** Painel de cobertura do Atlas (atlas:manage — ADR 025): quanto da TTDD já
  * tem fluxo e modelo, e a lista de trabalho de quem alimenta o Atlas. */
 export default function CoberturaPage() {
-  const { can } = useNexus();
+  const { can } = useSismarq();
   const gestao = can("atlas:manage");
   const painel = useApiQuery<CoberturaAtlas>(gestao ? "v1/atlas/admin/cobertura" : null);
   if (!gestao) {

@@ -5,12 +5,12 @@ package calendar
 import (
 	"github.com/go-chi/chi/v5"
 
-	"github.com/yurythx/projeto-nexus/internal/modules/calendar/application"
-	"github.com/yurythx/projeto-nexus/internal/modules/calendar/infrastructure"
-	"github.com/yurythx/projeto-nexus/internal/modules/calendar/transport"
-	"github.com/yurythx/projeto-nexus/internal/platform/httpserver"
-	"github.com/yurythx/projeto-nexus/internal/platform/kernel"
-	"github.com/yurythx/projeto-nexus/internal/platform/modkit"
+	"github.com/yurythx/sismarq/internal/modules/calendar/application"
+	"github.com/yurythx/sismarq/internal/modules/calendar/infrastructure"
+	"github.com/yurythx/sismarq/internal/modules/calendar/transport"
+	"github.com/yurythx/sismarq/internal/platform/httpserver"
+	"github.com/yurythx/sismarq/internal/platform/kernel"
+	"github.com/yurythx/sismarq/internal/platform/modkit"
 )
 
 // Key é a chave do módulo.

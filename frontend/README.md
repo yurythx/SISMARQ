@@ -1,6 +1,6 @@
-# Projeto Nexus — Frontend
+# SISMARQ — Frontend
 
-Dashboard em Next.js (App Router) + TypeScript para o Projeto Nexus. Veja o
+Dashboard em Next.js (App Router) + TypeScript para o SISMARQ. Veja o
 [README raiz do repositório](../README.md) para a visão geral completa do
 projeto, a configuração do Keycloak e como rodar toda a stack via Docker
 Compose.
@@ -36,10 +36,10 @@ npm run dev
   `/auditoria`, `/configuracao/*`, `/perfil`), o route handler do NextAuth e
   os proxies BFF `/api/backend/*` (autenticado) e `/api/public/*` (allowlist
   anônima).
-- `src/lib/nexus` — `NexusProvider` (identidade efetiva via `GET /me` e estado
+- `src/lib/sismarq` — `SismarqProvider` (identidade efetiva via `GET /me` e estado
   dos módulos via `GET /system/modules`), `types.ts` (espelho dos DTOs Go) e
   `upload.ts` (upload direto ao MinIO por URL pré-assinada, SHA-256 local).
-- `src/components/nexus` — peças de tela reutilizadas pelos plug-ins
+- `src/components/sismarq` — peças de tela reutilizadas pelos plug-ins
   (`PageHeader`, `DataState`, `Pagination`, `ConfirmButton`, `Markdown`
   seguro, `useAction`).
 - `src/lib/auth` — configuração do NextAuth: login local usuário/senha

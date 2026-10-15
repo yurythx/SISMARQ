@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/yurythx/projeto-nexus/internal/platform/logging"
+	"github.com/yurythx/sismarq/internal/platform/logging"
 )
 
 func TestFromRequest_PopulatesIPAndCorrelation(t *testing.T) {

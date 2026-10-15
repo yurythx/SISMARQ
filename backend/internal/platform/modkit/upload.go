@@ -12,8 +12,8 @@ import (
 
 	"github.com/google/uuid"
 
-	apperrors "github.com/yurythx/projeto-nexus/internal/domain/errors"
-	"github.com/yurythx/projeto-nexus/internal/platform/storage"
+	apperrors "github.com/yurythx/sismarq/internal/domain/errors"
+	"github.com/yurythx/sismarq/internal/platform/storage"
 )
 
 // Tipos de conteúdo aceitos por categoria de upload.

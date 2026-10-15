@@ -16,10 +16,10 @@ import { ThemeToggle } from "@/components/ui/ThemeToggle";
 // tecnologia mais avançada do mercado"), que a versão anterior tinha
 // herdado de um template.
 const capabilities = [
-  "Autenticação unificada via SSO Keycloak (OIDC) e credenciais locais auditadas.",
-  "Governança digital com isolamento de transações e mensageria RabbitMQ.",
-  "Orquestração Proxmox VE, storage TrueNAS e catálogo de 26 soluções de TI.",
-  "Conformidade estrita com e-MAG 2.0 (WCAG 2.1 AA com VLibras), LGPD e OWASP Top 10.",
+  "Gestão dos documentos da administração municipal nas três idades (Lei 10.301/2019, art. 18).",
+  "Tabela de Temporalidade e Destinação de Documentos oficial, com histórico de versões.",
+  "Avaliação e eliminação com o rito da lei: comissões, edital de 30 dias e termos (Anexos I a IV).",
+  "Trilha de auditoria imutável, acessibilidade e-MAG e proteção de dados pessoais (LGPD).",
 ];
 
 export default async function LoginPage() {
@@ -48,7 +48,7 @@ export default async function LoginPage() {
 
         <div className="relative flex items-center gap-2.5 text-lg font-semibold tracking-wide">
           <Logo size={32} />
-          {brand.appName || "Projeto Nexus"}
+          {brand.appName || "SISMARQ"}
         </div>
 
         <div className="relative flex flex-col gap-6">

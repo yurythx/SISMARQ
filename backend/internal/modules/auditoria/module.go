@@ -5,9 +5,9 @@
 package auditoria
 
 import (
-	"github.com/yurythx/projeto-nexus/internal/platform/audit"
-	"github.com/yurythx/projeto-nexus/internal/platform/kernel"
-	"github.com/yurythx/projeto-nexus/internal/platform/modkit"
+	"github.com/yurythx/sismarq/internal/platform/audit"
+	"github.com/yurythx/sismarq/internal/platform/kernel"
+	"github.com/yurythx/sismarq/internal/platform/modkit"
 )
 
 // Key é a chave do módulo no Kernel.

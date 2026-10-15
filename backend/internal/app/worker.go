@@ -9,13 +9,14 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
-	"github.com/yurythx/projeto-nexus/internal/domain/events"
-	"github.com/yurythx/projeto-nexus/internal/platform/audit"
-	"github.com/yurythx/projeto-nexus/internal/platform/httpserver"
-	"github.com/yurythx/projeto-nexus/internal/platform/idempotency"
-	"github.com/yurythx/projeto-nexus/internal/platform/kernel"
-	"github.com/yurythx/projeto-nexus/internal/platform/messaging"
-	"github.com/yurythx/projeto-nexus/internal/platform/outbox"
+	"github.com/yurythx/sismarq/internal/domain/events"
+	"github.com/yurythx/sismarq/internal/platform/audit"
+	"github.com/yurythx/sismarq/internal/platform/httpserver"
+	"github.com/yurythx/sismarq/internal/platform/idempotency"
+	"github.com/yurythx/sismarq/internal/platform/kernel"
+	"github.com/yurythx/sismarq/internal/platform/messaging"
+	"github.com/yurythx/sismarq/internal/platform/outbox"
+	"github.com/yurythx/sismarq/internal/platform/searchindex"
 )
 
 // Worker roda os processadores de segundo plano: os do núcleo (Relay do
@@ -31,7 +32,7 @@ type processor func(ctx context.Context) error
 // NewWorker constrói o runner do processo worker.
 func NewWorker(d *Dependencies) *Worker {
 	relay := outbox.NewPublisher(d.DB, d.Publisher, d.Logger)
-	return &Worker{
+	w := &Worker{
 		deps: d,
 		processors: []processor{
 			// Relay Worker do Transactional Outbox -> RabbitMQ.
@@ -50,6 +51,15 @@ func NewWorker(d *Dependencies) *Worker {
 			}),
 		},
 	}
+	if d.SearchIndex != nil {
+		// Índice da Busca Global (ADR 031): cargas e recarga por evento.
+		w.processors = append(w.processors,
+			supervised("search_index", d.Logger, d.SearchIndex.Run),
+			supervised("search_index_events", d.Logger, func(ctx context.Context) error {
+				return d.consume(ctx, searchindex.QueueName, d.SearchIndex.Handle)
+			}))
+	}
+	return w
 }
 
 // consume liga uma fila a um handler (usado pelo supervisor do Kernel).

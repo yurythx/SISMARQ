@@ -6,7 +6,7 @@ import { ArrowRight, Search, X } from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
 import { ServiceIcon, getCategoryIconStyles } from "@/lib/catalog/icons";
-import type { CatalogService } from "@/lib/nexus/types";
+import type { CatalogService } from "@/lib/sismarq/types";
 
 interface ServicosCatalogClientProps {
   initialServices: CatalogService[];
@@ -177,7 +177,7 @@ export function ServicosCatalogClient({ initialServices }: ServicosCatalogClient
                     {svc.summary}
                   </CardDescription>
                   <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent transition-transform group-hover:translate-x-1">
-                    Conhecer solução <ArrowRight size={13} aria-hidden="true" />
+                    Ver o serviço <ArrowRight size={13} aria-hidden="true" />
                   </span>
                 </CardContent>
               </Card>

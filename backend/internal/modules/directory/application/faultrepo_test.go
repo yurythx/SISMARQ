@@ -10,9 +10,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
-	"github.com/yurythx/projeto-nexus/internal/domain/pagination"
-	"github.com/yurythx/projeto-nexus/internal/modules/directory/domain"
-	"github.com/yurythx/projeto-nexus/internal/platform/database"
+	"github.com/yurythx/sismarq/internal/domain/pagination"
+	"github.com/yurythx/sismarq/internal/modules/directory/domain"
+	"github.com/yurythx/sismarq/internal/platform/database"
 )
 
 type innerRepo = domain.Repository

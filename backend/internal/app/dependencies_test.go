@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 	"sync/atomic"
@@ -25,13 +26,13 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/redis/go-redis/v9"
 
-	"github.com/yurythx/projeto-nexus/internal/domain/events"
-	"github.com/yurythx/projeto-nexus/internal/platform/config"
-	"github.com/yurythx/projeto-nexus/internal/platform/keycloakconfig"
-	"github.com/yurythx/projeto-nexus/internal/platform/messaging"
-	"github.com/yurythx/projeto-nexus/internal/platform/redisx"
-	"github.com/yurythx/projeto-nexus/internal/platform/secretcrypto"
-	"github.com/yurythx/projeto-nexus/internal/platform/ws"
+	"github.com/yurythx/sismarq/internal/domain/events"
+	"github.com/yurythx/sismarq/internal/platform/config"
+	"github.com/yurythx/sismarq/internal/platform/keycloakconfig"
+	"github.com/yurythx/sismarq/internal/platform/messaging"
+	"github.com/yurythx/sismarq/internal/platform/redisx"
+	"github.com/yurythx/sismarq/internal/platform/secretcrypto"
+	"github.com/yurythx/sismarq/internal/platform/ws"
 )
 
 const testConfigKey = "MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA="
@@ -396,4 +397,65 @@ func TestNewDependenciesLoadsConfigFromEnv(t *testing.T) {
 		t.Fatal(err)
 	}
 	d.Close()
+}
+
+// fakeTypesense responde como um Typesense saudável e conta os documentos
+// importados.
+func fakeTypesense(t *testing.T) (string, *atomic.Int64) {
+	t.Helper()
+	var imported atomic.Int64
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case strings.HasSuffix(r.URL.Path, "/documents/import"):
+			body, _ := io.ReadAll(r.Body)
+			for range strings.Count(string(body), "\n") {
+				imported.Add(1)
+				_, _ = io.WriteString(w, "{\"success\":true}\n")
+			}
+		case r.Method == http.MethodDelete:
+			_, _ = io.WriteString(w, `{"num_deleted":0}`)
+		case strings.HasSuffix(r.URL.Path, "/documents/search"):
+			_, _ = io.WriteString(w, `{"found":0,"hits":[]}`)
+		default:
+			_, _ = io.WriteString(w, `{}`)
+		}
+	}))
+	t.Cleanup(srv.Close)
+	return srv.URL, &imported
+}
+
+// Com TYPESENSE_URL: o índice nasce, a fila de recarga é declarada com os
+// eventos dos módulos indexados, o worker ganha os dois processadores e a
+// Busca Global consulta o índice (vazio → Postgres).
+func TestBuildComIndiceDaBusca(t *testing.T) {
+	cfg := infraConfig(t)
+	url, imported := fakeTypesense(t)
+	cfg.Typesense = config.TypesenseConfig{URL: url, APIKey: "chave-de-teste-123456", Collection: "busca_teste", Timeout: time.Second, SyncInterval: time.Hour}
+
+	d, err := build(context.Background(), cfg, "worker")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(d.Close)
+	if d.SearchIndex == nil || !slices.Contains(d.indexedModules(), "atlas") {
+		t.Fatalf("índice e módulos indexados: %v %v", d.SearchIndex, d.indexedModules())
+	}
+	w := NewWorker(d)
+	if len(w.processors) != 9 {
+		t.Fatalf("processors = %d", len(w.processors))
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	go func() { _ = w.Run(ctx) }()
+	deadline := time.Now().Add(2 * time.Second)
+	for imported.Load() == 0 && time.Now().Before(deadline) {
+		time.Sleep(10 * time.Millisecond)
+	}
+	if imported.Load() == 0 {
+		t.Fatal("a carga inicial deveria indexar o Atlas")
+	}
+
+	// Índice vazio: a Busca Global confirma no Postgres.
+	h := &apiHarness{t: t, d: d, router: NewRouter(d)}
+	h.expect(http.StatusOK, http.MethodGet, "/api/v1/search?q=temporalidade&module=atlas", h.admin(), "")
 }

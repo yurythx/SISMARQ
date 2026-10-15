@@ -19,14 +19,14 @@ import { AtlasBusca } from "@/components/atlas/AtlasBusca";
 import { resumoProcedimentos } from "@/components/atlas/secretaria";
 import { NovoProcedimentoForm } from "@/components/atlas/NovoProcedimentoForm";
 import { WorkflowList } from "@/components/atlas/WorkflowList";
-import { DataState } from "@/components/nexus/DataState";
-import { PageHeader } from "@/components/nexus/PageHeader";
-import { Pagination } from "@/components/nexus/Pagination";
+import { DataState } from "@/components/sismarq/DataState";
+import { PageHeader } from "@/components/sismarq/PageHeader";
+import { Pagination } from "@/components/sismarq/Pagination";
 import { Button, buttonClass } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { useApiPage, useApiQuery, withQuery } from "@/lib/api/swr";
-import { useNexus } from "@/lib/nexus/NexusProvider";
-import type { EstruturaTTDD, ProcedimentosOrgao, Workflow } from "@/lib/nexus/types";
+import { useSismarq } from "@/lib/sismarq/SismarqProvider";
+import type { EstruturaTTDD, ProcedimentosOrgao, Workflow } from "@/lib/sismarq/types";
 
 /** Links antigos (?procedimento=, ?ttdd=) da Busca Global e do assistente
  * continuam valendo: redirecionam para as páginas próprias. */
@@ -150,7 +150,7 @@ function Procedimentos({ canManage }: { canManage: boolean }) {
 
 function Inicio() {
   useRedirecionaLegado();
-  const { can } = useNexus();
+  const { can } = useSismarq();
   const router = useRouter();
   const canManage = can("atlas:manage");
   const [creating, setCreating] = useState(false);

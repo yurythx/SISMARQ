@@ -7,6 +7,7 @@ volumes:
   rabbitmq_data: null
   minio_data: null
   redis_data: null
+  typesense_data: null
 services:
   postgres:
     image: postgres:16-bookworm
@@ -121,6 +122,33 @@ services:
       timeout: 5s
       retries: 5
       start_period: 5s
+  typesense:
+    # Índice da Busca Global (ADR 031). Opcional para a API: se cair, a
+    # busca volta ao Postgres; o worker recarrega o índice ao voltar. Sem
+    # porta publicada — só a API e o worker falam com ele.
+    image: typesense/typesense:29.0
+    restart: unless-stopped
+    command:
+    - --data-dir=/data
+    - --api-key=${TYPESENSE_API_KEY:?TYPESENSE_API_KEY must be set}
+    volumes:
+    - typesense_data:/data
+    networks:
+    - nexus_internal
+    healthcheck:
+      # A imagem não tem curl/wget: GET /health pelo /dev/tcp do bash.
+      test:
+      - CMD
+      - bash
+      - -c
+      - >-
+        exec 3<>/dev/tcp/127.0.0.1/8108 &&
+        printf 'GET /health HTTP/1.0\r\n\r\n' >&3 &&
+        grep -q '"ok":true' <&3
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
   migrate:
     # One-shot: aplica as migrations (goose) antes da API e do worker, que
     # não sobem com schema desatualizado (o Kernel lê system_modules no boot).
@@ -165,6 +193,8 @@ services:
       MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL:-http://localhost:9002}
       MINIO_BUCKET: ${MINIO_BUCKET:-nexus}
       MINIO_USE_SSL: "false"
+      TYPESENSE_URL: http://typesense:8108
+      TYPESENSE_API_KEY: ${TYPESENSE_API_KEY:?TYPESENSE_API_KEY must be set}
     volumes:
     - ./secrets:/run/secrets:ro
     networks:
@@ -180,6 +210,9 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      typesense:
+        # Só a ordem de subida: sem o índice a busca usa o Postgres.
+        condition: service_started
     healthcheck:
       test:
       - CMD
@@ -213,6 +246,8 @@ services:
       MINIO_BUCKET: ${MINIO_BUCKET:-nexus}
       MINIO_USE_SSL: "false"
       MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL:-http://localhost:9002}
+      TYPESENSE_URL: http://typesense:8108
+      TYPESENSE_API_KEY: ${TYPESENSE_API_KEY:?TYPESENSE_API_KEY must be set}
     volumes:
     - ./secrets:/run/secrets:ro
     networks:
@@ -226,6 +261,9 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      typesense:
+        # Só a ordem de subida: sem o índice a busca usa o Postgres.
+        condition: service_started
     healthcheck:
       test:
       - CMD

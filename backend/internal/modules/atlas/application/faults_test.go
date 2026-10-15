@@ -15,17 +15,18 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/yurythx/projeto-nexus/internal/domain/pagination"
-	"github.com/yurythx/projeto-nexus/internal/modules/atlas"
-	"github.com/yurythx/projeto-nexus/internal/modules/atlas/application"
-	"github.com/yurythx/projeto-nexus/internal/modules/atlas/domain"
-	"github.com/yurythx/projeto-nexus/internal/modules/atlas/infrastructure"
-	"github.com/yurythx/projeto-nexus/internal/modules/atlas/transport"
-	"github.com/yurythx/projeto-nexus/internal/platform/auth"
-	"github.com/yurythx/projeto-nexus/internal/platform/config"
-	"github.com/yurythx/projeto-nexus/internal/platform/database/dbtest"
-	"github.com/yurythx/projeto-nexus/internal/platform/modkit"
-	"github.com/yurythx/projeto-nexus/internal/platform/outbox"
+	"github.com/yurythx/sismarq/internal/domain/pagination"
+	"github.com/yurythx/sismarq/internal/modules/atlas"
+	"github.com/yurythx/sismarq/internal/modules/atlas/application"
+	"github.com/yurythx/sismarq/internal/modules/atlas/domain"
+	"github.com/yurythx/sismarq/internal/modules/atlas/infrastructure"
+	"github.com/yurythx/sismarq/internal/modules/atlas/transport"
+	"github.com/yurythx/sismarq/internal/platform/auth"
+	"github.com/yurythx/sismarq/internal/platform/config"
+	"github.com/yurythx/sismarq/internal/platform/database/dbtest"
+	"github.com/yurythx/sismarq/internal/platform/modkit"
+	"github.com/yurythx/sismarq/internal/platform/outbox"
+	"github.com/yurythx/sismarq/internal/platform/search"
 )
 
 var (
@@ -242,6 +243,11 @@ func TestEveryRepositoryFailureIsPropagated(t *testing.T) {
 		"BuscaGlobal": func() func(*application.Service) error {
 			return func(s *application.Service) error { _, err := s.BuscaGlobal(ctx, "atlas", "pregão", 5); return err }
 		},
+		"DocumentosBusca": func() func(*application.Service) error {
+			return func(s *application.Service) error {
+				return s.DocumentosBusca(ctx, func(search.Document) error { return nil })
+			}
+		},
 		"ModelosDaSerie": func() func(*application.Service) error {
 			return func(s *application.Service) error { _, err := s.ModelosDaSerie(ctx, serieVigente); return err }
 		},
@@ -391,6 +397,15 @@ func TestModule(t *testing.T) {
 	cancel()
 	if _, err := prov.Search(cctx, auth.Identity{}, "x", 5); err == nil {
 		t.Fatal("busca com o banco indisponível falha")
+	}
+	// O Atlas alimenta o índice da Busca Global (ADR 031).
+	idx, ok := prov.(search.Indexer)
+	if !ok {
+		t.Fatal("o provider do Atlas deveria ser um search.Indexer")
+	}
+	achou := false
+	if err := idx.Documents(ctx, func(d search.Document) error { achou = achou || d.ID == w.ID.String(); return nil }); err != nil || !achou {
+		t.Fatalf("documentos do índice: achou=%v %v", achou, err)
 	}
 }
 

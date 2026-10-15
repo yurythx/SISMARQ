@@ -30,7 +30,7 @@ O servidor de teste (192.168.1.42) — máquina, endereços, verificação pós-
 ## Ordem recomendada (servidor novo)
 
 ```bash
-git clone https://github.com/yurythx/Projeto-Nexus.git && cd Projeto-Nexus
+git clone https://github.com/yurythx/SISMARQ.git && cd SISMARQ
 ./scripts/deploy.sh 192.168.1.42        # 1. stack em produção (gera .env e chave)
 make prod-seed-admin                     # 2. admin local (senha impressa UMA vez)
 make demo-keycloak                       # 3. (teste) Keycloak + estrutura e usuários fictícios
@@ -55,6 +55,12 @@ make deploy        # git pull --ff-only + rebuild + restart
 
 `.env`, chaves e CA são reaproveitados; migrations novas rodam sozinhas
 (serviço `migrate`) antes da API e do worker.
+
+Segredos que entraram depois são gerados na primeira atualização: hoje, a
+`TYPESENSE_API_KEY` do índice da Busca Global (ADR 031). O `make deploy` e o
+deploy contínuo do CI a acrescentam ao `.env` quando falta. Na primeira
+subida, o worker faz a carga completa do índice; até ela terminar, a busca
+usa o Postgres.
 
 **Antes de atualizar uma implantação que já tem lotações com escopo**,
 rode `make iam-scope-report` e confira o resultado: ele lista cada lotação
@@ -103,7 +109,7 @@ Idempotente. Coloca o Caddy (`docker-compose.https.yml`,
 
 | Serviço | Endereço |
 |---|---|
-| Nexus e WebSocket de notificações | `https://<host>` (`wss://<host>/ws`) |
+| SISMARQ e WebSocket de notificações | `https://<host>` (`wss://<host>/ws`) |
 | API direta (health, integrações) | `https://<host>:8443` |
 | MinIO (URLs pré-assinadas) | `https://<host>:9443` |
 | Keycloak de teste | `https://<host>:8543` |
@@ -150,6 +156,8 @@ scripts/restore.sh --yes <dir> --minio   # SUBSTITUI banco (e objetos) pelo back
 Cada backup tem o dump do Postgres, o espelho dos buckets do MinIO, os
 volumes do Keycloak de teste e da CA do Caddy (se existirem), `.env` +
 `secrets/` e `SHA256SUMS`. Retenção de `BACKUP_KEEP_DAYS` (7) dias.
+O volume do Typesense (`typesense_data`) não entra no backup: o índice é
+derivado do banco, e o worker o reconstrói sozinho depois da restauração.
 **O `.env` do backup é indispensável** (senha do banco e
 `CONFIG_ENCRYPTION_KEY`): numa máquina nova, copie `<dir>/config/.env` e
 `<dir>/config/secrets` antes de restaurar. Os backups ficam no mesmo disco —
@@ -274,11 +282,11 @@ organizacional fictícia:
 - Cada departamento é um grupo no Keycloak (ex.: `SEMSA-UPA-ADM`) mapeado
   para o perfil **Servidor** com lotação no departamento; a Administração
   de cada unidade também recebe **Protocolo** na unidade.
-- Os usuários já existem no Nexus antes do 1º login (Diretório com cargo e
+- Os usuários já existem no SISMARQ antes do 1º login (Diretório com cargo e
   ramal); o login pelo Keycloak só os atualiza.
 - Console: `https://<host>:8543/admin` (sem HTTPS: `http://<host>:8180/admin`),
   usuário `admin` e `KEYCLOAK_ADMIN_PASSWORD` do `.env`. Os usuários do
-  Nexus ficam no realm **nexus**.
+  SISMARQ ficam no realm **nexus**.
 - `make demo-popular` (uma vez; marca em `.demo-popular`) povoa todos os
   apps com dados criados pelos próprios usuários fictícios: serviços do
   catálogo, notícias, manuais na Wiki, salas e eventos, salas de equipe e

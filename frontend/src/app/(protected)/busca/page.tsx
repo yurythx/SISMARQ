@@ -6,20 +6,20 @@ import { Search } from "lucide-react";
 import { Suspense, useState } from "react";
 
 import { ModuleIcon } from "@/components/layout/ModuleIcon";
-import { DataState } from "@/components/nexus/DataState";
-import { PageHeader } from "@/components/nexus/PageHeader";
-import { fmtDate } from "@/components/nexus/useAction";
+import { DataState } from "@/components/sismarq/DataState";
+import { PageHeader } from "@/components/sismarq/PageHeader";
+import { fmtDate } from "@/components/sismarq/useAction";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { useApiQuery, withQuery } from "@/lib/api/swr";
-import { useNexus } from "@/lib/nexus/NexusProvider";
-import type { SearchResponse } from "@/lib/nexus/types";
+import { useSismarq } from "@/lib/sismarq/SismarqProvider";
+import type { SearchResponse } from "@/lib/sismarq/types";
 
 function Busca() {
   const params = useSearchParams();
   const router = useRouter();
-  const { modules } = useNexus();
+  const { modules } = useSismarq();
   const q = params.get("q") ?? "";
   const mod = params.get("modulo") ?? "";
   const [draft, setDraft] = useState(q);

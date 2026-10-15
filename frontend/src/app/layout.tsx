@@ -8,7 +8,7 @@ import { BRANDING_COOKIE, mergeServerBranding, parseBrandingCookie, tokensToCss 
 import { publicGetOr } from "@/lib/api/publicServer";
 import { BRANDING_TAG } from "@/lib/branding/tag";
 import { APP_URL } from "@/lib/env";
-import type { Branding } from "@/lib/nexus/types";
+import type { Branding } from "@/lib/sismarq/types";
 import { Providers } from "./providers";
 
 export const viewport: Viewport = {
@@ -48,10 +48,10 @@ const geistMono = localFont({
 
 export async function generateMetadata(): Promise<Metadata> {
   const b = await publicGetOr<Branding | null>("branding", null, 60, [BRANDING_TAG]);
-  const name = b?.app_name || "Projeto Nexus";
+  const name = b?.app_name || "SISMARQ";
   const desc =
     b?.app_description ||
-    "Plataforma completa de soluções corporativas de TI, nuvem privada, catálogo interativo e governança digital.";
+    "Sistema Municipal de Arquivos — Arquivo Público Municipal de Rondonópolis (Lei nº 10.301/2019).";
 
   return {
     metadataBase: new URL(APP_URL),

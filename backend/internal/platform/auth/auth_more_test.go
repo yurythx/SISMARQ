@@ -20,7 +20,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 
-	"github.com/yurythx/projeto-nexus/internal/platform/config"
+	"github.com/yurythx/sismarq/internal/platform/config"
 )
 
 func TestParseRSAPrivateKeyFormats(t *testing.T) {

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { sha256Hex } from "@/lib/nexus/upload";
+import { sha256Hex } from "@/lib/sismarq/upload";
 
 /** Calcula no navegador o SHA-256 do documento escolhido — o arquivo
  * nunca sai da máquina do usuário, só o hash. */

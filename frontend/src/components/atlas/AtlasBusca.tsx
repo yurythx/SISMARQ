@@ -6,7 +6,7 @@ import { useId, useState, type ReactNode } from "react";
 
 import { useApiPage, withQuery } from "@/lib/api/swr";
 import { useAtrasado } from "@/lib/atlas/useAtrasado";
-import type { ClassificacaoTTDD, Workflow } from "@/lib/nexus/types";
+import type { ClassificacaoTTDD, Workflow } from "@/lib/sismarq/types";
 
 import { useAssistente } from "./AssistenteGaveta";
 

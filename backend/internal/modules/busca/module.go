@@ -7,11 +7,11 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/yurythx/projeto-nexus/internal/modules/busca/application"
-	"github.com/yurythx/projeto-nexus/internal/platform/auth"
-	"github.com/yurythx/projeto-nexus/internal/platform/kernel"
-	"github.com/yurythx/projeto-nexus/internal/platform/modkit"
-	"github.com/yurythx/projeto-nexus/pkg/httputil"
+	"github.com/yurythx/sismarq/internal/modules/busca/application"
+	"github.com/yurythx/sismarq/internal/platform/auth"
+	"github.com/yurythx/sismarq/internal/platform/kernel"
+	"github.com/yurythx/sismarq/internal/platform/modkit"
+	"github.com/yurythx/sismarq/pkg/httputil"
 )
 
 // Key é a chave do módulo.
@@ -26,6 +26,12 @@ type Module struct {
 // New constrói o módulo; source é kernel.SearchProviders (só ativos).
 func New(deps modkit.Deps, source application.ProviderSource) *Module {
 	return &Module{svc: application.NewService(source, deps.Logger), logger: deps.Logger}
+}
+
+// WithIndex liga o índice da busca (Typesense, ADR 031).
+func (m *Module) WithIndex(idx application.Index) *Module {
+	m.svc.WithIndex(idx)
+	return m
 }
 
 // Manifest implementa kernel.Plugin.

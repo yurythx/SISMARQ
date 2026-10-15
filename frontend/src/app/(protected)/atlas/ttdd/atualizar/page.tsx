@@ -6,14 +6,14 @@ import { useId, useState } from "react";
 
 import { Trilha } from "@/components/atlas/Trilha";
 import { destinacao, fase, fonteTTDD } from "@/components/atlas/labels";
-import { PageHeader } from "@/components/nexus/PageHeader";
-import { useAction } from "@/components/nexus/useAction";
+import { PageHeader } from "@/components/sismarq/PageHeader";
+import { useAction } from "@/components/sismarq/useAction";
 import { Badge } from "@/components/ui/Badge";
 import { Button, buttonClass } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { apiClient } from "@/lib/api/client";
-import { useNexus } from "@/lib/nexus/NexusProvider";
-import type { ImpactoCargaTTDD, PrazosTTDD, SituacaoCarga } from "@/lib/nexus/types";
+import { useSismarq } from "@/lib/sismarq/SismarqProvider";
+import type { ImpactoCargaTTDD, PrazosTTDD, SituacaoCarga } from "@/lib/sismarq/types";
 
 const SITUACOES: {
   valor: SituacaoCarga;
@@ -36,7 +36,7 @@ function resumo(p: PrazosTTDD | null): string {
 /** Atualizar a TTDD pela tela (atlas:manage — ADR 022): enviar a nova
  * publicação, conferir o impacto e só então aplicar. */
 export default function AtualizarTTDDPage() {
-  const { can } = useNexus();
+  const { can } = useSismarq();
   const id = useId();
   const { run, pending } = useAction();
   const [arquivo, setArquivo] = useState<{

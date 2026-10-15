@@ -40,6 +40,7 @@ const PROTECTED_PREFIXES = [
   "/signum",
   "/tramite",
   "/atlas",
+  "/acervo",
   "/gestao",
   "/exemplos",
 ];

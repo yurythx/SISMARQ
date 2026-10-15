@@ -1,4 +1,4 @@
-name: CI/CD Pipeline — Projeto Nexus Base Governamental
+name: CI/CD Pipeline — SISMARQ Base Governamental
 
 on:
   push:
@@ -42,6 +42,8 @@ jobs:
       TEST_MINIO_ENDPOINT: "localhost:9000"
       TEST_MINIO_ACCESS_KEY: nexus
       TEST_MINIO_SECRET_KEY: nexus_ci_password
+      TEST_TYPESENSE_URL: "http://localhost:8108"
+      TEST_TYPESENSE_API_KEY: ci-typesense-key-0123456789
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -92,6 +94,17 @@ jobs:
             sleep 1
           done
           docker logs minio; exit 1
+
+      - name: Start Typesense (índice da Busca Global, ADR 031)
+        # Mesma imagem do docker-compose; o argumento --api-key impede o uso
+        # como serviço do job (sem command).
+        run: |
+          docker run -d --name typesense -p 8108:8108 typesense/typesense:29.0             --data-dir /tmp --api-key="$TEST_TYPESENSE_API_KEY"
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:8108/health && exit 0
+            sleep 1
+          done
+          docker logs typesense; exit 1
 
       - name: Apply migrations (banco de teste)
         env:
@@ -201,7 +214,7 @@ jobs:
         run: cd frontend && npm run lint
 
       # Os tipos do contrato (src/types/openapi.gen.ts) saem do OpenAPI do
-      # backend; src/lib/nexus/contract.types.ts faz o tsc provar que cada
+      # backend; src/lib/sismarq/contract.types.ts faz o tsc provar que cada
       # tipo da tela aceita o que o backend envia (ADR 010 §10.5).
       - name: Contrato frontend × backend (tipos gerados do OpenAPI em dia)
         run: cd frontend && npm run gen:api && git diff --exit-code -- src/types/openapi.gen.ts
@@ -366,10 +379,17 @@ jobs:
           port: ${{ secrets.PROD_SSH_PORT || 22 }}
           script_stop: true
           script: |
-            echo "🚀 Iniciando Continuous Deployment do Projeto Nexus..."
+            echo "🚀 Iniciando Continuous Deployment do SISMARQ..."
             cd /root/Projetos/Projeto-Nexus
             git fetch origin main
             git reset --hard origin/main
+            # Segredo novo (ADR 031): gera a chave do Typesense se o .env do
+            # servidor ainda não tem — sem ela o compose não sobe.
+            if ! grep -q '^TYPESENSE_API_KEY=.' .env || grep -q '^TYPESENSE_API_KEY=dev-change-this' .env; then
+              sed -i '/^TYPESENSE_API_KEY=/d' .env
+              echo "TYPESENSE_API_KEY=$(openssl rand -hex 32)" >> .env
+            fi
+            docker compose config --quiet
             docker compose down
             docker compose up -d --build
             echo "✅ Deploy concluído com sucesso e stack operacional!"

@@ -5,7 +5,7 @@ import { Mail, MapPin, Phone } from "lucide-react";
 import { PublicShell } from "@/components/layout/PublicShell";
 import { PublicApiError, publicGet } from "@/lib/api/publicServer";
 import { APP_URL } from "@/lib/env";
-import type { Sector } from "@/lib/nexus/types";
+import type { Sector } from "@/lib/sismarq/types";
 
 const description = "Unidades e setores de atendimento, com contatos e endereços.";
 

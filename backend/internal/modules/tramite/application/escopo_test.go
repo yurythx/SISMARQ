@@ -8,10 +8,10 @@ import (
 
 	"github.com/google/uuid"
 
-	apperrors "github.com/yurythx/projeto-nexus/internal/domain/errors"
-	"github.com/yurythx/projeto-nexus/internal/modules/tramite/domain"
-	"github.com/yurythx/projeto-nexus/internal/platform/auth"
-	"github.com/yurythx/projeto-nexus/internal/platform/database/dbtest"
+	apperrors "github.com/yurythx/sismarq/internal/domain/errors"
+	"github.com/yurythx/sismarq/internal/modules/tramite/domain"
+	"github.com/yurythx/sismarq/internal/platform/auth"
+	"github.com/yurythx/sismarq/internal/platform/database/dbtest"
 )
 
 // Lotado na unidade em que o processo está age sobre ele, mas tramitar

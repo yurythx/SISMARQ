@@ -16,17 +16,17 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	apperrors "github.com/yurythx/projeto-nexus/internal/domain/errors"
-	"github.com/yurythx/projeto-nexus/internal/domain/events"
-	"github.com/yurythx/projeto-nexus/internal/domain/pagination"
-	"github.com/yurythx/projeto-nexus/internal/modules/tramite/domain"
-	"github.com/yurythx/projeto-nexus/internal/platform/audit"
-	"github.com/yurythx/projeto-nexus/internal/platform/auth"
-	"github.com/yurythx/projeto-nexus/internal/platform/database"
-	"github.com/yurythx/projeto-nexus/internal/platform/modkit"
-	"github.com/yurythx/projeto-nexus/internal/platform/notificacoes"
-	"github.com/yurythx/projeto-nexus/internal/platform/outbox"
-	"github.com/yurythx/projeto-nexus/internal/platform/storage"
+	apperrors "github.com/yurythx/sismarq/internal/domain/errors"
+	"github.com/yurythx/sismarq/internal/domain/events"
+	"github.com/yurythx/sismarq/internal/domain/pagination"
+	"github.com/yurythx/sismarq/internal/modules/tramite/domain"
+	"github.com/yurythx/sismarq/internal/platform/audit"
+	"github.com/yurythx/sismarq/internal/platform/auth"
+	"github.com/yurythx/sismarq/internal/platform/database"
+	"github.com/yurythx/sismarq/internal/platform/modkit"
+	"github.com/yurythx/sismarq/internal/platform/notificacoes"
+	"github.com/yurythx/sismarq/internal/platform/outbox"
+	"github.com/yurythx/sismarq/internal/platform/storage"
 )
 
 // Eventos emitidos.

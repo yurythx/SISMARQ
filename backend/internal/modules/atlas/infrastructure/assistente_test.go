@@ -11,8 +11,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yurythx/projeto-nexus/internal/modules/atlas/domain"
-	"github.com/yurythx/projeto-nexus/internal/platform/iaconfig"
+	"github.com/yurythx/sismarq/internal/modules/atlas/domain"
+	"github.com/yurythx/sismarq/internal/platform/iaconfig"
 )
 
 // semUso: nada configurado pela tela (vale a conexão do ambiente).

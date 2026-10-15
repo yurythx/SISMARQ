@@ -5,7 +5,7 @@ import { CalendarDays, MapPin } from "lucide-react";
 import { PublicShell } from "@/components/layout/PublicShell";
 import { PublicApiError, publicGet } from "@/lib/api/publicServer";
 import { APP_URL } from "@/lib/env";
-import type { CalendarEvent } from "@/lib/nexus/types";
+import type { CalendarEvent } from "@/lib/sismarq/types";
 
 const description = "Agenda pública de eventos institucionais.";
 

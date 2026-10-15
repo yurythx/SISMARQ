@@ -10,16 +10,16 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	"github.com/yurythx/projeto-nexus/internal/modules/atlas/application"
-	"github.com/yurythx/projeto-nexus/internal/modules/atlas/domain"
-	"github.com/yurythx/projeto-nexus/internal/modules/atlas/infrastructure"
-	"github.com/yurythx/projeto-nexus/internal/modules/atlas/transport"
-	"github.com/yurythx/projeto-nexus/internal/platform/auth"
-	"github.com/yurythx/projeto-nexus/internal/platform/httpserver"
-	"github.com/yurythx/projeto-nexus/internal/platform/iaconfig"
-	"github.com/yurythx/projeto-nexus/internal/platform/kernel"
-	"github.com/yurythx/projeto-nexus/internal/platform/modkit"
-	"github.com/yurythx/projeto-nexus/internal/platform/search"
+	"github.com/yurythx/sismarq/internal/modules/atlas/application"
+	"github.com/yurythx/sismarq/internal/modules/atlas/domain"
+	"github.com/yurythx/sismarq/internal/modules/atlas/infrastructure"
+	"github.com/yurythx/sismarq/internal/modules/atlas/transport"
+	"github.com/yurythx/sismarq/internal/platform/auth"
+	"github.com/yurythx/sismarq/internal/platform/httpserver"
+	"github.com/yurythx/sismarq/internal/platform/iaconfig"
+	"github.com/yurythx/sismarq/internal/platform/kernel"
+	"github.com/yurythx/sismarq/internal/platform/modkit"
+	"github.com/yurythx/sismarq/internal/platform/search"
 )
 
 // Key é a chave do módulo.
@@ -45,6 +45,10 @@ func New(deps modkit.Deps) *Module {
 		WithStorage(deps.Storage, deps.Config.MinIO.Bucket).WithNotificacoes(deps.Notificacoes)
 	return &Module{deps: deps, svc: svc, handlers: transport.NewHandlers(svc, deps.Logger, deps.Config.MaxPageSize)}
 }
+
+// Service expõe os casos de uso (o Acervo lê a TTDD por uma porta ligada em
+// internal/app).
+func (m *Module) Service() *application.Service { return m.svc }
 
 // Manifest implementa kernel.Plugin.
 func (m *Module) Manifest() kernel.Manifest {
@@ -81,4 +85,10 @@ func (provider) Module() string { return Key }
 
 func (p provider) Search(ctx context.Context, _ auth.Identity, q string, limit int) ([]search.Result, error) {
 	return p.svc.BuscaGlobal(ctx, Key, q, limit)
+}
+
+// Documents implementa search.Indexer: todo o conteúdo da busca do Atlas é
+// público (consulta sem login, ADR 026), então ele vai para o índice.
+func (p provider) Documents(ctx context.Context, emit func(search.Document) error) error {
+	return p.svc.DocumentosBusca(ctx, emit)
 }

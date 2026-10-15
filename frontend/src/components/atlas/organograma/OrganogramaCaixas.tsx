@@ -1,7 +1,7 @@
 import { TriangleAlert } from "lucide-react";
 import Link from "next/link";
 
-import type { FuncaoOrganograma, OrgaoOrganograma } from "@/lib/nexus/types";
+import type { FuncaoOrganograma, OrgaoOrganograma } from "@/lib/sismarq/types";
 
 import { linkFuncao, linkSecretaria, linkSubfuncao, procedimentos, rotulo } from "./organograma";
 

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { FileText } from "lucide-react";
 
-import type { WikiPage } from "@/lib/nexus/types";
+import type { WikiPage } from "@/lib/sismarq/types";
 
 interface Node extends WikiPage {
   children: Node[];

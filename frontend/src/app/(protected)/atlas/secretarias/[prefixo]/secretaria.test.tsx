@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { porFuncao, resumoProcedimentos } from "@/components/atlas/secretaria";
-import type { Workflow } from "@/lib/nexus/types";
+import type { Workflow } from "@/lib/sismarq/types";
 import { identityRoutes, mockBackend, page, renderApp } from "@/test/backend";
 import { resetNavigation, router } from "@/test/navigation";
 

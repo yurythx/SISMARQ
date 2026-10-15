@@ -220,7 +220,7 @@ Registrado em 2026-10-05. O estado do Atlas nessa data:
 
 ## 4. Operação e segurança
 
-- **Trocar as senhas:** root do servidor e admin local do Nexus. Ambas
+- **Trocar as senhas:** root do servidor e admin local do SISMARQ. Ambas
   circularam em conversa. O admin local se redefine com
   `make prod-seed-admin`.
 - ~~**Backup automatizado:** agendar o backup do Postgres e do MinIO de produção~~ — **Concluído em 2026-10-13:** agendado em `/etc/cron.d/nexus-backup` (diário às 02:30 com retenção de 7 dias, dump do Postgres, mirror do MinIO, dados do Keycloak, CA do Caddy e manifesto SHA256SUMS).

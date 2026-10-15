@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import { buildNav } from "./Sidebar";
-import type { ModuleStatus } from "@/lib/nexus/types";
-import { hasPermission } from "@/lib/nexus/permissions";
+import type { ModuleStatus } from "@/lib/sismarq/types";
+import { hasPermission } from "@/lib/sismarq/permissions";
 
 function mod(key: string, extra: Partial<ModuleStatus> = {}): ModuleStatus {
   return {

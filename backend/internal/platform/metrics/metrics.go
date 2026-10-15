@@ -59,6 +59,14 @@ var (
 		Help: "Messages routed to a dead-letter queue after exhausting retries, by queue.",
 	}, []string{"queue"})
 
+	// SearchIndexFallbackTotal conta as buscas que o índice (Typesense) não
+	// respondeu e voltaram ao Postgres: "erro" (indisponível) ou "vazio"
+	// (sem resultado — o índice pode ainda não ter recebido a carga).
+	SearchIndexFallbackTotal = promauto.NewCounterVec(prometheus.CounterOpts{
+		Name: "nexus_search_index_fallback_total",
+		Help: "Global searches answered by the Postgres providers instead of the Typesense index, by reason.",
+	}, []string{"reason"})
+
 	// --- WebSocket ---
 	WebSocketConnections = promauto.NewGauge(prometheus.GaugeOpts{
 		Name: "nexus_websocket_connections",

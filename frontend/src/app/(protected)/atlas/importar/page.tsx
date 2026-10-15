@@ -5,14 +5,14 @@ import Link from "next/link";
 import { useId, useState } from "react";
 
 import { Trilha } from "@/components/atlas/Trilha";
-import { PageHeader } from "@/components/nexus/PageHeader";
-import { useAction } from "@/components/nexus/useAction";
+import { PageHeader } from "@/components/sismarq/PageHeader";
+import { useAction } from "@/components/sismarq/useAction";
 import { Badge } from "@/components/ui/Badge";
 import { Button, buttonClass } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { apiClient } from "@/lib/api/client";
-import { useNexus } from "@/lib/nexus/NexusProvider";
-import type { ImportacaoProcedimentos, SituacaoImportacao } from "@/lib/nexus/types";
+import { useSismarq } from "@/lib/sismarq/SismarqProvider";
+import type { ImportacaoProcedimentos, SituacaoImportacao } from "@/lib/sismarq/types";
 
 const SITUACOES: {
   valor: SituacaoImportacao;
@@ -29,7 +29,7 @@ const SITUACOES: {
  * procedimentos em vigor, revisar ou acrescentar no arquivo, simular e
  * aplicar só o arquivo conferido. */
 export default function ImportarProcedimentosPage() {
-  const { can } = useNexus();
+  const { can } = useSismarq();
   const id = useId();
   const { run, pending } = useAction();
   const [arquivo, setArquivo] = useState<{ nome: string; conteudo: string } | null>(null);

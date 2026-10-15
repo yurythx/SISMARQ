@@ -13,10 +13,10 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/yurythx/projeto-nexus/internal/domain/events"
-	"github.com/yurythx/projeto-nexus/internal/platform/kernel"
-	"github.com/yurythx/projeto-nexus/internal/platform/passwords"
-	"github.com/yurythx/projeto-nexus/internal/platform/storage/storagetest"
+	"github.com/yurythx/sismarq/internal/domain/events"
+	"github.com/yurythx/sismarq/internal/platform/kernel"
+	"github.com/yurythx/sismarq/internal/platform/passwords"
+	"github.com/yurythx/sismarq/internal/platform/storage/storagetest"
 )
 
 // apiHarness é o sistema completo (router real + Postgres de teste) com

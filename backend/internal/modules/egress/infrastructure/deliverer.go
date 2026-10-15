@@ -13,8 +13,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/yurythx/projeto-nexus/internal/modules/egress/domain"
-	"github.com/yurythx/projeto-nexus/internal/platform/netguard"
+	"github.com/yurythx/sismarq/internal/modules/egress/domain"
+	"github.com/yurythx/sismarq/internal/platform/netguard"
 )
 
 // Deliverer faz o POST do webhook pelo cliente HTTP anti-SSRF.
@@ -37,7 +37,7 @@ func Body(kind string, eventID, eventType string, payload json.RawMessage, at ti
 	switch kind {
 	case "zabbix", "grafana":
 		return json.Marshal(map[string]any{
-			"title":       "Nexus: " + eventType,
+			"title":       "SISMARQ: " + eventType,
 			"message":     string(payload),
 			"event_id":    eventID,
 			"event_type":  eventType,

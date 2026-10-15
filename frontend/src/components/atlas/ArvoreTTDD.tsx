@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import type { EstruturaTTDD } from "@/lib/nexus/types";
+import type { EstruturaTTDD } from "@/lib/sismarq/types";
 
 /** O nó `prefixo` contém o código selecionado? ("2.0" contém "2.0.02.00"). */
 export const contem = (prefixo: string, codigo: string) =>

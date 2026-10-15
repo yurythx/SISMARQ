@@ -12,13 +12,20 @@ import (
 	"sync"
 	"time"
 
-	apperrors "github.com/yurythx/projeto-nexus/internal/domain/errors"
-	"github.com/yurythx/projeto-nexus/internal/platform/auth"
-	"github.com/yurythx/projeto-nexus/internal/platform/search"
+	apperrors "github.com/yurythx/sismarq/internal/domain/errors"
+	"github.com/yurythx/sismarq/internal/platform/auth"
+	"github.com/yurythx/sismarq/internal/platform/metrics"
+	"github.com/yurythx/sismarq/internal/platform/search"
 )
 
 // ProviderSource devolve os providers dos módulos ativos neste instante.
 type ProviderSource func() []search.Provider
+
+// Index é o índice da busca (Typesense, ADR 031). Responde pelos módulos
+// cujo provider é um search.Indexer; sem índice, todos vão ao Postgres.
+type Index interface {
+	Search(ctx context.Context, q string, modules []string, limit int) ([]search.Result, error)
+}
 
 // Response é o resultado agregado.
 type Response struct {
@@ -32,6 +39,7 @@ type Response struct {
 // Service agrega os providers.
 type Service struct {
 	source  ProviderSource
+	index   Index
 	timeout time.Duration
 	logger  *slog.Logger
 }
@@ -39,6 +47,36 @@ type Service struct {
 // NewService cria o serviço.
 func NewService(source ProviderSource, logger *slog.Logger) *Service {
 	return &Service{source: source, timeout: 2 * time.Second, logger: logger}
+}
+
+// WithIndex liga o índice da busca.
+func (s *Service) WithIndex(idx Index) *Service {
+	s.index = idx
+	return s
+}
+
+// fromIndex consulta o índice pelos módulos indexados. ok=false manda
+// esses módulos de volta ao Postgres: índice com erro, ou sem nenhum
+// resultado (o índice pode ainda não ter recebido a carga — o Postgres
+// confirma).
+func (s *Service) fromIndex(ctx context.Context, query string, indexed []search.Provider, limit int) ([]search.Result, bool) {
+	modules := make([]string, len(indexed))
+	for i, p := range indexed {
+		modules[i] = p.Module()
+	}
+	ictx, cancel := context.WithTimeout(ctx, s.timeout)
+	defer cancel()
+	res, err := s.index.Search(ictx, query, modules, limit)
+	switch {
+	case err != nil:
+		s.logger.Warn("busca: índice indisponível — usando a busca do Postgres", slog.Any("error", err))
+		metrics.SearchIndexFallbackTotal.WithLabelValues("erro").Inc()
+		return nil, false
+	case len(res) == 0:
+		metrics.SearchIndexFallbackTotal.WithLabelValues("vazio").Inc()
+		return nil, false
+	}
+	return res, true
 }
 
 // Search executa a busca global.
@@ -58,14 +96,31 @@ func (s *Service) Search(ctx context.Context, identity auth.Identity, query stri
 		results []search.Result
 		err     error
 	}
-	ch := make(chan outcome, len(providers))
-	var wg sync.WaitGroup
 	modules := []string{}
+	var run, indexed []search.Provider
 	for _, p := range providers {
 		if module != "" && p.Module() != module {
 			continue
 		}
 		modules = append(modules, p.Module())
+		if _, ok := p.(search.Indexer); ok && s.index != nil {
+			indexed = append(indexed, p)
+			continue
+		}
+		run = append(run, p)
+	}
+	resp := Response{Query: query, Results: []search.Result{}, Modules: modules, Degraded: []string{}}
+	if len(indexed) > 0 {
+		if res, ok := s.fromIndex(ctx, query, indexed, limit); ok {
+			resp.Results = append(resp.Results, res...)
+		} else {
+			run = append(run, indexed...)
+		}
+	}
+
+	ch := make(chan outcome, len(run))
+	var wg sync.WaitGroup
+	for _, p := range run {
 		wg.Add(1)
 		go func(p search.Provider) {
 			defer wg.Done()
@@ -78,7 +133,6 @@ func (s *Service) Search(ctx context.Context, identity auth.Identity, query stri
 	wg.Wait()
 	close(ch)
 
-	resp := Response{Query: query, Results: []search.Result{}, Modules: modules, Degraded: []string{}}
 	for o := range ch {
 		if o.err != nil {
 			s.logger.Warn("busca: provider falhou — resultado parcial", slog.String("module", o.module), slog.Any("error", o.err))

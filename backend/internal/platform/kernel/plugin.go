@@ -1,4 +1,4 @@
-// Package kernel é o Core Kernel do Microkernel do Nexus.
+// Package kernel é o Core Kernel do Microkernel do SISMARQ.
 //
 // Todo módulo de negócio é um Plugin registrado por RegisterModule. O
 // Kernel é dono do ciclo de vida: ativa e desativa plugins em tempo de
@@ -20,10 +20,10 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	"github.com/yurythx/projeto-nexus/internal/domain/events"
-	"github.com/yurythx/projeto-nexus/internal/platform/messaging"
-	"github.com/yurythx/projeto-nexus/internal/platform/search"
-	"github.com/yurythx/projeto-nexus/internal/platform/ws"
+	"github.com/yurythx/sismarq/internal/domain/events"
+	"github.com/yurythx/sismarq/internal/platform/messaging"
+	"github.com/yurythx/sismarq/internal/platform/search"
+	"github.com/yurythx/sismarq/internal/platform/ws"
 )
 
 // PermissionInfo documenta uma permissão declarada pelo plugin (exibida

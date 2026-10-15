@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/Badge";
-import type { Workflow } from "@/lib/nexus/types";
+import type { Workflow } from "@/lib/sismarq/types";
 
 import { NIVEL_ACESSO } from "./labels";
 import { SITUACAO } from "./ValidacaoProcedimento";

@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { pecaJuntada, situacaoGuarda } from "@/components/tramite/AtlasDoProcesso";
-import type { ClassificacaoTTDD } from "@/lib/nexus/types";
+import type { ClassificacaoTTDD } from "@/lib/sismarq/types";
 import { identityRoutes, mockBackend, page, renderApp } from "@/test/backend";
 import { resetNavigation, router } from "@/test/navigation";
 

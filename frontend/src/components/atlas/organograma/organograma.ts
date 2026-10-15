@@ -3,7 +3,7 @@ import type {
   FuncaoOrganograma,
   OrgaoOrganograma,
   SubfuncaoOrganograma,
-} from "@/lib/nexus/types";
+} from "@/lib/sismarq/types";
 
 /** As quatro visualizações da aba Organograma. */
 export const VISOES = [

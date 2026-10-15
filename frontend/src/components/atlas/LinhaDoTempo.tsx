@@ -17,7 +17,7 @@ import { useId, useState } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { useApiQuery } from "@/lib/api/swr";
 import { urlArquivoModelo } from "@/lib/atlas/modelos";
-import type { Etapa, EtapaDocumento, ModeloDocumento } from "@/lib/nexus/types";
+import type { Etapa, EtapaDocumento, ModeloDocumento } from "@/lib/sismarq/types";
 
 import { DetalhePeca, type GestaoPecas, type ModelosSerie } from "./DetalhePeca";
 import { ASSINATURA, FORMATO } from "./labels";

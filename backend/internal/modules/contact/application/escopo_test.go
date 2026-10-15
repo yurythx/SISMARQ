@@ -8,11 +8,11 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/yurythx/projeto-nexus/internal/domain/pagination"
-	"github.com/yurythx/projeto-nexus/internal/modules/contact/domain"
-	"github.com/yurythx/projeto-nexus/internal/modules/contact/infrastructure"
-	"github.com/yurythx/projeto-nexus/internal/platform/auth"
-	"github.com/yurythx/projeto-nexus/internal/platform/database/dbtest"
+	"github.com/yurythx/sismarq/internal/domain/pagination"
+	"github.com/yurythx/sismarq/internal/modules/contact/domain"
+	"github.com/yurythx/sismarq/internal/modules/contact/infrastructure"
+	"github.com/yurythx/sismarq/internal/platform/auth"
+	"github.com/yurythx/sismarq/internal/platform/database/dbtest"
 )
 
 // gestor é a gestão global (nexus-admin equivale a "*" em todo lugar).

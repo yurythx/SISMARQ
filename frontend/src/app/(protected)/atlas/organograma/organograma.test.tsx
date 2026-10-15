@@ -2,7 +2,7 @@ import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { OrgaoOrganograma } from "@/lib/nexus/types";
+import type { OrgaoOrganograma } from "@/lib/sismarq/types";
 import { identityRoutes, mockBackend, page, renderApp } from "@/test/backend";
 import { resetNavigation, router } from "@/test/navigation";
 

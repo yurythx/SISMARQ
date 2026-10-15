@@ -9,7 +9,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/yurythx/projeto-nexus/internal/platform/storage"
+	"github.com/yurythx/sismarq/internal/platform/storage"
 )
 
 // memStorage é um storage.Provider em memória para os testes.

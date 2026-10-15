@@ -6,21 +6,21 @@ import { Suspense, useCallback, useEffect, useRef, useState, type FormEvent, typ
 
 import { RoomsAdmin } from "@/components/mercurio/RoomsAdmin";
 import { useFrames, useRealtimeSend, useRealtimeState, useTopic } from "@/components/realtime/RealtimeProvider";
-import { DataState } from "@/components/nexus/DataState";
-import { useAction } from "@/components/nexus/useAction";
+import { DataState } from "@/components/sismarq/DataState";
+import { useAction } from "@/components/sismarq/useAction";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { apiClient } from "@/lib/api/client";
 import { useApiQuery, withQuery } from "@/lib/api/swr";
-import { useNexus } from "@/lib/nexus/NexusProvider";
-import type { ChatMessage, ChatRoom } from "@/lib/nexus/types";
+import { useSismarq } from "@/lib/sismarq/SismarqProvider";
+import type { ChatMessage, ChatRoom } from "@/lib/sismarq/types";
 
 const KIND_ICON = { global: Hash, department: Users, direct: UserIcon } as const;
 const TYPING_TTL = 4000;
 
 function RoomView({ room, onRead }: { room: ChatRoom; onRead: () => void }) {
-  const { me, can } = useNexus();
+  const { me, can } = useSismarq();
   const { run } = useAction();
   const send = useRealtimeSend();
   const connection = useRealtimeState();
@@ -234,7 +234,7 @@ function RoomView({ room, onRead }: { room: ChatRoom; onRead: () => void }) {
 
 function Mercurio() {
   const router = useRouter();
-  const { can } = useNexus();
+  const { can } = useSismarq();
   const [admin, setAdmin] = useState(false);
   const params = useSearchParams();
   const rooms = useApiQuery<ChatRoom[]>("v1/mercurio/rooms");

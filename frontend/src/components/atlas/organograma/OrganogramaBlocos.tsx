@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import type { OrgaoOrganograma, SubfuncaoOrganograma } from "@/lib/nexus/types";
+import type { OrgaoOrganograma, SubfuncaoOrganograma } from "@/lib/sismarq/types";
 
 import {
   cobertura,

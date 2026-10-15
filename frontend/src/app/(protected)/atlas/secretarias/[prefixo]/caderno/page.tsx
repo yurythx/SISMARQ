@@ -13,11 +13,11 @@ import {
   useFuncoes,
   useProcedimentosDaSecretaria,
 } from "@/components/atlas/secretaria";
-import { DataState } from "@/components/nexus/DataState";
+import { DataState } from "@/components/sismarq/DataState";
 import { Button } from "@/components/ui/Button";
 import { useApiQuery, withQuery } from "@/lib/api/swr";
-import { useNexus } from "@/lib/nexus/NexusProvider";
-import type { ProcedimentosOrgao, Workflow } from "@/lib/nexus/types";
+import { useSismarq } from "@/lib/sismarq/SismarqProvider";
+import type { ProcedimentosOrgao, Workflow } from "@/lib/sismarq/types";
 
 /** Uma ficha do caderno: carrega o procedimento completo (com as etapas). */
 function Ficha({ id }: { id: string }) {
@@ -231,7 +231,7 @@ function Caderno() {
 }
 
 export default function CadernoPage() {
-  const { can } = useNexus();
+  const { can } = useSismarq();
   if (!can("atlas:manage")) {
     return (
       <p className="text-sm text-muted">

@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	"github.com/yurythx/projeto-nexus/internal/platform/auth"
+	"github.com/yurythx/sismarq/internal/platform/auth"
 )
 
 // RegisterRoutes monta as rotas do módulo-modelo. Leitura: qualquer

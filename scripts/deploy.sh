@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Deploy do Projeto Nexus num servidor com Docker (modo produção, só o
+# Deploy do SISMARQ num servidor com Docker (modo produção, só o
 # docker-compose.yml). Idempotente: pode rodar a cada atualização.
 #
 #   scripts/deploy.sh                 # usa o 1º IP da máquina como host público
@@ -72,6 +72,13 @@ if [ ! -f .env ]; then
   chmod 600 .env
 else
   log "Reaproveitando o .env existente"
+fi
+
+# Segredos que entraram depois do .env já existir: gera só o que falta (os
+# demais nunca são regenerados — ver o aviso no topo).
+if ! grep -q '^TYPESENSE_API_KEY=.' .env || grep -q '^TYPESENSE_API_KEY=dev-change-this' .env; then
+  log "Gerando TYPESENSE_API_KEY (índice da Busca Global, ADR 031)"
+  set_kv TYPESENSE_API_KEY "$(openssl rand -hex 32)"
 fi
 
 if [ ! -f secrets/local_auth_private_key.pem ]; then

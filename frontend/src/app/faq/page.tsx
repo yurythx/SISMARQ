@@ -5,9 +5,10 @@ import { ArrowRight, HelpCircle, MessageSquare } from "lucide-react";
 import { PublicShell } from "@/components/layout/PublicShell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { APP_URL } from "@/lib/env";
+import { FAQ } from "@/lib/sismarq/conteudo";
 
 const description =
-  "Perguntas frequentes sobre a plataforma tecnológica, catálogo de serviços de TI, implantação, infraestrutura e segurança.";
+  "Perguntas frequentes sobre o Arquivo Público Municipal, o SISMARQ, a Tabela de Temporalidade e o rito de eliminação de documentos, com base na Lei Municipal nº 10.301/2019.";
 
 export const metadata: Metadata = {
   title: "Perguntas Frequentes (FAQ)",
@@ -20,64 +21,6 @@ export const metadata: Metadata = {
     url: `${APP_URL}/faq`,
   },
 };
-
-const FAQ_SECTIONS = [
-  {
-    category: "Plataforma e Arquitetura",
-    items: [
-      {
-        q: "O que é o Projeto Nexus e como foi desenvolvido?",
-        a: "O Projeto Nexus é uma plataforma digital institucional de alto desempenho construída sobre uma arquitetura Microkernel em Go (Golang) com desacoplamento modular completo. O frontend utiliza Next.js 16 com React 19, persistência em PostgreSQL 16 com isolamento de transações, mensageria RabbitMQ e orquestração Docker sobre Proxmox VE.",
-      },
-      {
-        q: "Quais normas de conformidade pública e governamental a plataforma atende?",
-        a: "A plataforma foi desenhada em estrita conformidade com as diretrizes da Secretaria de Governo Digital (SGD/MGI), respeitando o e-MAG 2.0 (Acessibilidade Digital WCAG 2.1 AA com VLibras), o Padrão Digital de Governo (DSGov), a LGPD (Lei 13.709/2018 com mascaramento PII nativo) e a matriz de segurança cibernética OWASP Top 10 Enterprise.",
-      },
-      {
-        q: "Nossa organização mantém total soberania sobre os dados e infraestrutura?",
-        a: "Sim. Toda a stack é desenhada para operar de forma dedicada (On-Premises ou VPS privada), sem dependência de nuvens proprietárias opacas. Seus dados, bancos de dados, backups e chaves criptográficas permanecem sob sua total custódia e governança.",
-      },
-    ],
-  },
-  {
-    category: "Serviços Especializados de TI",
-    items: [
-      {
-        q: "Como funciona o processo de contratação e implantação de um serviço?",
-        a: "O processo é dividido em três fases claras: 1) Levantamento técnico e arquitetura personalizada; 2) Configuração, hardening de segurança e testes em homologação; 3) Entrega em produção, documentação técnica viva e treinamento prático para a sua equipe.",
-      },
-      {
-        q: "Qual a diferença entre a WhatsApp Business API Oficial e soluções não-oficiais?",
-        a: "A API Oficial é conectada diretamente aos servidores da Meta com número verificado. Não há risco de ban de número, permite múltiplos atendentes simultâneos sem desconexões, suporta mensagens ativas em massa aprovadas (templates HSM) e integra-se perfeitamente a CRMs e helpdesks como Chatwoot.",
-      },
-      {
-        q: "Como o Terraform e o Ansible se complementam na prática?",
-        a: "O Terraform cuida da Infraestrutura como Código (IaC): cria as máquinas virtuais no Proxmox ou nuvem, define redes, IPs e storages. O Ansible entra em seguida para configurar o sistema operacional, aplicar patches de segurança, criar usuários e instalar os softwares de forma automatizada e idempotente (agentless).",
-      },
-      {
-        q: "Por que migrar para o Proxmox VE e storages TrueNAS?",
-        a: "Proxmox VE e TrueNAS entregam virtualização e armazenamento de nível enterprise com sistemas de arquivos resilientes (ZFS), replicação de dados e alta disponibilidade sem custos astronômicos de licenciamento por socket ou core, permitindo economia imediata de até 70% nos custos de TI.",
-      },
-    ],
-  },
-  {
-    category: "Suporte, Prazos e Segurança",
-    items: [
-      {
-        q: "Qual é o prazo médio de entrega e implementação dos serviços?",
-        a: "A maioria das soluções padronizadas (como Chatwoot, Zabbix, GLPI, Nextcloud, TrueNAS e VPNs Tailscale) é entregue em até 5 a 10 dias úteis, com acompanhamento assistido e garantia de operação contínua.",
-      },
-      {
-        q: "Existe suporte contínuo após a entrega?",
-        a: "Sim. Oferecemos pacotes de serviços gerenciados, rotinas de backup corporativo automatizado, monitoramento proativo de métricas e suporte técnico especializado via canais dedicados.",
-      },
-      {
-        q: "Como entrar em contato para tirar dúvidas específicas?",
-        a: "Você pode navegar pelo catálogo em /servicos, consultar artigos técnicos no nosso Blog (/blog) ou enviar uma mensagem pelo formulário público em /contato.",
-      },
-    ],
-  },
-];
 
 export default function FAQPage() {
   return (
@@ -92,13 +35,13 @@ export default function FAQPage() {
         </div>
 
         <div className="flex flex-col gap-10">
-          {FAQ_SECTIONS.map((sec) => (
-            <section key={sec.category} className="flex flex-col gap-4">
+          {FAQ.map((sec) => (
+            <section key={sec.categoria} className="flex flex-col gap-4">
               <h2 className="text-xl font-bold text-foreground border-b border-surface-border pb-2">
-                {sec.category}
+                {sec.categoria}
               </h2>
               <div className="grid gap-4">
-                {sec.items.map((item, idx) => (
+                {sec.itens.map((item, idx) => (
                   <Card key={idx} className="border-surface-border">
                     <CardHeader className="flex flex-row items-start gap-3 pb-2">
                       <HelpCircle size={20} className="mt-0.5 text-accent shrink-0" aria-hidden="true" />
@@ -106,8 +49,9 @@ export default function FAQPage() {
                         {item.q}
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="pl-4 sm:pl-11 text-sm leading-relaxed text-muted">
-                      {item.a}
+                    <CardContent className="flex flex-col gap-2 pl-4 sm:pl-11 text-sm leading-relaxed text-muted">
+                      <p>{item.a}</p>
+                      <p className="text-xs font-medium text-foreground/70">Base: {item.fonte}</p>
                     </CardContent>
                   </Card>
                 ))}
@@ -121,7 +65,7 @@ export default function FAQPage() {
           <div className="flex flex-col gap-1">
             <h3 className="text-lg font-bold text-foreground">Ainda tem dúvidas?</h3>
             <p className="text-sm text-muted">
-              Nossa equipe está pronta para avaliar seu cenário e desenhar a solução ideal.
+              Fale com o Arquivo Público Municipal ou consulte a Tabela de Temporalidade em vigor.
             </p>
           </div>
           <div className="mt-4 sm:mt-0 flex flex-wrap shrink-0 items-center justify-center sm:justify-start gap-3">
@@ -132,10 +76,10 @@ export default function FAQPage() {
               <MessageSquare size={16} aria-hidden="true" /> Fale Conosco
             </Link>
             <Link
-              href="/servicos"
+              href="/temporalidade"
               className="inline-flex items-center gap-1 text-sm font-medium text-accent hover:underline"
             >
-              Ver Serviços <ArrowRight size={14} aria-hidden="true" />
+              Consultar a Temporalidade <ArrowRight size={14} aria-hidden="true" />
             </Link>
           </div>
         </div>

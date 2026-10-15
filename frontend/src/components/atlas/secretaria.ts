@@ -1,5 +1,5 @@
 import { useApiPage, useApiQuery, withQuery } from "@/lib/api/swr";
-import type { EstruturaTTDD, ProcedimentosOrgao, Workflow } from "@/lib/nexus/types";
+import type { EstruturaTTDD, ProcedimentosOrgao, Workflow } from "@/lib/sismarq/types";
 
 /** Resumo dos procedimentos de uma secretaria: publicados e, para a gestão,
  * os que estão em validação ou em rascunho. */

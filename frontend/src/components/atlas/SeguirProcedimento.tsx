@@ -2,7 +2,7 @@
 
 import { BellOff, BellRing } from "lucide-react";
 
-import { useAction } from "@/components/nexus/useAction";
+import { useAction } from "@/components/sismarq/useAction";
 import { Button } from "@/components/ui/Button";
 import { apiClient } from "@/lib/api/client";
 import { useApiQuery } from "@/lib/api/swr";

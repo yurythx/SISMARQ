@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useId, useState, type FormEvent } from "react";
 
 import { destinacao, fase } from "@/components/atlas/labels";
-import { useAction } from "@/components/nexus/useAction";
+import { useAction } from "@/components/sismarq/useAction";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Dialog } from "@/components/ui/Dialog";
@@ -21,7 +21,7 @@ import type {
   ModeloDocumento,
   Processo,
   Workflow,
-} from "@/lib/nexus/types";
+} from "@/lib/sismarq/types";
 
 /** Peça exigida pelo procedimento, com o modelo para baixar (o da peça ou,
  * sem ele, o primeiro modelo ativo da série — ADR 024). */

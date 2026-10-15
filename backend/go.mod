@@ -1,4 +1,4 @@
-module github.com/yurythx/projeto-nexus
+module github.com/yurythx/sismarq
 
 go 1.26.0
 

@@ -1,7 +1,7 @@
 import "server-only";
 
 import { publicGetOr } from "@/lib/api/publicServer";
-import type { PublicModule } from "@/lib/nexus/types";
+import type { PublicModule } from "@/lib/sismarq/types";
 
 /** Estado dos módulos com superfície pública (Kernel), para o site
  * institucional esconder seções de plugins desativados. Revalida a cada

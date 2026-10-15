@@ -17,8 +17,8 @@
   roles:
     - docker
 
-# 3. Deploy Contínuo da Aplicação Nexus
-- name: Deploy da Stack Projeto Nexus
+# 3. Deploy Contínuo da Aplicação SISMARQ
+- name: Deploy da Stack SISMARQ
   hosts: nexus_apps
   become: yes
   roles:

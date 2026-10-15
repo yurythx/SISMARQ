@@ -5,7 +5,7 @@ import { ClipboardList } from "lucide-react";
 import { PublicShell } from "@/components/layout/PublicShell";
 import { publicGetOr } from "@/lib/api/publicServer";
 import { APP_URL } from "@/lib/env";
-import type { Workflow } from "@/lib/nexus/types";
+import type { Workflow } from "@/lib/sismarq/types";
 
 const description =
   "Como tramita cada processo administrativo: etapas, setores, prazos, documentos exigidos e modelos para baixar (transparência ativa — LAI).";

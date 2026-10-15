@@ -8,7 +8,7 @@ import { PublicShell } from "@/components/layout/PublicShell";
 import { PublicApiError, publicGet, publicGetOr } from "@/lib/api/publicServer";
 import { extensao, urlArquivoModelo } from "@/lib/atlas/modelos";
 import { APP_URL } from "@/lib/env";
-import type { ClassificacaoTTDD, ModeloDocumento, Workflow } from "@/lib/nexus/types";
+import type { ClassificacaoTTDD, ModeloDocumento, Workflow } from "@/lib/sismarq/types";
 
 type Props = { params: Promise<{ codigo: string }> };
 

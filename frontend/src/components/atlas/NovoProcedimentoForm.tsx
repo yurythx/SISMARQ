@@ -3,7 +3,7 @@
 import { ArrowRight, Plus, Trash2 } from "lucide-react";
 import { useId, useState, type FormEvent } from "react";
 
-import { useAction } from "@/components/nexus/useAction";
+import { useAction } from "@/components/sismarq/useAction";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
@@ -19,7 +19,7 @@ import type {
   ModeloDocumento,
   NivelAcesso,
   Workflow,
-} from "@/lib/nexus/types";
+} from "@/lib/sismarq/types";
 
 import { NIVEL_ACESSO } from "./labels";
 

@@ -1,6 +1,6 @@
 # Guia de Automação de Infraestrutura: Proxmox VE + Terraform + Ansible + Cloudflare Tunnel
 
-Este guia documenta o padrão corporativo de **Infraestrutura como Código (IaC)**, **Gerenciamento de Configuração** e **Borda Zero Trust** do Projeto Nexus no Proxmox VE 8/9.
+Este guia documenta o padrão corporativo de **Infraestrutura como Código (IaC)**, **Gerenciamento de Configuração** e **Borda Zero Trust** do SISMARQ no Proxmox VE 8/9.
 
 ---
 
@@ -106,7 +106,7 @@ O Terraform irá:
 2. Injetar sua chave SSH pública via Cloud-Init.
 3. Gerar automaticamente o arquivo `deploy/infra/ansible/inventory.ini`.
 
-### Passo 3: Configurar o Docker e Fazer Deploy do Nexus
+### Passo 3: Configurar o Docker e Fazer Deploy do SISMARQ
 ```bash
 make infra-deploy
 ```

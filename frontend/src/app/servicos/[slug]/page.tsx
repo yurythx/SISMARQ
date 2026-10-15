@@ -4,14 +4,13 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Clock, Globe, Mail, MapPin, Phone, Wallet } from "lucide-react";
 
 import { PublicShell } from "@/components/layout/PublicShell";
-import { Markdown } from "@/components/nexus/Markdown";
+import { Markdown } from "@/components/sismarq/Markdown";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { getPublishedService } from "@/lib/catalog/catalog";
-import { ServiceCodeSnippet } from "@/components/catalog/ServiceCodeSnippet";
 import { ServiceIcon, getCategoryIconStyles } from "@/lib/catalog/icons";
 import { APP_URL } from "@/lib/env";
 import { safeResourceUrl } from "@/lib/security/safe-url";
-import type { ServiceChannel } from "@/lib/nexus/types";
+import type { ServiceChannel } from "@/lib/sismarq/types";
 
 export const dynamic = "force-dynamic";
 
@@ -102,9 +101,6 @@ export default async function ServicoPage({ params }: Props) {
           </section>
         )}
 
-        {/* Exemplo de Manifesto Técnico & IaC quando aplicável */}
-        <ServiceCodeSnippet slug={svc.slug} />
-
         {svc.channels.length > 0 && (
           <Card>
             <CardHeader>
@@ -130,15 +126,9 @@ export default async function ServicoPage({ params }: Props) {
         )}
 
         <div className="flex flex-col gap-2 rounded-xl border border-accent/20 bg-accent/5 p-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-col">
-            <span className="text-xs font-bold uppercase tracking-wider text-accent">Artigo Técnico & Análise de Mercado</span>
-            <span className="text-sm font-medium text-foreground">Quer conhecer a origem, empresas que usam e arquitetura desta tecnologia?</span>
-          </div>
-          <Link
-            href={`/blog/artigo-${svc.slug}`}
-            className="inline-flex shrink-0 items-center gap-1.5 text-xs font-semibold text-accent hover:underline"
-          >
-            Ler artigo no Blog →
+          <span className="text-sm font-medium text-foreground">Tem dúvidas sobre a lei, a Tabela de Temporalidade ou o rito de eliminação?</span>
+          <Link href="/faq" className="inline-flex shrink-0 items-center gap-1.5 text-xs font-semibold text-accent hover:underline">
+            Perguntas frequentes →
           </Link>
         </div>
 

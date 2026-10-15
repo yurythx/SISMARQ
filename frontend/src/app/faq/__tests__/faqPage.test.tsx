@@ -14,9 +14,12 @@ describe("FaqPage", () => {
     render(<FaqPage />);
 
     expect(screen.getByRole("heading", { name: "Perguntas Frequentes (FAQ)", level: 1 })).toBeInTheDocument();
-    expect(screen.getByText("Plataforma e Arquitetura")).toBeInTheDocument();
-    expect(screen.getByText("Serviços Especializados de TI")).toBeInTheDocument();
-    expect(screen.getByText("O que é o Projeto Nexus e como foi desenvolvido?")).toBeInTheDocument();
+    expect(screen.getByText("O Arquivo Público e o SISMARQ")).toBeInTheDocument();
+    expect(screen.getByText("Avaliação e eliminação")).toBeInTheDocument();
+    expect(screen.getByText("O que é o SISMARQ?")).toBeInTheDocument();
+    // Toda resposta cita a base legal (docs/SISMARQ).
+    expect(screen.getAllByText(/^Base: /).length).toBeGreaterThan(10);
+    expect(screen.getByRole("link", { name: /consultar a temporalidade/i })).toHaveAttribute("href", "/temporalidade");
     expect(screen.getByText("Ainda tem dúvidas?")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /fale conosco/i })).toBeInTheDocument();
   });

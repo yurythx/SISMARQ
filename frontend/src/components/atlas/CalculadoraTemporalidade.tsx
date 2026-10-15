@@ -4,7 +4,7 @@ import { Calculator } from "lucide-react";
 import { useId, useState } from "react";
 
 import { calcularDestinacao, dataBR, rotuloReferencia } from "@/lib/atlas/temporalidade";
-import type { ClassificacaoTTDD } from "@/lib/nexus/types";
+import type { ClassificacaoTTDD } from "@/lib/sismarq/types";
 
 import { destinacao } from "./labels";
 

@@ -5,13 +5,13 @@ package wiki
 import (
 	"context"
 
-	"github.com/yurythx/projeto-nexus/internal/modules/wiki/application"
-	"github.com/yurythx/projeto-nexus/internal/modules/wiki/infrastructure"
-	"github.com/yurythx/projeto-nexus/internal/modules/wiki/transport"
-	"github.com/yurythx/projeto-nexus/internal/platform/auth"
-	"github.com/yurythx/projeto-nexus/internal/platform/kernel"
-	"github.com/yurythx/projeto-nexus/internal/platform/modkit"
-	"github.com/yurythx/projeto-nexus/internal/platform/search"
+	"github.com/yurythx/sismarq/internal/modules/wiki/application"
+	"github.com/yurythx/sismarq/internal/modules/wiki/infrastructure"
+	"github.com/yurythx/sismarq/internal/modules/wiki/transport"
+	"github.com/yurythx/sismarq/internal/platform/auth"
+	"github.com/yurythx/sismarq/internal/platform/kernel"
+	"github.com/yurythx/sismarq/internal/platform/modkit"
+	"github.com/yurythx/sismarq/internal/platform/search"
 )
 
 // Key é a chave do módulo.

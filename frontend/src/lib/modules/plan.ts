@@ -1,4 +1,4 @@
-import type { ModuleStatus } from "@/lib/nexus/types";
+import type { ModuleStatus } from "@/lib/sismarq/types";
 
 export interface ToggleStep {
   key: string;

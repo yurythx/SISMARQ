@@ -1,105 +1,54 @@
-import { Cloud, Layers, Lock, Radar, RefreshCw, Server, ShieldCheck } from "lucide-react";
+import { Archive, ArrowRight, Landmark, Scale, ShieldCheck } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { connection } from "next/server";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { PublicShell } from "@/components/layout/PublicShell";
-import { getServerBranding } from "@/lib/branding/server";
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from "@/components/ui/Table";
+import { getServerBranding } from "@/lib/branding/server";
+import {
+  BASE_LEGAL,
+  COMPETENCIAS,
+  FINALIDADES,
+  IDADES,
+  LEI,
+  MISSAO,
+  SEI_X_SISMARQ,
+  TTDD_PUBLICACOES,
+} from "@/lib/sismarq/conteudo";
 
 const description =
-  "Visão geral da arquitetura da plataforma e sua conformidade com as normas do Governo Federal (e-MAG, DSGov, LGPD, e-PING e OWASP).";
+  "O Arquivo Público Municipal de Rondonópolis e o Sistema Municipal de Arquivos (SISMARQ), criados pela Lei Municipal nº 10.301/2019: missão, competências, estrutura e base legal.";
 
 export const metadata: Metadata = {
-  title: "Sobre & Conformidade",
+  title: "Sobre o Arquivo Público e o SISMARQ",
   description,
-  openGraph: { title: "Sobre & Conformidade", description, type: "website" },
+  openGraph: { title: "Sobre o Arquivo Público e o SISMARQ", description, type: "website" },
 };
 
-// Detalhamento dos 5 Módulos de Conformidade Governamental
-const govConformityModules = [
+// Como o sistema informatizado atende às exigências legais e às práticas do
+// Governo Federal (art. 13 da lei: e-ARQ Brasil).
+const SISTEMA = [
   {
-    module: "Módulo 1: Segurança HTTP & Headers (Go Backend)",
-    norm: "Portarias SGD/MGI & OWASP Top 10",
-    tech: "Middleware Go (httpserver/middleware.go), HSTS, CSP com Nonce, Rate Limiter Postgres",
-    justification: "Injeta cabeçalhos defensivos estritos em 100% das respostas HTTP (HSTS max-age=63072000, X-Frame-Options DENY, X-Content-Type-Options nosniff) e limita requisições por IP/token para prevenir ataques DoS/Slowloris e injeção de scripts maliciosos.",
+    titulo: "Gestão arquivística (e-ARQ Brasil)",
+    texto:
+      "O art. 13 da lei prevê um sistema informatizado de gestão arquivística que atenda ao e-ARQ Brasil do CONARQ. A Tabela de Temporalidade em vigor está carregada no sistema, com histórico de versões.",
   },
   {
-    module: "Módulo 2: Privacidade & LGPD (Go Backend)",
-    norm: "Lei Geral de Proteção de Dados (Lei 13.709/2018)",
-    tech: "log/slog nativo em JSON, slog.LogValuer (MaskCPF, MaskEmail, MaskPhone) e X-Request-ID",
-    justification: "Garante que dados pessoais sensíveis (PII) de cidadãos e servidores nunca vazem em texto puro nos logs do sistema. Toda requisição recebe um X-Request-ID correlacionado para rastreabilidade auditável de ponta a ponta.",
+    titulo: "Prova e integridade",
+    texto:
+      "Todo ato fica registrado numa trilha de auditoria imutável, encadeada por hash. A digitalização segue o Decreto Federal nº 10.278/2020: PDF/A, metadados técnicos e hash SHA-256.",
   },
   {
-    module: "Módulo 3: Autenticação Federada & Interoperabilidade",
-    norm: "Portaria SGD/SEDGG Nº 2.154 & e-PING",
-    tech: "go-oidc/v3, JWKS do Keycloak dedicado (cache + rotação), federação LDAP/LDAPS com o AD, fallback RS256 e OpenAPI 3.0",
-    justification: "Verifica a assinatura JWT localmente via JWKS sem chamadas adicionais por requisição e mapeia grupos do Active Directory para Perfis e escopos organizacionais (RBAC multi-escopo). Expõe especificações RESTful e-PING.",
+    titulo: "Acesso e privacidade",
+    texto:
+      "Acesso pleno como regra e sigilo como exceção (art. 2º), com proteção dos dados pessoais conforme a LGPD.",
   },
   {
-    module: "Módulo 4: Acessibilidade Digital e-MAG",
-    norm: "e-MAG 2.0 / WCAG 2.1 Nível AA",
-    tech: "EMagAccessibilityBar, SkipLinks (Alt+1..4), VLibras nativo, Alto Contraste e eslint-plugin-jsx-a11y",
-    justification: "Assegura o direito de acesso à informação para pessoas com deficiência. Inclui barra e-MAG com atalhos de navegação por teclado, leitor visual de alto contraste (preto/amarelo), escala de fonte proporcional e tradutor de Libras em todas as páginas.",
-  },
-  {
-    module: "Módulo 5: Identidade Visual Governamental DSGov",
-    norm: "Padrão Digital de Governo (GovBR-DS)",
-    tech: "BrandingProvider Server-Side, Tokens Tailwind CSS v4, GovHeader, GovFooter e Fontes Oficiais",
-    justification: "Garante a padronização estática e dinâmica de portais públicos, com suporte White-Label dinâmico para prefeituras e órgãos, rodapé institucional completo com LGPD/LAI e eliminação total de flashes de layout na hidratação.",
-  },
-];
-
-// Resumo público da matriz OWASP
-const owaspMapping = [
-  { code: "A01", risk: "Broken Access Control", today: "RBAC por permissão em cada rota sensível — nunca só a presença de um token." },
-  { code: "A02", risk: "Cryptographic Failures", today: "RS256 com chave própria para o login local, bcrypt, segredos via arquivo, nunca em texto puro." },
-  { code: "A03", risk: "Injection", today: "100% consultas parametrizadas — conferido: zero concatenação de string em SQL em todo o backend." },
-  { code: "A04", risk: "Insecure Design", today: "Arquitetura Microkernel com módulos de negócio isolados (plug-ins) e decisões de arquitetura documentadas em ADRs." },
-  { code: "A05", risk: "Security Misconfiguration", today: "CSP com nonce por requisição, containers non-root, headers de segurança em toda resposta." },
-  { code: "A06", risk: "Vulnerable Components", today: "govulncheck no backend a cada push/PR no CI; lint, typecheck e build verificados no frontend na mesma pipeline." },
-  { code: "A07", risk: "Identification & Auth Failures", today: "Bloqueio de conta, rate limiting distribuído, erro sempre genérico (nunca revela se um usuário existe)." },
-  { code: "A08", risk: "Software & Data Integrity Failures", today: "Idempotência e outbox transacional com entrega Exactly-Once para novos módulos." },
-  { code: "A09", risk: "Logging & Monitoring Failures", today: "Auditoria imutável (a tabela recusa UPDATE/DELETE), logs correlacionados por request id, métricas e tracing." },
-  { code: "A10", risk: "SSRF", today: "Conferido: nenhum endpoint aceita uma URL arbitrária vinda de quem chama." },
-];
-
-const principles = [
-  {
-    icon: Layers,
-    title: "Arquitetura Microkernel (Plug-in System)",
-    description:
-      "Core System (Kernel) robusto em Go 1.26 que fornece infraestrutura de segurança, isolamento de rotas e auth, com suporte nativo a plug-ins de negócio totalmente desacoplados.",
-  },
-  {
-    icon: RefreshCw,
-    title: "Resiliência & Outbox Transacional",
-    description:
-      "Publicação de eventos no RabbitMQ via Transactional Outbox Pattern com suporte a filas de mensagens mortas (DLQ).",
-  },
-  {
-    icon: Lock,
-    title: "DevSecOps & Privacidade",
-    description:
-      "Autenticação Keycloak OIDC com federação AD, mascaramento de PII em logs, CSP estrita com nonce e trilhas de auditoria imutáveis no Postgres.",
-  },
-  {
-    icon: Radar,
-    title: "Acessibilidade & Observabilidade",
-    description:
-      "Conformidade e-MAG 2.0 / WCAG 2.1 AA com VLibras, métricas Prometheus e rastreamento correlacionado de requisições.",
-  },
-  {
-    icon: Server,
-    title: "Infraestrutura Imutável (Proxmox KVM & IaC)",
-    description:
-      "Provisionamento declarativo via Terraform sobre Proxmox VE (VM KVM isolada por hardware) e gerência de configuração idempotente via Ansible com QEMU Guest Agent.",
-  },
-  {
-    icon: Cloud,
-    title: "Borda Zero Trust (Cloudflare Tunnel)",
-    description:
-      "Conexão de saída (outbound) criptografada com a borda global da Cloudflare: zero portas 80/443 expostas no firewall, mitigação DDoS e terminação SSL/TLS na borda.",
+    titulo: "Acessibilidade",
+    texto:
+      "Portal no padrão de acessibilidade do Governo Federal (e-MAG), com atalhos de teclado, alto contraste e tradução para Libras (VLibras).",
   },
 ];
 
@@ -112,132 +61,159 @@ export default async function AboutPage() {
       <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-12 px-6 py-12">
         <section className="flex flex-col gap-4">
           <div className="flex items-center gap-2 text-xs font-bold font-mono text-accent uppercase tracking-wider">
-            <ShieldCheck size={16} className="text-success" />
-            Conformidade Federal SGD/MGI & e-MAG 2.0
+            <Landmark size={16} className="text-success" aria-hidden="true" />
+            {LEI.numero}, de {LEI.data}
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-            Sobre a Plataforma & Diretrizes Governamentais
+            Sobre o Arquivo Público Municipal e o SISMARQ
           </h1>
-          <p className="text-base text-muted leading-relaxed max-w-3xl">
-            O <strong>{brand.appName || "Projeto Nexus"}</strong> é uma plataforma digital institucional de alto desempenho construída sobre uma arquitetura Microkernel desacoplada em <strong>Go 1.26</strong> e <strong>Next.js 16</strong>. A infraestrutura unifica os mais rígidos padrões de <strong>Segurança (OWASP Top 10), Acessibilidade Digital (e-MAG 2.0 / WCAG 2.1 AA com VLibras), Identidade Visual (DSGov), Privacidade (LGPD Lei 13.709/2018) e Interoperabilidade (OIDC / Keycloak)</strong> com soberania total de dados on-premises e nuvem privada.
+          <p className="max-w-3xl text-base leading-relaxed text-muted">{LEI.ementa}</p>
+          <p className="max-w-3xl text-base leading-relaxed text-muted">
+            O <strong>{brand.appName || "SISMARQ"}</strong> é o sistema do Arquivo Público Municipal de Rondonópolis
+            para gerir os documentos da administração municipal em todo o ciclo de vida, da produção à eliminação ou à
+            guarda permanente, conforme a lei municipal.
           </p>
         </section>
 
-        {/* Tabela detalhada de Conformidade Governamental */}
-        <section className="flex flex-col gap-4">
-          <div>
-            <h2 className="text-xl font-semibold text-foreground">Conformidade com Normas Governamentais (SGD/MGI)</h2>
-            <p className="mt-1 text-sm text-muted">
-              Mapeamento dos 5 módulos de conformidade implementados na plataforma e suas justificativas técnicas.
-            </p>
-          </div>
-          <Table
-            caption="Detalhamento das diretrizes federais e justificativas de implementação."
-            className="min-w-[640px]"
-          >
-            <TableHead>
-              <TableRow>
-                <TableHeaderCell className="w-[30%]">Módulo & Norma</TableHeaderCell>
-                <TableHeaderCell className="w-[30%]">Tecnologias & Métodos</TableHeaderCell>
-                <TableHeaderCell className="w-[40%]">Justificativa Técnica de Uso</TableHeaderCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {govConformityModules.map((item) => (
-                <TableRow key={item.module}>
-                  <TableCell className="align-top font-medium text-foreground">
-                    <div className="flex flex-col gap-1">
-                      <span className="font-bold text-xs text-primary">{item.module}</span>
-                      <span className="text-[11px] font-mono text-seal">{item.norm}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="align-top font-mono text-xs text-muted">
-                    {item.tech}
-                  </TableCell>
-                  <TableCell className="align-top text-xs text-muted leading-relaxed">
-                    {item.justification}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+        <section className="flex flex-col gap-3 rounded-xl border border-surface-border bg-surface p-6 shadow-xs">
+          <h2 className="flex items-center gap-2 text-xl font-semibold text-foreground">
+            <Archive size={20} className="text-primary" aria-hidden="true" /> Missão
+          </h2>
+          <p className="text-sm leading-relaxed text-muted">{MISSAO}</p>
+          <p className="text-xs text-muted">
+            Base: Lei 10.301/2019, art. 5º. Pela lei, o Arquivo Público é subordinado ao Gabinete da Secretaria
+            Municipal de Administração, sob a responsabilidade da Divisão de Arquivo Público.
+          </p>
         </section>
 
         <section className="flex flex-col gap-4">
-          <h2 className="text-xl font-semibold text-foreground">Princípios Arquiteturais</h2>
+          <h2 className="text-xl font-semibold text-foreground">Competências do Arquivo Público</h2>
+          <ol className="flex list-decimal flex-col gap-2 pl-6 text-sm leading-relaxed text-muted">
+            {COMPETENCIAS.map((c) => (
+              <li key={c}>{c}</li>
+            ))}
+          </ol>
+          <p className="text-xs text-muted">Base: Lei 10.301/2019, art. 5º, I a XI.</p>
+        </section>
+
+        <section className="flex flex-col gap-4">
+          <h2 className="text-xl font-semibold text-foreground">O Sistema Municipal de Arquivos</h2>
+          <p className="text-sm leading-relaxed text-muted">
+            O SISMARQ organiza as atividades de gestão de documentos de todos os órgãos e entidades da administração
+            municipal. O <strong>Arquivo Público</strong> é o órgão central. As unidades das secretarias que coordenam o
+            protocolo e a gestão de documentos são os <strong>órgãos setoriais</strong>, e os servidores que chefiam essas
+            atividades são os <strong>agentes setoriais</strong>. Cada órgão tem uma{" "}
+            <strong>Comissão Setorial Permanente de Avaliação de Documentos (CSPAD)</strong>, e a{" "}
+            <strong>Comissão Central (CCPAD)</strong> funciona junto ao Arquivo Público.
+          </p>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle as="h3" className="text-base">Finalidades</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="flex list-disc flex-col gap-1.5 pl-5 text-sm text-muted">
+                  {FINALIDADES.map((f) => (
+                    <li key={f}>{f}</li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle as="h3" className="text-base">As três idades dos documentos</CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-3">
+                {IDADES.map((i) => (
+                  <div key={i.nome} className="flex flex-col gap-0.5">
+                    <span className="text-sm font-semibold text-foreground">{i.nome}</span>
+                    <span className="text-sm text-muted">{i.descricao}</span>
+                    <span className="text-xs text-muted">{i.onde}</span>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+          <p className="text-xs text-muted">Base: Lei 10.301/2019, arts. 6º a 12, 18 e 31.</p>
+        </section>
+
+        <section className="flex flex-col gap-4">
+          <h2 className="text-xl font-semibold text-foreground">SISMARQ e SEI: cada um no seu papel</h2>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {[SEI_X_SISMARQ.sei, SEI_X_SISMARQ.sismarq].map((lado) => (
+              <Card key={lado.titulo}>
+                <CardHeader>
+                  <CardTitle as="h3" className="text-base">{lado.titulo}</CardTitle>
+                  <p className="text-xs font-semibold text-primary">{lado.escopo}</p>
+                </CardHeader>
+                <CardContent>
+                  <ul className="flex list-disc flex-col gap-1.5 pl-5 text-sm text-muted">
+                    {lado.itens.map((it) => (
+                      <li key={it}>{it}</li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          <p className="text-xs text-muted">
+            Base: artigo técnico do SISMARQ, Quadro 1. Os processos concluídos no SEI são recolhidos ao SISMARQ.
+          </p>
+        </section>
+
+        <section className="flex flex-col gap-4">
+          <h2 className="text-xl font-semibold text-foreground">O sistema informatizado</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {principles.map((principle) => {
-              const Icon = principle.icon;
-              return (
-                <Card key={principle.title}>
-                  <CardHeader className="flex flex-row items-center gap-3 space-y-0">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                      <Icon size={18} aria-hidden="true" />
-                    </span>
-                    <CardTitle className="text-base">{principle.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted">{principle.description}</p>
-                  </CardContent>
-                </Card>
-              );
-            })}
+            {SISTEMA.map((s) => (
+              <Card key={s.titulo}>
+                <CardHeader className="flex flex-row items-center gap-3 space-y-0">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <ShieldCheck size={18} aria-hidden="true" />
+                  </span>
+                  <CardTitle as="h3" className="text-base">{s.titulo}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted">{s.texto}</p>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </section>
 
         <section className="flex flex-col gap-4">
-          <div>
-            <h2 className="text-xl font-semibold text-foreground">OWASP Top 10 Enterprise</h2>
-            <p className="mt-1 text-sm text-muted">
-              Tratado como checklist de desenvolvimento e segurança desde o primeiro commit. A coluna da direita descreve a prática hoje na plataforma.
-            </p>
-          </div>
-          <Table
-            caption="Riscos do OWASP Top 10 e a prática correspondente adotada na plataforma."
-            className="min-w-[500px]"
-          >
+          <h2 className="flex items-center gap-2 text-xl font-semibold text-foreground">
+            <Scale size={20} className="text-primary" aria-hidden="true" /> Base legal
+          </h2>
+          <Table caption="Normas que fundamentam o Arquivo Público Municipal e o SISMARQ." className="min-w-[500px]">
             <TableHead>
               <TableRow>
-                <TableHeaderCell>Risco</TableHeaderCell>
-                <TableHeaderCell>Prática na plataforma</TableHeaderCell>
+                <TableHeaderCell>Norma</TableHeaderCell>
+                <TableHeaderCell>Assunto</TableHeaderCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {owaspMapping.map((item) => (
-                <TableRow key={item.code}>
-                  <TableCell className="whitespace-nowrap align-top font-medium text-foreground">
-                    <span className="font-mono text-xs font-semibold text-seal">{item.code}</span>{" "}
-                    {item.risk}
-                  </TableCell>
-                  <TableCell className="text-muted">{item.today}</TableCell>
+              {BASE_LEGAL.map((b) => (
+                <TableRow key={b.norma}>
+                  <TableCell className="align-top font-medium text-foreground">{b.norma}</TableCell>
+                  <TableCell className="text-muted">{b.tema}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
-        </section>
-
-        <section className="flex flex-col gap-4 rounded-xl border border-surface-border bg-surface p-6 shadow-xs">
-          <div className="flex flex-col gap-1">
-            <h2 className="text-xl font-semibold text-foreground">Stack Tecnológica & Dogfooding Corporativo</h2>
-            <p className="text-xs text-muted">
-              O Projeto Nexus pratica <em>dogfooding</em> rigoroso: a própria plataforma foi desenvolvida e roda em produção exatamente sobre as tecnologias, padrões e serviços corporativos que disponibiliza e opera em seu catálogo.
+          <div className="text-sm text-muted">
+            <p>
+              As Tabelas de Temporalidade e Destinação de Documentos em vigor foram aprovadas pela Comissão Central
+              Permanente de Avaliação de Documentos e publicadas no Diário Oficial do Município:
             </p>
+            <ul className="mt-2 flex list-disc flex-col gap-1 pl-5">
+              {TTDD_PUBLICACOES.map((p) => (
+                <li key={p}>{p}</li>
+              ))}
+            </ul>
           </div>
-          <p className="text-sm text-muted leading-relaxed">
-            <strong className="text-foreground">Backend (Go 1.26):</strong> Arquitetura Limpa (Clean Architecture), Microkernel desacoplado, roteador Chi v5, banco de dados PostgreSQL 16 com pooling <code>pgxpool</code>, mensageria RabbitMQ via AMQP com Transactional Outbox Pattern e Dead Letter Queues (DLQ), mascaramento nativo de PII com <code>log/slog</code>, e cobertura de testes automatizados com mocks rigorosos.
-          </p>
-          <p className="text-sm text-muted leading-relaxed">
-            <strong className="text-foreground">Frontend (Next.js 16 App Router):</strong> React 19 em TypeScript estrito, Tailwind CSS v4 com tokens acessíveis e suporte a modo escuro persistido, autenticação integrada <code>NextAuth.js</code> com SSO Keycloak (OIDC), leitor VLibras nativo desacoplado e conformidade e-MAG 2.0 (WCAG 2.1 AA).
-          </p>
-          <p className="text-sm text-muted leading-relaxed">
-            <strong className="text-foreground">Infraestrutura como Código (IaC & Proxmox VE):</strong> Provisionamento 100% automatizado via Terraform (provider <code>bpg/proxmox</code>) com template Cloud-Init sobre Proxmox VE em VM KVM dedicada. Isolamento de hardware total do kernel do host e sistema de arquivos ext4 nativo para o driver de containers Docker <code>overlay2</code> (eliminando conflitos de storage com pools ZFS).
-          </p>
-          <p className="text-sm text-muted leading-relaxed">
-            <strong className="text-foreground">Borda Zero Trust & Ingress (Cloudflare Tunnel):</strong> Ingress seguro de tráfego de saída (outbound) sem nenhuma porta (80/443) exposta em roteadores ou firewalls de rede local, dispensando proxies reversos intermediários desnecessários e garantindo WAF corporativo, mitigação DDoS e terminação SSL/TLS na borda global.
-          </p>
-          <p className="text-sm text-muted leading-relaxed">
-            <strong className="text-foreground">Automação & Hardening (Ansible):</strong> Playbooks idempotentes sem agentes (agentless) que executam hardening de SO, priorização IPv4, políticas UFW, ativação do QEMU Guest Agent e orquestração reproduzível da stack Docker Compose.
-          </p>
+          <Link href="/temporalidade" className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
+            Consultar a Tabela de Temporalidade <ArrowRight size={14} aria-hidden="true" />
+          </Link>
         </section>
       </div>
     </PublicShell>

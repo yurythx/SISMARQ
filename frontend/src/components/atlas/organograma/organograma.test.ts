@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { SubfuncaoOrganograma } from "@/lib/nexus/types";
+import type { SubfuncaoOrganograma } from "@/lib/sismarq/types";
 
 import {
   cobertura,

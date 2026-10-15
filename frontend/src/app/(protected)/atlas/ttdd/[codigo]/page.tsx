@@ -11,10 +11,10 @@ import { SeloVigencia } from "@/components/atlas/SeloVigencia";
 import { Trilha } from "@/components/atlas/Trilha";
 import { WorkflowList } from "@/components/atlas/WorkflowList";
 import { destinacao, fase, revogacao } from "@/components/atlas/labels";
-import { DataState } from "@/components/nexus/DataState";
+import { DataState } from "@/components/sismarq/DataState";
 import { Badge } from "@/components/ui/Badge";
 import { useApiPage, useApiQuery, withQuery } from "@/lib/api/swr";
-import type { ClassificacaoTTDD, HistoricoTTDD, Workflow } from "@/lib/nexus/types";
+import type { ClassificacaoTTDD, HistoricoTTDD, Workflow } from "@/lib/sismarq/types";
 
 function Prazo({
   titulo,

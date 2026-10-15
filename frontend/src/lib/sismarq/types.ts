@@ -1,4 +1,4 @@
-// Tipos da API do Projeto Nexus (espelho dos DTOs do backend Go).
+// Tipos da API do SISMARQ (espelho dos DTOs do backend Go).
 
 export type UUID = string;
 
@@ -1012,4 +1012,86 @@ export interface ImpactoCargaTTDD {
     codigo_ttdd: string;
     situacao: SituacaoCarga;
   }[];
+}
+
+// --- Acervo do SISMARQ (ADR 032) ---------------------------------------------
+
+export type AcervoFase = "CORRENTE" | "INTERMEDIARIA" | "PERMANENTE" | "ELIMINADO";
+export type AcervoDestinacao = "ELIMINACAO" | "GUARDA_PERMANENTE" | "INDEFINIDA";
+export type AcervoTipo = "CAIXA" | "PASTA" | "LIVRO" | "PROCESSO" | "DOSSIE" | "DOCUMENTO" | "MAPA" | "OUTRO";
+export type AcervoNivelAcesso = "PUBLICO" | "RESTRITO" | "SIGILOSO";
+
+/** Unidade de arquivamento (caixa, livro, processo…) com o cálculo gravado. */
+export interface AcervoUnidade {
+  id: string;
+  numero: string;
+  tipo: AcervoTipo;
+  codigo_classificacao: string;
+  assunto: string;
+  unidade_id: string;
+  data_inicial: string;
+  data_final: string;
+  quantidade: number;
+  especificacao: string;
+  observacoes: string;
+  fase: AcervoFase;
+  destinacao: AcervoDestinacao;
+  data_evento: string | null;
+  contas_aprovadas_em: string | null;
+  nivel_acesso: AcervoNivelAcesso;
+  hipotese_legal: string;
+  local_id: string | null;
+  posicao: string;
+  created_at: string;
+  updated_at: string;
+  fim_corrente: string | null;
+  fim_intermediaria: string | null;
+  situacao: string;
+  local_caminho: string;
+}
+
+export interface AcervoBloqueio {
+  id: string;
+  unidade_arquivamento_id: string;
+  processo: string;
+  motivo: string;
+  criado_em: string;
+  liberado_em: string | null;
+  motivo_liberacao: string;
+}
+
+export interface AcervoMovimentacao {
+  id: string;
+  tipo: string;
+  fase_de: string | null;
+  fase_para: string | null;
+  descricao: string;
+  em: string;
+}
+
+/** Ficha da unidade: prazos calculados pela TTDD, série, bloqueios e histórico. */
+export interface AcervoDetalhe extends AcervoUnidade {
+  serie: { codigo: string; descritor: string; vigente: boolean; destinacao: string };
+  prazos: {
+    fim_corrente: string | null;
+    fim_intermediaria: string | null;
+    situacao: string;
+    regra_corrente: string;
+    regra_intermediaria: string;
+  };
+  bloqueios: AcervoBloqueio[];
+  movimentacoes: AcervoMovimentacao[];
+  pode: { gerir: boolean; bloquear: boolean };
+}
+
+export type AcervoTipoLocal = "PREDIO" | "DEPOSITO" | "SALA" | "CORREDOR" | "ESTANTE" | "PRATELEIRA";
+
+/** Local físico do acervo (prédio > depósito > … > prateleira). */
+export interface AcervoLocal {
+  id: string;
+  parent_id: string | null;
+  tipo: AcervoTipoLocal;
+  nome: string;
+  ativo: boolean;
+  caminho: string;
 }

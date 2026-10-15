@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { OrgTree, Scope } from "@/lib/nexus/types";
+import type { OrgTree, Scope } from "@/lib/sismarq/types";
 
 import { departamentosGeridos, hasPermission, unidadesGeridas, unidadesLotadas } from "./permissions";
 

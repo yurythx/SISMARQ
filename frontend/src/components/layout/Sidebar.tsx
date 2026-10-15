@@ -7,8 +7,8 @@ import { useEffect, type ComponentType } from "react";
 
 import { useBranding } from "@/components/branding/BrandingContext";
 import { ModuleIcon } from "@/components/layout/ModuleIcon";
-import { useNexus } from "@/lib/nexus/NexusProvider";
-import type { ModuleStatus } from "@/lib/nexus/types";
+import { useSismarq } from "@/lib/sismarq/SismarqProvider";
+import type { ModuleStatus } from "@/lib/sismarq/types";
 
 interface NavItem {
   href: string;
@@ -66,7 +66,7 @@ export function Sidebar({
 }) {
   const pathname = usePathname();
   const { branding } = useBranding();
-  const { modules, can } = useNexus();
+  const { modules, can } = useSismarq();
   const nav = buildNav(modules, can);
 
   useEffect(() => {

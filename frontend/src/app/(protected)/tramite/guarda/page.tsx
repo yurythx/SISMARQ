@@ -3,12 +3,12 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
-import { DataState } from "@/components/nexus/DataState";
-import { PageHeader } from "@/components/nexus/PageHeader";
+import { DataState } from "@/components/sismarq/DataState";
+import { PageHeader } from "@/components/sismarq/PageHeader";
 import { situacaoGuarda } from "@/components/tramite/AtlasDoProcesso";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { useApiPage, useApiQuery, withQuery } from "@/lib/api/swr";
-import type { ClassificacaoTTDD, Processo } from "@/lib/nexus/types";
+import type { ClassificacaoTTDD, Processo } from "@/lib/sismarq/types";
 
 /** Os processos de uma série, com a situação da guarda de cada um. */
 function GrupoSerie({ codigo, processos }: { codigo: string; processos: Processo[] }) {

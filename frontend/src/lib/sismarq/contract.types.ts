@@ -33,6 +33,11 @@ type Widen<T> = T extends string
 type Accepts<Front, Back extends Widen<Front>> = [Front, Back];
 
 export type Contract = [
+  Accepts<T.AcervoUnidade, S["AcervoUnidadeLista"]>,
+  Accepts<T.AcervoDetalhe, S["AcervoDetalhe"]>,
+  Accepts<T.AcervoBloqueio, S["AcervoBloqueio"]>,
+  Accepts<T.AcervoMovimentacao, S["AcervoMovimentacao"]>,
+  Accepts<T.AcervoLocal, S["AcervoLocal"]>,
   Accepts<T.PageMeta, S["PaginationMeta"]>,
   Accepts<T.Me, S["IamMeResponse"]>,
   Accepts<T.PermissionInfo, S["KernelPermissionInfo"]>,

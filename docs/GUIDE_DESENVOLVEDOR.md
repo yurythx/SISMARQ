@@ -1,12 +1,12 @@
-# 📖 Guia do Desenvolvedor — Plataforma Projeto Nexus
+# 📖 Guia do Desenvolvedor — Plataforma SISMARQ
 
-Bem-vindo ao guia de desenvolvimento e arquitetura do **Projeto Nexus**. Este documento foi elaborado para capacitar engenheiros de software, arquitetos e equipes de TI municipais a desenvolver, manter e expandir aplicações corporativas sobre a base governamental padronizada.
+Bem-vindo ao guia de desenvolvimento e arquitetura do **SISMARQ**. Este documento foi elaborado para capacitar engenheiros de software, arquitetos e equipes de TI municipais a desenvolver, manter e expandir aplicações corporativas sobre a base governamental padronizada.
 
 ---
 
 ## 🏛️ 1. Visão Geral e Arquitetura
 
-O **Projeto Nexus** é uma plataforma corporativa modular construída segundo o padrão de **Arquitetura Microkernel (Plug-in Architecture)** combinado a um **Monólito Modular & Clean Architecture**:
+O **SISMARQ** é uma plataforma corporativa modular construída segundo o padrão de **Arquitetura Microkernel (Plug-in Architecture)** combinado a um **Monólito Modular & Clean Architecture**:
 
 - **Core System / Kernel (`internal/platform/`)**: Infraestrutura central reutilizável que fornece os serviços fundamentais da plataforma:
   - **Kernel de plug-ins** (`internal/platform/kernel`): registro (`RegisterModule`), ciclo de vida em runtime, grafo de dependências, Guard HTTP, supervisão de workers/consumidores e tópicos WebSocket.
@@ -220,7 +220,7 @@ UPDATE_OPENAPI=1 TEST_DATABASE_URL=... go test ./internal/app -run TestOpenAPIMa
 cd ../frontend && npm test
 
 # Depois de regenerar o OpenAPI, atualize os tipos do contrato no frontend.
-# O tsc confere cada tipo de src/lib/nexus/types.ts contra o que o backend envia:
+# O tsc confere cada tipo de src/lib/sismarq/types.ts contra o que o backend envia:
 npm run gen:api && npx tsc --noEmit
 ```
 

@@ -11,7 +11,7 @@ vi.mock("@/components/realtime/RealtimeProvider", () => ({
   },
 }));
 const refreshModules = vi.fn();
-vi.mock("@/lib/nexus/NexusProvider", () => ({ useNexus: () => ({ refreshModules }) }));
+vi.mock("@/lib/sismarq/SismarqProvider", () => ({ useSismarq: () => ({ refreshModules }) }));
 
 import { describeEvent, NotificationCenter } from "./NotificationCenter";
 import { NotificationHistoryProvider, useNotificationHistory } from "./NotificationHistoryProvider";

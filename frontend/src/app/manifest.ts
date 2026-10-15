@@ -4,11 +4,11 @@ import { getServerBranding } from "@/lib/branding/server";
 
 export default async function manifest(): Promise<MetadataRoute.Manifest> {
   const brand = await getServerBranding().catch(() => null);
-  const name = brand?.appName || "Projeto Nexus";
-  const shortName = "Nexus";
+  const name = brand?.appName || "SISMARQ";
+  const shortName = "SISMARQ";
   const description =
     brand?.appDescription ||
-    "Plataforma completa de soluções corporativas de TI, nuvem privada, catálogo interativo e governança digital.";
+    "Sistema Municipal de Arquivos — Arquivo Público Municipal de Rondonópolis (Lei nº 10.301/2019).";
 
   return {
     name,

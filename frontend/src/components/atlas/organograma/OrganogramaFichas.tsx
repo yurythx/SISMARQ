@@ -1,7 +1,7 @@
 import { TriangleAlert } from "lucide-react";
 import Link from "next/link";
 
-import type { OrgaoOrganograma } from "@/lib/nexus/types";
+import type { OrgaoOrganograma } from "@/lib/sismarq/types";
 
 import {
   detalheProcedimentos,

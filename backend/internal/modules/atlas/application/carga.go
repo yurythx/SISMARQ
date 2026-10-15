@@ -13,11 +13,12 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
-	"github.com/yurythx/projeto-nexus/internal/modules/atlas/domain"
-	"github.com/yurythx/projeto-nexus/internal/platform/audit"
-	"github.com/yurythx/projeto-nexus/internal/platform/database"
+	"github.com/yurythx/sismarq/internal/modules/atlas/domain"
+	"github.com/yurythx/sismarq/internal/platform/audit"
+	"github.com/yurythx/sismarq/internal/platform/database"
 )
 
 // Formatos aceitos na atualização da TTDD (ADR 022).
@@ -267,7 +268,12 @@ func (s *Service) ImpactoTTDD(ctx context.Context, formato, conteudo, hashConfer
 		if !aplicar {
 			return errSimulacao
 		}
-		return audit.NewWriter(tx).Record(ctx, audit.Meta(ctx, "atlas.ttdd.carga.aplicada", "atlas_ttdd", hash, nil,
+		// O Acervo recalcula os prazos de guarda com a TTDD nova (ADR 032).
+		if err := s.outbox.Write(ctx, tx, EventTTDDCargaAplicada, "atlas_ttdd", hash, uuid.Nil,
+			map[string]any{"formato": formato, "totais": out.Totais}); err != nil {
+			return err
+		}
+		return audit.NewWriter(tx).Record(ctx, audit.Meta(ctx, EventTTDDCargaAplicada, "atlas_ttdd", hash, nil,
 			map[string]any{"formato": formato, "totais": out.Totais, "orgaos": len(out.Orgaos), "procedimentos_afetados": len(out.Procedimentos)}))
 	})
 	if errors.Is(err, errSimulacao) {

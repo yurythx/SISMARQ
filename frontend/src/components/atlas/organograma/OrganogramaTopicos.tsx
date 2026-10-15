@@ -6,7 +6,7 @@ import { useState, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { useApiPage, withQuery } from "@/lib/api/swr";
-import type { ClassificacaoTTDD, ContagemOrganograma, OrgaoOrganograma } from "@/lib/nexus/types";
+import type { ClassificacaoTTDD, ContagemOrganograma, OrgaoOrganograma } from "@/lib/sismarq/types";
 
 import { linkFuncao, linkSecretaria, rotulo } from "./organograma";
 

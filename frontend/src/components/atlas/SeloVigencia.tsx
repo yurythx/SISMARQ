@@ -1,6 +1,6 @@
 import { BadgeCheck } from "lucide-react";
 
-import type { OrgaoTTDD } from "@/lib/nexus/types";
+import type { OrgaoTTDD } from "@/lib/sismarq/types";
 
 import { fonteTTDD } from "./labels";
 

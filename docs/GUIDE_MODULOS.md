@@ -1,12 +1,12 @@
-# Guia de Desenvolvimento de Novos Módulos (Plug-ins) — Projeto Nexus
+# Guia de Desenvolvimento de Novos Módulos (Plug-ins) — SISMARQ
 
-Este documento é o guia oficial para engenheiros que vão criar novos **módulos de negócio (plug-ins)** sobre o **Core System (Kernel)** da plataforma **Projeto Nexus**. Siga estas convenções para manter o isolamento de domínio, o desacoplamento e a consistência da **Arquitetura Microkernel**.
+Este documento é o guia oficial para engenheiros que vão criar novos **módulos de negócio (plug-ins)** sobre o **Core System (Kernel)** da plataforma **SISMARQ**. Siga estas convenções para manter o isolamento de domínio, o desacoplamento e a consistência da **Arquitetura Microkernel**.
 
 ---
 
 ## 🏗️ Visão Geral da Arquitetura Microkernel
 
-O Projeto Nexus utiliza o modelo **Microkernel (Plug-in Architecture)** combinado a **Camadas Limpas (Clean Architecture)** e comunicação assíncrona orientada a eventos via **Transactional Outbox**:
+O SISMARQ utiliza o modelo **Microkernel (Plug-in Architecture)** combinado a **Camadas Limpas (Clean Architecture)** e comunicação assíncrona orientada a eventos via **Transactional Outbox**:
 
 ```
    Navegador (React / Next.js DSGov Shell)
@@ -54,7 +54,7 @@ O script copia o blueprint `internal/modules/example` (código que roda em produ
 1. Gera `internal/modules/<nome>/` com `module.go` (Manifest do Kernel) e as camadas `domain`, `application`, `infrastructure`, `transport`.
 2. Cria a migration sequencial `backend/migrations/0001NN_<nome>.sql` (goose).
 3. Registra o plug-in no Kernel (`internal/app/modules.go` → `Kernel.MustRegister`).
-4. Cria a página `frontend/src/app/(protected)/<nome>/page.tsx` sobre o kit (`DataState`, `useAction`, `useNexus`) e protege a rota em `src/proxy.ts`.
+4. Cria a página `frontend/src/app/(protected)/<nome>/page.tsx` sobre o kit (`DataState`, `useAction`, `useSismarq`) e protege a rota em `src/proxy.ts`.
 
 O módulo nasce **desativado** (`DefaultEnabled: false`); ative em **Configurações → Módulos**.
 
@@ -79,7 +79,7 @@ src/
 │   ├── page.tsx
 │   └── [id]/page.tsx
 ├── components/financeiro/        # Componentes específicos do módulo
-└── lib/nexus/types.ts            # Espelho TypeScript dos DTOs Go do módulo
+└── lib/sismarq/types.ts            # Espelho TypeScript dos DTOs Go do módulo
 ```
 
 ---
@@ -164,7 +164,7 @@ Use `httputil.Bind` (limite de corpo + campos desconhecidos recusados + validaç
 ```tsx
 "use client";
 export default function FinanceiroPage() {
-  const { can } = useNexus();                                    // permissões efetivas (só exibição)
+  const { can } = useSismarq();                                    // permissões efetivas (só exibição)
   const list = useApiPage<Titulo>(withQuery("v1/financeiro/titulos", { page }));
   const { run } = useAction();                                   // toast de sucesso/erro
   // …
@@ -178,7 +178,7 @@ export default function FinanceiroPage() {
 
 - O item de menu aparece sozinho a partir do Manifest (`Route`/`Icon`) quando o módulo está ativo — nada a editar no `Sidebar`.
 - Chamadas sempre por `apiClient`/`useApiQuery` (BFF `/api/backend/*`: o token nunca chega ao navegador).
-- Uploads: peça um `UploadTicket` ao backend e envie direto ao MinIO com `putToTicket` (`lib/nexus/upload.ts`).
+- Uploads: peça um `UploadTicket` ao backend e envie direto ao MinIO com `putToTicket` (`lib/sismarq/upload.ts`).
 - Tempo real: `useTopic("financeiro:…", handler)` assina um tópico autorizado pelo `WSProvider` do plug-in.
 
 ---
@@ -212,3 +212,13 @@ export default function FinanceiroPage() {
    repositório e `auth.NoPublico` no detalhe. Evento de Outbox de conteúdo
    com público leva `"restrito": true` (a difusão geral em tempo real o
    descarta). No frontend, `PublicoAlvoPicker` e `PublicoBadge`.
+9. **Busca Global e índice (ADR 031).** O `SearchProvider` do módulo busca
+   no Postgres respeitando as permissões de quem pergunta. Se **todo** o
+   conteúdo pesquisável do módulo é público (visível sem login), o provider
+   pode também implementar `search.Indexer` (`Documents`, que entrega cada
+   item a `emit`). Aí o worker o indexa no Typesense: carga no boot, a cada
+   intervalo e a cada evento `<módulo>.*`. A Busca Global passa a consultar o
+   índice, voltando ao `Search` do Postgres se ele falhar. O índice não
+   conhece permissões: conteúdo com ACL, sigilo ou público-alvo **nunca**
+   implementa `Indexer`. Teste `Documents` mostrando o que entra e o que
+   fica de fora, e inclua-o na matriz de falhas.

@@ -8,10 +8,10 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 
-	"github.com/yurythx/projeto-nexus/internal/modules/signum/application"
-	"github.com/yurythx/projeto-nexus/internal/platform/auth"
-	"github.com/yurythx/projeto-nexus/internal/platform/httpserver"
-	"github.com/yurythx/projeto-nexus/pkg/httputil"
+	"github.com/yurythx/sismarq/internal/modules/signum/application"
+	"github.com/yurythx/sismarq/internal/platform/auth"
+	"github.com/yurythx/sismarq/internal/platform/httpserver"
+	"github.com/yurythx/sismarq/pkg/httputil"
 )
 
 // Handlers da API do Signum.

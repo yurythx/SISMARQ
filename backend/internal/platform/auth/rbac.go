@@ -54,6 +54,13 @@ const (
 	PermAtlasManage     Permission = "atlas:manage"
 	// PermIAManage: conexões de inteligência artificial (Configurações).
 	PermIAManage Permission = "ia:manage"
+	// Acervo do SISMARQ (ADR 032): consulta, gestão e bloqueio judicial
+	// valem no escopo (a secretaria cuida do que é dela); os locais do
+	// Arquivo Público (órgão central) só com concessão global.
+	PermAcervoRead     Permission = "acervo:read"
+	PermAcervoManage   Permission = "acervo:manage"
+	PermAcervoBloqueio Permission = "acervo:bloqueio"
+	PermAcervoCentral  Permission = "acervo:central"
 )
 
 // HasPermission reporta se identity possui permission, considerando os

@@ -7,27 +7,31 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
-	"github.com/yurythx/projeto-nexus/internal/modules/atlas"
-	"github.com/yurythx/projeto-nexus/internal/modules/auditoria"
-	"github.com/yurythx/projeto-nexus/internal/modules/blog"
-	"github.com/yurythx/projeto-nexus/internal/modules/busca"
-	"github.com/yurythx/projeto-nexus/internal/modules/calendar"
-	"github.com/yurythx/projeto-nexus/internal/modules/catalog"
-	"github.com/yurythx/projeto-nexus/internal/modules/contact"
-	"github.com/yurythx/projeto-nexus/internal/modules/directory"
-	"github.com/yurythx/projeto-nexus/internal/modules/egress"
-	"github.com/yurythx/projeto-nexus/internal/modules/example"
-	"github.com/yurythx/projeto-nexus/internal/modules/files"
-	"github.com/yurythx/projeto-nexus/internal/modules/iam"
-	iamTransport "github.com/yurythx/projeto-nexus/internal/modules/iam/transport"
-	"github.com/yurythx/projeto-nexus/internal/modules/mercurio"
-	"github.com/yurythx/projeto-nexus/internal/modules/signum"
-	signumApp "github.com/yurythx/projeto-nexus/internal/modules/signum/application"
-	"github.com/yurythx/projeto-nexus/internal/modules/tramite"
-	tramiteDomain "github.com/yurythx/projeto-nexus/internal/modules/tramite/domain"
-	"github.com/yurythx/projeto-nexus/internal/modules/wiki"
-	"github.com/yurythx/projeto-nexus/internal/platform/lgpd"
-	"github.com/yurythx/projeto-nexus/internal/platform/modkit"
+	apperrors "github.com/yurythx/sismarq/internal/domain/errors"
+	"github.com/yurythx/sismarq/internal/modules/acervo"
+	acervoDomain "github.com/yurythx/sismarq/internal/modules/acervo/domain"
+	"github.com/yurythx/sismarq/internal/modules/atlas"
+	atlasApp "github.com/yurythx/sismarq/internal/modules/atlas/application"
+	"github.com/yurythx/sismarq/internal/modules/auditoria"
+	"github.com/yurythx/sismarq/internal/modules/blog"
+	"github.com/yurythx/sismarq/internal/modules/busca"
+	"github.com/yurythx/sismarq/internal/modules/calendar"
+	"github.com/yurythx/sismarq/internal/modules/catalog"
+	"github.com/yurythx/sismarq/internal/modules/contact"
+	"github.com/yurythx/sismarq/internal/modules/directory"
+	"github.com/yurythx/sismarq/internal/modules/egress"
+	"github.com/yurythx/sismarq/internal/modules/example"
+	"github.com/yurythx/sismarq/internal/modules/files"
+	"github.com/yurythx/sismarq/internal/modules/iam"
+	iamTransport "github.com/yurythx/sismarq/internal/modules/iam/transport"
+	"github.com/yurythx/sismarq/internal/modules/mercurio"
+	"github.com/yurythx/sismarq/internal/modules/signum"
+	signumApp "github.com/yurythx/sismarq/internal/modules/signum/application"
+	"github.com/yurythx/sismarq/internal/modules/tramite"
+	tramiteDomain "github.com/yurythx/sismarq/internal/modules/tramite/domain"
+	"github.com/yurythx/sismarq/internal/modules/wiki"
+	"github.com/yurythx/sismarq/internal/platform/lgpd"
+	"github.com/yurythx/sismarq/internal/platform/modkit"
 )
 
 // registerPlugins monta o catálogo de módulos (skill §6) e o registra no
@@ -52,6 +56,11 @@ func registerPlugins(d *Dependencies) {
 	}
 
 	signumModule := signum.New(deps, d.keycloakCredentials, d.RateLimiters.Lockout)
+	atlasModule := atlas.New(deps)
+	buscaModule := busca.New(deps, d.Kernel.SearchProviders)
+	if d.SearchIndex != nil {
+		buscaModule.WithIndex(d.SearchIndex)
+	}
 
 	d.Kernel.MustRegister(
 		// Core imutável (nunca desativável).
@@ -67,10 +76,11 @@ func registerPlugins(d *Dependencies) {
 		calendar.New(deps),
 		files.New(deps),
 		wiki.New(deps),
-		busca.New(deps, d.Kernel.SearchProviders),
+		buscaModule,
 		signumModule,
 		tramite.New(deps, &signaturePort{svc: signumModule.Service(), enabled: func() bool { return d.Kernel.Enabled(signum.Key) }}),
-		atlas.New(deps),
+		atlasModule,
+		acervo.New(deps, &ttddPort{svc: atlasModule.Service()}),
 		example.New(deps),
 	)
 	d.LGPD.SetPersonalDataSource(d.personalData)
@@ -134,4 +144,26 @@ func (p *signaturePort) OpenEnvelope(ctx context.Context, tx pgx.Tx, req tramite
 		return uuid.Nil, err
 	}
 	return env.ID, nil
+}
+
+// ttddPort liga a porta de TTDD do Acervo ao Atlas — o único ponto em que os
+// dois plug-ins se encontram (ADR 032).
+type ttddPort struct{ svc *atlasApp.Service }
+
+func (p *ttddPort) Serie(ctx context.Context, codigo string) (acervoDomain.Serie, error) {
+	c, err := p.svc.GetTTDD(ctx, codigo)
+	if e, ok := apperrors.As(err); ok && e.Code == apperrors.CodeNotFound {
+		return acervoDomain.Serie{}, acervoDomain.ErrSerieInvalida
+	}
+	if err != nil {
+		return acervoDomain.Serie{}, err
+	}
+	s := acervoDomain.Serie{
+		Codigo: c.Codigo, Descritor: c.Descritor, CorrenteAnos: c.FaseCorrenteAnos, CorrenteCondicao: c.FaseCorrenteCondicao,
+		IntermAnos: c.FaseIntermAnos, IntermCondicao: c.FaseIntermCondicao, Observacoes: c.Observacoes, Vigente: c.Vigente(),
+	}
+	if c.DestinacaoFinal != nil {
+		s.Destinacao = acervoDomain.Destinacao(*c.DestinacaoFinal)
+	}
+	return s, nil
 }

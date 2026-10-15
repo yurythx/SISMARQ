@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	apperrors "github.com/yurythx/projeto-nexus/internal/domain/errors"
+	apperrors "github.com/yurythx/sismarq/internal/domain/errors"
 )
 
 type sampleDTO struct {

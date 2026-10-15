@@ -7,9 +7,9 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/yurythx/projeto-nexus/internal/modules/iam/infrastructure"
-	"github.com/yurythx/projeto-nexus/internal/platform/auth"
-	"github.com/yurythx/projeto-nexus/internal/platform/database/dbtest"
+	"github.com/yurythx/sismarq/internal/modules/iam/infrastructure"
+	"github.com/yurythx/sismarq/internal/platform/auth"
+	"github.com/yurythx/sismarq/internal/platform/database/dbtest"
 )
 
 // Administração delegada (ADR 013): falha do repositório nas checagens de

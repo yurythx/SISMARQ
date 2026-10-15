@@ -2,6 +2,7 @@ package application_test
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -10,11 +11,12 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 
-	"github.com/yurythx/projeto-nexus/internal/modules/atlas/domain"
-	"github.com/yurythx/projeto-nexus/internal/modules/atlas/infrastructure"
-	"github.com/yurythx/projeto-nexus/internal/modules/atlas/transport"
-	"github.com/yurythx/projeto-nexus/internal/platform/auth"
-	"github.com/yurythx/projeto-nexus/internal/platform/database/dbtest"
+	"github.com/yurythx/sismarq/internal/modules/atlas/domain"
+	"github.com/yurythx/sismarq/internal/modules/atlas/infrastructure"
+	"github.com/yurythx/sismarq/internal/modules/atlas/transport"
+	"github.com/yurythx/sismarq/internal/platform/auth"
+	"github.com/yurythx/sismarq/internal/platform/database/dbtest"
+	"github.com/yurythx/sismarq/internal/platform/search"
 )
 
 // serieVigente é a série usada pelos procedimentos de teste.
@@ -191,5 +193,55 @@ func TestBuscaGlobalEAssistenteComModelos(t *testing.T) {
 	}
 	if _, err := s.DesligarModeloSerie(ctx, serieVigente, m.ID); err != nil {
 		t.Fatal(err)
+	}
+}
+
+// Índice da Busca Global (ADR 031): o mesmo conteúdo da consulta pública —
+// procedimento em vigor, série vigente e modelo ativo; rascunho, série
+// revogada e modelo desativado ficam de fora. Falha de quem recebe para a
+// carga.
+func TestDocumentosBusca(t *testing.T) {
+	e := &env{t: t, pool: dbtest.Pool(t)}
+	ctx := context.Background()
+	s := e.real()
+	ativo := e.workflow(true)
+	rascunho := e.rascunho(s, itemArquivo(codigoNovo(), "Rascunho fora do índice", ""))
+	revogada := e.serieRevogada()
+	m := e.modelo()
+	inativo := e.modelo()
+	if _, err := s.AlterarModelo(ctx, gestor, domain.Modelo{ID: inativo.ID, Nome: inativo.Nome, Descricao: inativo.Descricao, Ativo: false}); err != nil {
+		t.Fatal(err)
+	}
+
+	docs := map[string]search.Document{}
+	if err := s.DocumentosBusca(ctx, func(d search.Document) error { docs[d.Type+":"+d.ID] = d; return nil }); err != nil {
+		t.Fatal(err)
+	}
+	p, ok := docs["procedimento:"+ativo.ID.String()]
+	if !ok || p.URL != "/atlas/procedimentos/"+ativo.ID.String() || p.UpdatedAt == nil || !strings.HasPrefix(p.Title, ativo.CodigoProcessual) {
+		t.Fatalf("procedimento em vigor: %+v", p)
+	}
+	if d, ok := docs["serie_ttdd:"+serieVigente]; !ok || d.URL != "/atlas/ttdd/"+serieVigente || d.Body == "" {
+		t.Fatalf("série vigente: %+v", d)
+	}
+	if d, ok := docs["modelo:"+m.ID.String()]; !ok || !strings.HasPrefix(d.URL, "/atlas/modelos?q=") {
+		t.Fatalf("modelo ativo: %+v", d)
+	}
+	for _, fora := range []string{"procedimento:" + rascunho.ID.String(), "serie_ttdd:" + revogada, "modelo:" + inativo.ID.String()} {
+		if _, ok := docs[fora]; ok {
+			t.Fatalf("%s não pode ir para o índice", fora)
+		}
+	}
+
+	for _, tipo := range []string{"procedimento", "serie_ttdd", "modelo"} {
+		err := s.DocumentosBusca(ctx, func(d search.Document) error {
+			if d.Type == tipo {
+				return errors.New("índice fora")
+			}
+			return nil
+		})
+		if err == nil {
+			t.Fatalf("falha ao gravar %s deveria interromper a carga", tipo)
+		}
 	}
 }

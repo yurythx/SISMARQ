@@ -24,7 +24,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/yurythx/projeto-nexus/internal/platform/database"
+	"github.com/yurythx/sismarq/internal/platform/database"
 )
 
 // maxFailedAttempts é a partir de quantas tentativas seguidas de senha

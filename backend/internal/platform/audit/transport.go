@@ -11,10 +11,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
-	apperrors "github.com/yurythx/projeto-nexus/internal/domain/errors"
-	"github.com/yurythx/projeto-nexus/internal/domain/pagination"
-	"github.com/yurythx/projeto-nexus/internal/platform/auth"
-	"github.com/yurythx/projeto-nexus/pkg/httputil"
+	apperrors "github.com/yurythx/sismarq/internal/domain/errors"
+	"github.com/yurythx/sismarq/internal/domain/pagination"
+	"github.com/yurythx/sismarq/internal/platform/auth"
+	"github.com/yurythx/sismarq/pkg/httputil"
 )
 
 // Handlers expõe a consulta e a verificação de integridade da trilha.

@@ -2,7 +2,7 @@ import { useId } from "react";
 
 import { ASSINATURA, FORMATO, NIVEL_ACESSO } from "@/components/atlas/labels";
 import { SITUACAO } from "@/components/atlas/ValidacaoProcedimento";
-import type { Workflow } from "@/lib/nexus/types";
+import type { Workflow } from "@/lib/sismarq/types";
 
 /** Linha em branco para preencher à mão. */
 function Linha({ rotulo }: { rotulo: string }) {

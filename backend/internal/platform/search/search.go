@@ -8,7 +8,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/yurythx/projeto-nexus/internal/platform/auth"
+	"github.com/yurythx/sismarq/internal/platform/auth"
 )
 
 // Result é um item da busca global.
@@ -29,4 +29,24 @@ type Result struct {
 type Provider interface {
 	Module() string
 	Search(ctx context.Context, identity auth.Identity, query string, limit int) ([]Result, error)
+}
+
+// Document é um item publicado no índice de busca (Typesense, ADR 031).
+type Document struct {
+	Type      string
+	ID        string
+	Title     string
+	Body      string
+	URL       string
+	UpdatedAt *time.Time
+}
+
+// Indexer é o Provider de um módulo cujo conteúdo vai para o índice. O
+// índice não conhece permissões: só implementa Indexer o módulo cujo
+// conteúdo é PÚBLICO (visível a qualquer um, com ou sem login). Módulos com
+// ACL, sigilo ou público-alvo continuam respondendo só pelo Search.
+type Indexer interface {
+	Provider
+	// Documents entrega todo o conteúdo indexável, um por vez, a emit.
+	Documents(ctx context.Context, emit func(Document) error) error
 }

@@ -28,9 +28,9 @@ export async function GET() {
   const rssFeed = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Blog &amp; Novidades — Projeto Nexus</title>
+    <title>Blog &amp; Novidades — SISMARQ</title>
     <link>${APP_URL}/blog</link>
-    <description>Artigos aprofundados, novidades e análises técnicas sobre as principais soluções de infraestrutura, automação, comunicação e segurança.</description>
+    <description>Notícias e orientações do Arquivo Público Municipal de Rondonópolis (SISMARQ).</description>
     <language>pt-BR</language>
     <atom:link href="${APP_URL}/blog/rss.xml" rel="self" type="application/rss+xml"/>
 ${itemsXml}

@@ -4,14 +4,14 @@ import { BadgeCheck, ClipboardCheck, Printer } from "lucide-react";
 import Link from "next/link";
 import { useId, useState, type FormEvent } from "react";
 
-import { fmtDate, useAction } from "@/components/nexus/useAction";
+import { fmtDate, useAction } from "@/components/sismarq/useAction";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { apiClient } from "@/lib/api/client";
 import { useApiQuery } from "@/lib/api/swr";
-import type { SituacaoValidacao, ValidacaoAtlas, Workflow } from "@/lib/nexus/types";
+import type { SituacaoValidacao, ValidacaoAtlas, Workflow } from "@/lib/sismarq/types";
 
 export const SITUACAO: Record<
   SituacaoValidacao,

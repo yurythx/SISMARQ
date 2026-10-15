@@ -5,19 +5,19 @@
     state: directory
     mode: '0755'
 
-- name: Clonar ou sincronizar repositório Projeto Nexus
+- name: Clonar ou sincronizar repositório SISMARQ
   ansible.builtin.git:
-    repo: 'https://github.com/yurythx/Projeto-Nexus.git'
+    repo: 'https://github.com/yurythx/SISMARQ.git'
     dest: /root/Projetos/Projeto-Nexus
     version: main
     force: yes
 
-- name: Liberar portas no firewall UFW para o Nexus
+- name: Liberar portas no firewall UFW para o SISMARQ
   community.general.ufw:
     rule: allow
     port: '{{ item }}'
     proto: tcp
-    comment: "Trafego Nexus"
+    comment: "Trafego SISMARQ"
   loop:
     - '22'
     - '80'
@@ -41,13 +41,13 @@
     - /root/Projetos/Projeto-Nexus/scripts/deploy.sh
     - /root/Projetos/Projeto-Nexus/scripts/enable-https.sh
 
-- name: Executar script oficial de deploy do Nexus (gera .env, secrets RSA e sobe stack)
+- name: Executar script oficial de deploy do SISMARQ (gera .env, secrets RSA e sobe stack)
   ansible.builtin.command:
     cmd: "bash scripts/deploy.sh {{ ansible_host }}"
     chdir: /root/Projetos/Projeto-Nexus
   register: deploy_result
   changed_when: true
 
-- name: Exibir status e URLs de acesso do Nexus
+- name: Exibir status e URLs de acesso do SISMARQ
   ansible.builtin.debug:
     msg: "{{ deploy_result.stdout_lines | default([]) }}"

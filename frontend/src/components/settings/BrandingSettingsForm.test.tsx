@@ -108,8 +108,8 @@ describe("BrandingSettingsForm", () => {
     const dialog = await screen.findByRole("dialog", { name: "Restaurar configurações padrão?" });
     await userEvent.click(within(dialog).getByRole("button", { name: "Restaurar padrões" }));
     await waitFor(() => expect(api.to("PUT v1/admin/branding")).toHaveLength(1));
-    expect(api.to("PUT v1/admin/branding")[0]!.body).toMatchObject({ app_name: "Projeto Nexus", org_name: "Organização", tokens: {} });
-    await waitFor(() => expect(screen.getByTestId("nome")).toHaveTextContent("Projeto Nexus"));
+    expect(api.to("PUT v1/admin/branding")[0]!.body).toMatchObject({ app_name: "SISMARQ", org_name: "Organização", tokens: {} });
+    await waitFor(() => expect(screen.getByTestId("nome")).toHaveTextContent("SISMARQ"));
     await waitFor(() => expect(screen.queryByRole("dialog", { name: "Restaurar configurações padrão?" })).not.toBeInTheDocument());
 
     // cancelar fecha sem gravar

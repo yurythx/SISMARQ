@@ -9,15 +9,15 @@ import { ArvoreTTDD, contem } from "@/components/atlas/ArvoreTTDD";
 import { SeloVigencia } from "@/components/atlas/SeloVigencia";
 import { Trilha } from "@/components/atlas/Trilha";
 import { destinacao, fase } from "@/components/atlas/labels";
-import { DataState } from "@/components/nexus/DataState";
-import { PageHeader } from "@/components/nexus/PageHeader";
-import { Pagination } from "@/components/nexus/Pagination";
+import { DataState } from "@/components/sismarq/DataState";
+import { PageHeader } from "@/components/sismarq/PageHeader";
+import { Pagination } from "@/components/sismarq/Pagination";
 import { Badge } from "@/components/ui/Badge";
 import { Button, buttonClass } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { useApiPage, useApiQuery, withQuery } from "@/lib/api/swr";
-import { useNexus } from "@/lib/nexus/NexusProvider";
-import type { ClassificacaoTTDD, EstruturaTTDD } from "@/lib/nexus/types";
+import { useSismarq } from "@/lib/sismarq/SismarqProvider";
+import type { ClassificacaoTTDD, EstruturaTTDD } from "@/lib/sismarq/types";
 
 /** Séries consecutivas da mesma subfunção: a recomendação aparece uma vez. */
 function agrupar(items: ClassificacaoTTDD[]) {
@@ -60,7 +60,7 @@ function Serie({ c }: { c: ClassificacaoTTDD }) {
 /** Consulta da TTDD oficial: plano de classificação à esquerda, séries à
  * direita. Filtros na URL (?codigo, ?q, ?page) — o link é compartilhável. */
 function Consulta() {
-  const { can } = useNexus();
+  const { can } = useSismarq();
   const params = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();

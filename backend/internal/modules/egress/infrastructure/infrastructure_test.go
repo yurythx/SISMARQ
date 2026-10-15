@@ -13,11 +13,11 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/yurythx/projeto-nexus/internal/domain/pagination"
-	"github.com/yurythx/projeto-nexus/internal/modules/egress/domain"
-	"github.com/yurythx/projeto-nexus/internal/platform/database"
-	"github.com/yurythx/projeto-nexus/internal/platform/database/dbtest"
-	"github.com/yurythx/projeto-nexus/internal/platform/netguard"
+	"github.com/yurythx/sismarq/internal/domain/pagination"
+	"github.com/yurythx/sismarq/internal/modules/egress/domain"
+	"github.com/yurythx/sismarq/internal/platform/database"
+	"github.com/yurythx/sismarq/internal/platform/database/dbtest"
+	"github.com/yurythx/sismarq/internal/platform/netguard"
 )
 
 // O webhook sai assinado (HMAC com timestamp), com cabeçalhos de rastreio
@@ -62,7 +62,7 @@ func TestDeliverer(t *testing.T) {
 	if _, err := d.Deliver(context.Background(), domain.Target{Kind: "zabbix", URL: srv.URL}, del); err != nil {
 		t.Fatal(err)
 	}
-	if got.Header.Get("X-Nexus-Signature") != "" || !strings.Contains(string(body), `"title":"Nexus: blog.post.published"`) {
+	if got.Header.Get("X-Nexus-Signature") != "" || !strings.Contains(string(body), `"title":"SISMARQ: blog.post.published"`) {
 		t.Fatalf("alerta do Zabbix sem assinatura: %v %s", got.Header, body)
 	}
 	status = http.StatusBadGateway

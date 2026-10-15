@@ -5,12 +5,12 @@ package signum
 import (
 	"github.com/go-chi/chi/v5"
 
-	"github.com/yurythx/projeto-nexus/internal/modules/signum/application"
-	"github.com/yurythx/projeto-nexus/internal/modules/signum/infrastructure"
-	"github.com/yurythx/projeto-nexus/internal/modules/signum/transport"
-	"github.com/yurythx/projeto-nexus/internal/platform/httpserver"
-	"github.com/yurythx/projeto-nexus/internal/platform/kernel"
-	"github.com/yurythx/projeto-nexus/internal/platform/modkit"
+	"github.com/yurythx/sismarq/internal/modules/signum/application"
+	"github.com/yurythx/sismarq/internal/modules/signum/infrastructure"
+	"github.com/yurythx/sismarq/internal/modules/signum/transport"
+	"github.com/yurythx/sismarq/internal/platform/httpserver"
+	"github.com/yurythx/sismarq/internal/platform/kernel"
+	"github.com/yurythx/sismarq/internal/platform/modkit"
 )
 
 // Key é a chave do módulo.

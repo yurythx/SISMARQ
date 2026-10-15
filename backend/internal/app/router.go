@@ -7,22 +7,22 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	"github.com/yurythx/projeto-nexus/internal/platform/audit"
-	"github.com/yurythx/projeto-nexus/internal/platform/auth"
-	"github.com/yurythx/projeto-nexus/internal/platform/branding"
-	"github.com/yurythx/projeto-nexus/internal/platform/database"
-	"github.com/yurythx/projeto-nexus/internal/platform/httpserver"
-	"github.com/yurythx/projeto-nexus/internal/platform/iaconfig"
-	"github.com/yurythx/projeto-nexus/internal/platform/idempotency"
-	"github.com/yurythx/projeto-nexus/internal/platform/kernel"
-	"github.com/yurythx/projeto-nexus/internal/platform/keycloakconfig"
-	"github.com/yurythx/projeto-nexus/internal/platform/lgpd"
-	"github.com/yurythx/projeto-nexus/internal/platform/localauth"
-	"github.com/yurythx/projeto-nexus/internal/platform/notificacoes"
-	"github.com/yurythx/projeto-nexus/internal/platform/outbox"
-	"github.com/yurythx/projeto-nexus/internal/platform/redisx"
-	"github.com/yurythx/projeto-nexus/internal/platform/transparency"
-	"github.com/yurythx/projeto-nexus/internal/platform/ws"
+	"github.com/yurythx/sismarq/internal/platform/audit"
+	"github.com/yurythx/sismarq/internal/platform/auth"
+	"github.com/yurythx/sismarq/internal/platform/branding"
+	"github.com/yurythx/sismarq/internal/platform/database"
+	"github.com/yurythx/sismarq/internal/platform/httpserver"
+	"github.com/yurythx/sismarq/internal/platform/iaconfig"
+	"github.com/yurythx/sismarq/internal/platform/idempotency"
+	"github.com/yurythx/sismarq/internal/platform/kernel"
+	"github.com/yurythx/sismarq/internal/platform/keycloakconfig"
+	"github.com/yurythx/sismarq/internal/platform/lgpd"
+	"github.com/yurythx/sismarq/internal/platform/localauth"
+	"github.com/yurythx/sismarq/internal/platform/notificacoes"
+	"github.com/yurythx/sismarq/internal/platform/outbox"
+	"github.com/yurythx/sismarq/internal/platform/redisx"
+	"github.com/yurythx/sismarq/internal/platform/transparency"
+	"github.com/yurythx/sismarq/internal/platform/ws"
 )
 
 // NewRouter monta o router HTTP da API: base de plataforma (request id,
@@ -106,6 +106,10 @@ func NewRouter(d *Dependencies) chi.Router {
 			// Plugins: cada um recebe um ponto de montagem público e um
 			// autenticado, ambos atrás do guard de ativação do Kernel.
 			api.Group(func(pluginPublic chi.Router) {
+				// Rota pública que mostra mais a quem está logado: o Blog
+				// entrega ao servidor os posts do público-alvo da secretaria
+				// dele (ADR 014), que o anônimo não vê.
+				pluginPublic.Use(auth.OptionalAuthentication(d.Verifier, d.IAM.Enrich))
 				d.Kernel.MountRoutes(pluginPublic, authed, d.Logger)
 			})
 		})
@@ -135,7 +139,7 @@ func swaggerUI(w http.ResponseWriter, _ *http.Request) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Projeto Nexus — API (OpenAPI 3)</title>
+  <title>SISMARQ — API (OpenAPI 3)</title>
   <link rel="stylesheet" href="/docs/assets/swagger-ui.css" />
 </head>
 <body>

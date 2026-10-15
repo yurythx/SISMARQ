@@ -7,34 +7,17 @@ interface BlogCoverImageProps {
   aspect?: "hero" | "card" | "article";
 }
 
-const SERVICE_ICON_MAP: Record<string, string> = {
-  "whatsapp-api": "message-circle",
-  "whatsapp-evolution": "message-circle",
-  "evolution-api": "message-circle",
-  chatwoot: "message-square",
-  n8n: "workflow",
-  ansible: "cpu",
-  glpi: "clipboard-list",
-  zabbix: "activity",
-  terraform: "boxes",
-  proxmox: "server",
-  truenas: "hard-drive",
-  nextcloud: "cloud",
-  aapanel: "layout-dashboard",
-  rustdesk: "monitor",
-  "windows-server": "server",
-  samba: "folder-open",
-  keycloak: "key-round",
-  tailscale: "network",
-  crowdsec: "shield-check",
-  "twenty-crm": "users",
-  papermark: "file-text",
-  plone: "globe",
-  redes: "network",
-  cabeamento: "network",
-  manutencao: "wrench",
-  backup: "archive",
-};
+// Ícone da capa padrão pelo tema da publicação (palavra no slug).
+const TEMA_ICONE: [string, string][] = [
+  ["temporalidade", "calendar-clock"],
+  ["eliminacao", "file-x"],
+  ["digitalizacao", "scan-line"],
+  ["recolhimento", "archive"],
+  ["comiss", "users"],
+  ["classificacao", "list-tree"],
+  ["privad", "landmark"],
+  ["acesso", "book-open"],
+];
 
 export function BlogCoverImage({
   coverUrl,
@@ -42,8 +25,7 @@ export function BlogCoverImage({
   slug,
   aspect = "card",
 }: BlogCoverImageProps) {
-  const serviceSlug = slug.replace(/^artigo-/, "");
-  const iconName = SERVICE_ICON_MAP[serviceSlug] || "layers";
+  const iconName = TEMA_ICONE.find(([tema]) => slug.includes(tema))?.[1] ?? "archive";
 
   const aspectClass =
     aspect === "hero"
@@ -66,7 +48,7 @@ export function BlogCoverImage({
     );
   }
 
-  // Fallback visual com identidade visual do Projeto Nexus
+  // Fallback visual com identidade visual do SISMARQ
   return (
     <div
       className={`relative flex flex-col justify-between overflow-hidden rounded-xl border border-surface-border bg-gradient-to-br from-surface-2 via-surface-1 to-surface-3 p-6 text-foreground shadow-xs transition-all duration-300 group-hover:border-accent/40 ${aspectClass}`}
@@ -79,13 +61,13 @@ export function BlogCoverImage({
           <ServiceIcon name={iconName} size={24} className="text-accent" />
         </div>
         <span className="rounded-md border border-surface-border/60 bg-surface/80 px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider text-muted">
-          Nexus Editorial
+          SISMARQ
         </span>
       </div>
 
       <div className="relative z-10 mt-auto flex flex-col gap-1">
         <span className="text-xs font-mono font-medium text-muted">
-          {serviceSlug !== slug ? serviceSlug.toUpperCase() : "SOLUÇÃO"}
+          ARQUIVO PÚBLICO MUNICIPAL
         </span>
         <h3 className="line-clamp-2 text-base font-bold tracking-tight text-foreground sm:text-lg">
           {title}

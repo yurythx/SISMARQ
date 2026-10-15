@@ -14,17 +14,17 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/yurythx/projeto-nexus/internal/domain/pagination"
-	"github.com/yurythx/projeto-nexus/internal/modules/catalog"
-	"github.com/yurythx/projeto-nexus/internal/modules/catalog/application"
-	"github.com/yurythx/projeto-nexus/internal/modules/catalog/domain"
-	"github.com/yurythx/projeto-nexus/internal/modules/catalog/infrastructure"
-	"github.com/yurythx/projeto-nexus/internal/modules/catalog/transport"
-	"github.com/yurythx/projeto-nexus/internal/platform/auth"
-	"github.com/yurythx/projeto-nexus/internal/platform/config"
-	"github.com/yurythx/projeto-nexus/internal/platform/database/dbtest"
-	"github.com/yurythx/projeto-nexus/internal/platform/modkit"
-	"github.com/yurythx/projeto-nexus/internal/platform/outbox"
+	"github.com/yurythx/sismarq/internal/domain/pagination"
+	"github.com/yurythx/sismarq/internal/modules/catalog"
+	"github.com/yurythx/sismarq/internal/modules/catalog/application"
+	"github.com/yurythx/sismarq/internal/modules/catalog/domain"
+	"github.com/yurythx/sismarq/internal/modules/catalog/infrastructure"
+	"github.com/yurythx/sismarq/internal/modules/catalog/transport"
+	"github.com/yurythx/sismarq/internal/platform/auth"
+	"github.com/yurythx/sismarq/internal/platform/config"
+	"github.com/yurythx/sismarq/internal/platform/database/dbtest"
+	"github.com/yurythx/sismarq/internal/platform/modkit"
+	"github.com/yurythx/sismarq/internal/platform/outbox"
 )
 
 // gestor: gestão global do catálogo (ADR 013 — concessão sem escopo).

@@ -5,9 +5,10 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/yurythx/projeto-nexus/internal/modules/atlas/domain"
-	"github.com/yurythx/projeto-nexus/internal/platform/modkit"
-	"github.com/yurythx/projeto-nexus/internal/platform/search"
+	"github.com/yurythx/sismarq/internal/domain/pagination"
+	"github.com/yurythx/sismarq/internal/modules/atlas/domain"
+	"github.com/yurythx/sismarq/internal/platform/modkit"
+	"github.com/yurythx/sismarq/internal/platform/search"
 )
 
 // BuscaGlobal alimenta a Busca Global do sistema: procedimentos, séries
@@ -54,4 +55,54 @@ func (s *Service) BuscaGlobal(ctx context.Context, modulo, q string, limit int) 
 		})
 	}
 	return out, nil
+}
+
+// DocumentosBusca entrega ao índice da Busca Global (ADR 031) o mesmo
+// conteúdo da consulta pública: procedimentos em vigor, séries vigentes da
+// TTDD e modelos ativos — nada de rascunho, revogado ou inativo.
+func (s *Service) DocumentosBusca(ctx context.Context, emit func(search.Document) error) error {
+	for page := 1; ; page++ {
+		items, total, err := s.List(ctx, domain.Filter{}, pagination.New(page, pagination.AbsoluteMaxPageSize, pagination.AbsoluteMaxPageSize))
+		if err != nil {
+			return err
+		}
+		for _, w := range items {
+			updated := w.UpdatedAt
+			if err := emit(search.Document{
+				Type: "procedimento", ID: w.ID.String(), Title: w.CodigoProcessual + " — " + w.Titulo,
+				Body: w.Objetivo + "\n" + w.PublicoAlvo + "\n" + w.CodigoTTDD, URL: "/atlas/procedimentos/" + w.ID.String(), UpdatedAt: &updated,
+			}); err != nil {
+				return err
+			}
+		}
+		if int64(page*pagination.AbsoluteMaxPageSize) >= total || len(items) == 0 {
+			break
+		}
+	}
+	series, err := s.ExportarTTDD(ctx, domain.FiltroTTDD{})
+	if err != nil {
+		return err
+	}
+	for _, c := range series {
+		if err := emit(search.Document{
+			Type: "serie_ttdd", ID: c.Codigo, Title: c.Codigo + " — " + c.Descritor,
+			Body: domain.Temporalidade(c) + "\n" + c.Observacoes, URL: "/atlas/ttdd/" + c.Codigo,
+		}); err != nil {
+			return err
+		}
+	}
+	modelos, err := s.ListModelos(ctx, false)
+	if err != nil {
+		return err
+	}
+	for _, m := range modelos {
+		updated := m.UpdatedAt
+		if err := emit(search.Document{
+			Type: "modelo", ID: m.ID.String(), Title: "Modelo: " + m.Nome,
+			Body: m.Descricao, URL: "/atlas/modelos?q=" + url.QueryEscape(m.Nome), UpdatedAt: &updated,
+		}); err != nil {
+			return err
+		}
+	}
+	return nil
 }

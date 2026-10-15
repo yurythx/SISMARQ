@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { ModuleStatus } from "@/lib/nexus/types";
+import type { ModuleStatus } from "@/lib/sismarq/types";
 
 import { moduleNames, planToggle } from "./plan";
 

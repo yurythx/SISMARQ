@@ -5,18 +5,18 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 
 import { FichaValidacao } from "@/components/atlas/FichaValidacao";
-import { DataState } from "@/components/nexus/DataState";
+import { DataState } from "@/components/sismarq/DataState";
 import { Button } from "@/components/ui/Button";
 import { useApiQuery } from "@/lib/api/swr";
-import { useNexus } from "@/lib/nexus/NexusProvider";
-import type { Workflow } from "@/lib/nexus/types";
+import { useSismarq } from "@/lib/sismarq/SismarqProvider";
+import type { Workflow } from "@/lib/sismarq/types";
 
 /** Ficha de validação para imprimir e levar à entrevista no departamento
  * (ADR 028): o fluxo proposto, item a item, com espaço para confirmar ou
  * corrigir e para padronizar cada documento. */
 export default function FichaValidacaoPage() {
   const { id } = useParams<{ id: string }>();
-  const { can } = useNexus();
+  const { can } = useSismarq();
   const gestao = can("atlas:manage");
   const detail = useApiQuery<Workflow>(
     `v1/atlas/${gestao ? "admin/" : ""}workflows/${encodeURIComponent(id)}`,

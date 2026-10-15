@@ -38,16 +38,16 @@ import { PublicBlogListClient } from "../PublicBlogListClient";
 import BlogPublicPage from "../page";
 import PublicPostPage, { generateMetadata } from "../[ref]/page";
 import { GET as getRss } from "../rss.xml/route";
-import type { Post } from "@/lib/nexus/types";
+import type { Post } from "@/lib/sismarq/types";
 
 describe("PublicBlogListClient", () => {
   const samplePosts: Post[] = [
     {
       id: "1",
       slug: "post-infraestrutura",
-      title: "Guia de Infraestrutura e Nuvem",
-      summary: "Tudo sobre servidores e virtualização.",
-      body: "## Tópico 1\nConteúdo sobre Proxmox e Debian.",
+      title: "Tabela de Temporalidade publicada",
+      summary: "Prazos de guarda das secretarias.",
+      body: "## Tópico 1\nConteúdo sobre a TTDD e o DIORONDON-e.",
       kind: "noticia",
       status: "published",
       pinned: true,
@@ -58,9 +58,9 @@ describe("PublicBlogListClient", () => {
     {
       id: "2",
       slug: "post-seguranca",
-      title: "Segurança e Proteção de Dados",
-      summary: "Hardening e VPN WireGuard.",
-      body: "Conteúdo sobre segurança cibernética.",
+      title: "Rito de Eliminação de Documentos",
+      summary: "Relação, ata, edital e termo.",
+      body: "Conteúdo sobre a eliminação e a amostragem.",
       kind: "comunicado",
       status: "published",
       pinned: false,
@@ -74,41 +74,41 @@ describe("PublicBlogListClient", () => {
     render(<PublicBlogListClient initialPosts={samplePosts} />);
 
     expect(screen.getByText(/destaque editorial/i)).toBeInTheDocument();
-    expect(screen.getAllByText("Guia de Infraestrutura e Nuvem").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Segurança e Proteção de Dados").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Tabela de Temporalidade publicada").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Rito de Eliminação de Documentos").length).toBeGreaterThan(0);
   });
 
   it("filtra posts por termo de busca no input", () => {
     render(<PublicBlogListClient initialPosts={samplePosts} />);
 
-    const searchInput = screen.getByPlaceholderText(/buscar por artigos/i);
-    fireEvent.change(searchInput, { target: { value: "WireGuard" } });
+    const searchInput = screen.getByPlaceholderText(/buscar por assunto/i);
+    fireEvent.change(searchInput, { target: { value: "amostragem" } });
 
-    expect(screen.getAllByText("Segurança e Proteção de Dados").length).toBeGreaterThan(0);
-    expect(screen.queryByRole("heading", { name: "Guia de Infraestrutura e Nuvem" })).not.toBeInTheDocument();
+    expect(screen.getAllByText("Rito de Eliminação de Documentos").length).toBeGreaterThan(0);
+    expect(screen.queryByRole("heading", { name: "Tabela de Temporalidade publicada" })).not.toBeInTheDocument();
 
     // Limpa a busca
     const clearBtn = screen.getByLabelText("Limpar busca");
     fireEvent.click(clearBtn);
 
-    expect(screen.getAllByText("Guia de Infraestrutura e Nuvem").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Tabela de Temporalidade publicada").length).toBeGreaterThan(0);
   });
 
   it("filtra posts por tag de categoria", () => {
     render(<PublicBlogListClient initialPosts={samplePosts} />);
 
-    // Clica na tag de Segurança
-    const segurancaTag = screen.getByRole("tab", { name: "Segurança" });
+    // Clica na tag de Eliminação
+    const segurancaTag = screen.getByRole("tab", { name: "Eliminação" });
     fireEvent.click(segurancaTag);
 
-    expect(screen.getAllByText("Segurança e Proteção de Dados").length).toBeGreaterThan(0);
-    expect(screen.queryByRole("heading", { name: "Guia de Infraestrutura e Nuvem" })).not.toBeInTheDocument();
+    expect(screen.getAllByText("Rito de Eliminação de Documentos").length).toBeGreaterThan(0);
+    expect(screen.queryByRole("heading", { name: "Tabela de Temporalidade publicada" })).not.toBeInTheDocument();
   });
 
   it("exibe estado vazio quando nenhum post corresponde ao filtro", () => {
     render(<PublicBlogListClient initialPosts={samplePosts} />);
 
-    const searchInput = screen.getByPlaceholderText(/buscar por artigos/i);
+    const searchInput = screen.getByPlaceholderText(/buscar por assunto/i);
     fireEvent.change(searchInput, { target: { value: "palavra-inexistente-xyz" } });
 
     expect(screen.getByText(/nenhuma publicação encontrada/i)).toBeInTheDocument();
@@ -116,7 +116,7 @@ describe("PublicBlogListClient", () => {
     const resetBtn = screen.getByRole("button", { name: "Limpar filtros" });
     fireEvent.click(resetBtn);
 
-    expect(screen.getAllByText("Guia de Infraestrutura e Nuvem").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Tabela de Temporalidade publicada").length).toBeGreaterThan(0);
   });
 });
 

@@ -1,4 +1,4 @@
-// Service Worker para PWA do Projeto Nexus
+// Service Worker para PWA do SISMARQ
 const CACHE_NAME = "nexus-pwa-v1";
 const STATIC_ASSETS = [
   "/",
