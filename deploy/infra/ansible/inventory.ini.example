@@ -1,0 +1,13 @@
+# Exemplo de Inventário do Ansible para Proxmox VE - Projeto Nexus
+[all:vars]
+ansible_user=root
+ansible_python_interpreter=/usr/bin/python3
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+# Host Principal com Docker (VM KVM Dedicada)
+[docker_hosts]
+nexus-prod-app ansible_host=192.168.1.46 proxmox_vmid=201
+
+# Grupos de Papel
+[nexus_apps]
+nexus-prod-app

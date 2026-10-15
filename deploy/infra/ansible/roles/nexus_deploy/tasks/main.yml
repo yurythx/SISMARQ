@@ -1,0 +1,53 @@
+---
+- name: Criar pasta raiz de projetos
+  ansible.builtin.file:
+    path: /root/Projetos
+    state: directory
+    mode: '0755'
+
+- name: Clonar ou sincronizar repositório Projeto Nexus
+  ansible.builtin.git:
+    repo: 'https://github.com/yurythx/Projeto-Nexus.git'
+    dest: /root/Projetos/Projeto-Nexus
+    version: main
+    force: yes
+
+- name: Liberar portas no firewall UFW para o Nexus
+  community.general.ufw:
+    rule: allow
+    port: '{{ item }}'
+    proto: tcp
+    comment: "Trafego Nexus"
+  loop:
+    - '22'
+    - '80'
+    - '443'
+    - '3002'
+    - '3010'
+    - '8002'
+    - '8010'
+    - '8443'
+    - '8543'
+    - '9002'
+    - '9010'
+    - '9011'
+    - '9443'
+
+- name: Garantir permissão de execução nos scripts de automação
+  ansible.builtin.file:
+    path: "{{ item }}"
+    mode: '0755'
+  loop:
+    - /root/Projetos/Projeto-Nexus/scripts/deploy.sh
+    - /root/Projetos/Projeto-Nexus/scripts/enable-https.sh
+
+- name: Executar script oficial de deploy do Nexus (gera .env, secrets RSA e sobe stack)
+  ansible.builtin.command:
+    cmd: "bash scripts/deploy.sh {{ ansible_host }}"
+    chdir: /root/Projetos/Projeto-Nexus
+  register: deploy_result
+  changed_when: true
+
+- name: Exibir status e URLs de acesso do Nexus
+  ansible.builtin.debug:
+    msg: "{{ deploy_result.stdout_lines | default([]) }}"
