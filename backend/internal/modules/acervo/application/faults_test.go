@@ -17,6 +17,7 @@ import (
 	"github.com/yurythx/sismarq/internal/modules/acervo/infrastructure"
 	"github.com/yurythx/sismarq/internal/modules/acervo/transport"
 	"github.com/yurythx/sismarq/internal/platform/auth"
+	"github.com/yurythx/sismarq/internal/platform/database/dbtest"
 )
 
 // Matriz de falhas: cada chamada ao repositório falha (ou envenena a
@@ -39,6 +40,9 @@ func TestEveryRepositoryFailureIsPropagated(t *testing.T) {
 		}
 		return d
 	}
+	solicitante := dbtest.User(t, e.pool)
+	planilha := "tipo;codigo_classificacao;unidade;data_inicial;data_final;local\nCAIXA;" + codElim + ";" + e.unidade.String() +
+		";01/01/2018;31/12/2018;" + predio.Caminho + "\n"
 	bloqueada := func() (application.Detalhe, uuid.UUID) {
 		d := comLocal()
 		d, err := real.Bloquear(ctx, admin, d.ID, "1", "")
@@ -71,7 +75,10 @@ func TestEveryRepositoryFailureIsPropagated(t *testing.T) {
 		},
 		"Localizar": func() func(*application.Service) error {
 			d := comLocal()
-			return func(s *application.Service) error { _, err := s.Localizar(ctx, admin, d.ID, &predio.ID, "p"); return err }
+			return func(s *application.Service) error {
+				_, err := s.Localizar(ctx, admin, d.ID, &predio.ID, "p")
+				return err
+			}
 		},
 		"Bloquear": func() func(*application.Service) error {
 			d := comLocal()
@@ -93,6 +100,75 @@ func TestEveryRepositoryFailureIsPropagated(t *testing.T) {
 		},
 		"Painel": func() func(*application.Service) error {
 			return func(s *application.Service) error { _, err := s.Painel(ctx, admin, domain.Filtro{}); return err }
+		},
+		"Emprestar": func() func(*application.Service) error {
+			d := comLocal()
+			return func(s *application.Service) error {
+				_, err := s.Emprestar(ctx, admin, d.ID, solicitante, "consulta", dia("2021-01-10"))
+				return err
+			}
+		},
+		"Devolver": func() func(*application.Service) error {
+			d := comLocal()
+			d, err := real.Emprestar(ctx, admin, d.ID, solicitante, "consulta", dia("2021-01-10"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			return func(s *application.Service) error {
+				_, err := s.Devolver(ctx, admin, d.Emprestimos[0].ID, "ok")
+				return err
+			}
+		},
+		"Emprestimos": func() func(*application.Service) error {
+			return func(s *application.Service) error {
+				_, _, err := s.Emprestimos(ctx, admin, true, pagination.New(1, 5, 100))
+				return err
+			}
+		},
+		"CriarGuia": func() func(*application.Service) error {
+			d := comLocal()
+			return func(s *application.Service) error {
+				_, err := s.CriarGuia(ctx, admin, e.unidade, []uuid.UUID{d.ID}, "")
+				return err
+			}
+		},
+		"ReceberGuia": func() func(*application.Service) error {
+			d := comLocal()
+			g, err := real.CriarGuia(ctx, admin, e.unidade, []uuid.UUID{d.ID}, "")
+			if err != nil {
+				t.Fatal(err)
+			}
+			return func(s *application.Service) error { _, err := s.ReceberGuia(ctx, admin, g.ID); return err }
+		},
+		"CancelarGuia": func() func(*application.Service) error {
+			d := comLocal()
+			g, err := real.CriarGuia(ctx, admin, e.unidade, []uuid.UUID{d.ID}, "")
+			if err != nil {
+				t.Fatal(err)
+			}
+			return func(s *application.Service) error { _, err := s.CancelarGuia(ctx, admin, g.ID); return err }
+		},
+		"Guias": func() func(*application.Service) error {
+			return func(s *application.Service) error {
+				_, _, err := s.Guias(ctx, admin, pagination.New(1, 5, 100))
+				return err
+			}
+		},
+		"Importar": func() func(*application.Service) error {
+			return func(s *application.Service) error {
+				_, err := s.Importar(ctx, admin, planilha, "", false)
+				return err
+			}
+		},
+		"ImportarAplicar": func() func(*application.Service) error {
+			sim, err := real.Importar(ctx, admin, planilha, "", false)
+			if err != nil || len(sim.Erros) > 0 {
+				t.Fatalf("simulação: %+v %v", sim, err)
+			}
+			return func(s *application.Service) error {
+				_, err := s.Importar(ctx, admin, planilha, sim.Hash, true)
+				return err
+			}
 		},
 		"ListLocais": func() func(*application.Service) error {
 			return func(s *application.Service) error { _, err := s.ListLocais(ctx); return err }

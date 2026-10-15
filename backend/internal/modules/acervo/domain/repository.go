@@ -52,6 +52,23 @@ type Repository interface {
 	InsertMovimentacao(ctx context.Context, db database.DBTX, unidade uuid.UUID, m Movimentacao) error
 	ListMovimentacoes(ctx context.Context, db database.DBTX, unidade uuid.UUID) ([]Movimentacao, error)
 
+	// Fase 2 (ADR 033).
+	InsertEmprestimo(ctx context.Context, db database.DBTX, e Emprestimo) error
+	GetEmprestimo(ctx context.Context, db database.DBTX, id uuid.UUID) (Emprestimo, error)
+	DevolverEmprestimo(ctx context.Context, db database.DBTX, e Emprestimo) error
+	EmprestimoAberto(ctx context.Context, db database.DBTX, unidade uuid.UUID) (bool, error)
+	ListEmprestimos(ctx context.Context, db database.DBTX, unidade uuid.UUID) ([]Emprestimo, error)
+	ListEmprestimosAbertos(ctx context.Context, db database.DBTX, f Filtro, atrasadosEm *time.Time, p pagination.Params) ([]Emprestimo, int64, error)
+
+	InsertGuia(ctx context.Context, db database.DBTX, g Guia, unidades []uuid.UUID) (string, error)
+	GetGuia(ctx context.Context, db database.DBTX, id uuid.UUID, paraAtualizar bool) (Guia, error)
+	SetGuiaSituacao(ctx context.Context, db database.DBTX, g Guia) error
+	EmGuiaEnviada(ctx context.Context, db database.DBTX, unidade uuid.UUID) (bool, error)
+	ListGuias(ctx context.Context, db database.DBTX, f Filtro, p pagination.Params) ([]Guia, int64, error)
+
+	// ResolverUnidade acha a unidade produtora ativa pela sigla (ou id).
+	ResolverUnidade(ctx context.Context, db database.DBTX, ref string) (uuid.UUID, error)
+
 	InsertLocal(ctx context.Context, db database.DBTX, l Local) error
 	UpdateLocal(ctx context.Context, db database.DBTX, l Local) error
 	GetLocal(ctx context.Context, db database.DBTX, id uuid.UUID) (Local, error)

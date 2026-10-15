@@ -50,6 +50,7 @@ func (h *Handlers) RegisterRoutes(r chi.Router) {
 		r.With(ler).Get("/locais", h.ListLocais)
 		r.With(central).Post("/locais", h.CreateLocal)
 		r.With(central).Put("/locais/{id}", h.UpdateLocal)
+		h.registerFase2(r, ler, gerir)
 	})
 }
 

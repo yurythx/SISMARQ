@@ -226,9 +226,13 @@ func TestTransferenciaEFases(t *testing.T) {
 		t.Fatalf("antes do prazo: %v", err)
 	}
 	e.agora = dia("2021-01-01")
+	if _, err := s.Transferir(ctx, admin, d.ID, strings.Repeat("x", 1001)); codigoDe(err) != apperrors.CodeValidation {
+		t.Fatalf("observação longa: %v", err)
+	}
 	got, err := s.Transferir(ctx, agente(e.unidade), d.ID, " fim do exercício ")
 	if err != nil || got.Fase != domain.FaseIntermediaria || got.Situacao != domain.SituacaoNoIntermediario ||
-		got.Movimentacoes[0].Tipo != domain.MovTransferencia || !strings.HasSuffix(got.Movimentacoes[0].Descricao, ": fim do exercício") {
+		got.Movimentacoes[0].Tipo != domain.MovTransferencia || !strings.Contains(got.Movimentacoes[0].Descricao, "pela guia GT-") ||
+		got.Movimentacoes[1].Tipo != domain.MovGuia {
 		t.Fatalf("transferência: %+v %v", got, err)
 	}
 	if _, err := s.Transferir(ctx, admin, d.ID, ""); codigoDe(err) != apperrors.CodeConflict {
@@ -277,6 +281,9 @@ func TestTransferenciaEFases(t *testing.T) {
 	}
 	if _, err := s.Bloquear(ctx, admin, el.ID, "1", ""); codigoDe(err) != apperrors.CodeConflict {
 		t.Fatalf("eliminada não se bloqueia: %v", err)
+	}
+	if _, err := s.Emprestar(ctx, admin, el.ID, dbtest.User(t, e.pool), "x", e.agora.AddDate(0, 0, 5)); codigoDe(err) != apperrors.CodeConflict {
+		t.Fatalf("eliminada não se empresta: %v", err)
 	}
 	if _, err := e.pool.Exec(ctx, `UPDATE acervo_unidades SET fase = 'CORRENTE' WHERE id = $1`, el.ID); err == nil {
 		t.Fatal("eliminada não volta")
@@ -443,14 +450,18 @@ func TestRecalculo(t *testing.T) {
 func TestMapError(t *testing.T) {
 	casos := map[error]apperrors.Code{
 		&domain.ErrValidacao{Campo: "x", Motivo: "y"}: apperrors.CodeValidation,
-		domain.ErrNaoEncontrada:     apperrors.CodeNotFound,
-		domain.ErrForaDoEscopo:      apperrors.CodeForbidden,
-		domain.ErrLocalNaoExiste:    apperrors.CodeNotFound,
-		domain.ErrBloqueioNaoExiste: apperrors.CodeNotFound,
-		domain.ErrSerieInvalida:     apperrors.CodeValidation,
+		domain.ErrNaoEncontrada:                       apperrors.CodeNotFound,
+		domain.ErrForaDoEscopo:                        apperrors.CodeForbidden,
+		domain.ErrLocalNaoExiste:                      apperrors.CodeNotFound,
+		domain.ErrBloqueioNaoExiste:                   apperrors.CodeNotFound,
+		domain.ErrSerieInvalida:                       apperrors.CodeValidation,
+		domain.ErrEmprestimoNaoExiste:                 apperrors.CodeNotFound,
+		domain.ErrGuiaNaoExiste:                       apperrors.CodeNotFound,
+		domain.ErrUnidadeProdutora:                    apperrors.CodeValidation,
 	}
 	for _, trava := range []error{domain.ErrBloqueioLiberado, domain.ErrPermanente, domain.ErrBloqueioJudicial, domain.ErrNaoPrevistaNaTTDD,
-		domain.ErrPrazoNaoCumprido, domain.ErrAguardaEvento, domain.ErrDestinacaoIndefinida, domain.ErrFaseInvalida, domain.ErrEliminado} {
+		domain.ErrPrazoNaoCumprido, domain.ErrAguardaEvento, domain.ErrDestinacaoIndefinida, domain.ErrFaseInvalida, domain.ErrEliminado,
+		domain.ErrEmprestimoAberto, domain.ErrEmprestimoDevolvido, domain.ErrEmprestada, domain.ErrGuiaSituacao, domain.ErrEmOutraGuia} {
 		casos[trava] = apperrors.CodeConflict
 	}
 	for err, code := range casos {

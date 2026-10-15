@@ -306,6 +306,12 @@
             ],
             "type": "string"
           },
+          "emprestimos": {
+            "items": {
+              "$ref": "#/components/schemas/AcervoEmprestimo"
+            },
+            "type": "array"
+          },
           "especificacao": {
             "type": "string"
           },
@@ -414,6 +420,7 @@
           "data_final",
           "data_inicial",
           "destinacao",
+          "emprestimos",
           "especificacao",
           "fase",
           "fim_corrente",
@@ -435,6 +442,198 @@
           "tipo",
           "unidade_id",
           "updated_at"
+        ],
+        "type": "object",
+        "x-sismarq-generated": true
+      },
+      "AcervoDevolverRequest": {
+        "properties": {
+          "observacao": {
+            "maxLength": 500,
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "x-sismarq-generated": true
+      },
+      "AcervoEmprestarRequest": {
+        "properties": {
+          "devolver_ate": {
+            "type": "string"
+          },
+          "finalidade": {
+            "maxLength": 500,
+            "type": "string"
+          },
+          "solicitante_id": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "devolver_ate",
+          "finalidade",
+          "solicitante_id"
+        ],
+        "type": "object",
+        "x-sismarq-generated": true
+      },
+      "AcervoEmprestimo": {
+        "properties": {
+          "assunto": {
+            "type": "string"
+          },
+          "devolver_ate": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "devolvido_em": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "finalidade": {
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "numero": {
+            "type": "string"
+          },
+          "observacao": {
+            "type": "string"
+          },
+          "recebido_por": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "retirado_em": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "retirado_por": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "solicitante": {
+            "type": "string"
+          },
+          "solicitante_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "unidade_arquivamento_id": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "devolver_ate",
+          "devolvido_em",
+          "finalidade",
+          "id",
+          "observacao",
+          "recebido_por",
+          "retirado_em",
+          "retirado_por",
+          "solicitante",
+          "solicitante_id",
+          "unidade_arquivamento_id"
+        ],
+        "type": "object",
+        "x-sismarq-generated": true
+      },
+      "AcervoGuia": {
+        "properties": {
+          "criada_em": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "criada_por": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "itens": {
+            "items": {
+              "$ref": "#/components/schemas/AcervoUnidadeLista"
+            },
+            "type": "array"
+          },
+          "numero": {
+            "type": "string"
+          },
+          "observacao": {
+            "type": "string"
+          },
+          "origem_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "recebida_em": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "recebida_por": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "situacao": {
+            "type": "string"
+          },
+          "total_itens": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "criada_em",
+          "criada_por",
+          "id",
+          "itens",
+          "numero",
+          "observacao",
+          "origem_id",
+          "recebida_em",
+          "recebida_por",
+          "situacao",
+          "total_itens"
+        ],
+        "type": "object",
+        "x-sismarq-generated": true
+      },
+      "AcervoGuiaRequest": {
+        "properties": {
+          "observacao": {
+            "maxLength": 1000,
+            "type": "string"
+          },
+          "origem_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "unidades": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "maxItems": 500,
+            "minItems": 1,
+            "type": "array"
+          }
+        },
+        "required": [
+          "origem_id",
+          "unidades"
         ],
         "type": "object",
         "x-sismarq-generated": true
@@ -7661,6 +7860,638 @@
         ]
       }
     },
+    "/api/v1/acervo/emprestimos": {
+      "get": {
+        "description": "Empréstimos em aberto no escopo, do prazo mais antigo ao mais novo; ?atrasados=true traz só os vencidos.",
+        "operationId": "getAcervoEmprestimos",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Page"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          },
+          {
+            "in": "query",
+            "name": "atrasados",
+            "required": false,
+            "schema": {
+              "maxLength": 5,
+              "type": "string"
+            },
+            "x-sismarq-generated": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "items": {
+                            "$ref": "#/components/schemas/AcervoEmprestimo"
+                          },
+                          "type": "array"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/PaginationMeta"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Página de itens em `data`, paginação em `meta`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Empréstimos em aberto",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/emprestimos/{id}/devolver": {
+      "post": {
+        "description": "Encerra o empréstimo. Já devolvido: 409.",
+        "operationId": "postAcervoEmprestimosIdDevolver",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcervoDevolverRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-sismarq-generated": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoDetalhe"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Registrar devolução",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/guias": {
+      "get": {
+        "description": "Guias de transferência ao arquivo intermediário no escopo (mais recentes primeiro).",
+        "operationId": "getAcervoGuias",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Page"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "items": {
+                            "$ref": "#/components/schemas/AcervoGuia"
+                          },
+                          "type": "array"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/PaginationMeta"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Página de itens em `data`, paginação em `meta`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Guias de transferência",
+        "tags": [
+          "acervo"
+        ]
+      },
+      "post": {
+        "description": "Relaciona até 500 unidades da origem, no corrente e com o prazo corrente cumprido (art. 29), não emprestadas nem em outra guia. As unidades só mudam de fase no recebimento.",
+        "operationId": "postAcervoGuias",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcervoGuiaRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-sismarq-generated": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoGuia"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Gerar guia de transferência",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/guias/{id}": {
+      "get": {
+        "description": "A guia com as unidades relacionadas (a guia é documento de arquivo — TTDD 2.0.03.01.00).",
+        "operationId": "getAcervoGuiasId",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoGuia"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Guia de transferência",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/guias/{id}/cancelar": {
+      "post": {
+        "description": "Cancela a guia ainda não recebida; as unidades ficam livres para outra remessa.",
+        "operationId": "postAcervoGuiasIdCancelar",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoGuia"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Cancelar guia",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/guias/{id}/receber": {
+      "post": {
+        "description": "Aceite do arquivo intermediário: cada unidade é conferida de novo e passa à fase intermediária (art. 29).",
+        "operationId": "postAcervoGuiasIdReceber",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoGuia"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Receber guia (aceite)",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/importacao/aplicar": {
+      "post": {
+        "description": "Grava tudo ou nada: só a planilha simulada (mesmo hash) e sem nenhum erro.",
+        "operationId": "postAcervoImportacaoAplicar",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          },
+          "required": false
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Aplicar importação",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/importacao/modelo": {
+      "get": {
+        "description": "CSV (separador ;) com as colunas da importação do acervo existente.",
+        "operationId": "getAcervoImportacaoModelo",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Planilha-modelo da importação",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/importacao/simular": {
+      "post": {
+        "description": "Lê a planilha do acervo existente e confere cada linha com as regras do cadastro; nada é gravado. Devolve o hash do arquivo e os erros por linha.",
+        "operationId": "postAcervoImportacaoSimular",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          },
+          "required": false
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Simular importação",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
     "/api/v1/acervo/locais": {
       "get": {
         "description": "Hierarquia física do acervo (prédio \u003e depósito \u003e … \u003e prateleira), com o caminho de cada local.",
@@ -8381,6 +9212,85 @@
           }
         ],
         "summary": "Registrar bloqueio judicial",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/unidades/{id}/emprestimos": {
+      "post": {
+        "description": "Registra a saída para quem pediu, com finalidade e prazo de devolução (até um ano) — Lei 10.301/2019, art. 12, II. Uma unidade tem no máximo um empréstimo em aberto (409).",
+        "operationId": "postAcervoUnidadesIdEmprestimos",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcervoEmprestarRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-sismarq-generated": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoDetalhe"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Emprestar unidade de arquivamento",
         "tags": [
           "acervo"
         ]

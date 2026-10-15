@@ -14,7 +14,7 @@ e a divergência é registrada na seção 6.
 | **Tabela de Temporalidade (TTDD)** | As TTDDs aprovadas pela CCPAD e publicadas no DIORONDON-e, de ago/2025 a set/2026: 13 tabelas, por secretaria. É o mesmo arquivo de `docs/ttdd.pdf`, já carregado no Atlas com 1.686 séries. |
 | **Artigo científico (SISMARQ e RDC-Arq)** | A solução técnica. O SEI cuida da fase corrente e o SISMARQ das fases intermediária e permanente. O artigo descreve três módulos (pipeline, taxonomia e descarte), as exigências do Decreto 10.278/2020 e a busca no Typesense. |
 
-Registrado em 2026-10-15; **Fase 1 entregue** no mesmo dia (ADR 032 — falta só a validação da contagem dos prazos pela Divisão de Arquivo). Os artigos citados são da Lei 10.301/2019, salvo
+Registrado em 2026-10-15; **Fases 1 e 2 entregues** no mesmo dia (ADRs 032 e 033 — falta a validação da contagem dos prazos pela Divisão de Arquivo e a ponte com o Trâmite). Os artigos citados são da Lei 10.301/2019, salvo
 indicação em contrário.
 
 ---
@@ -171,6 +171,10 @@ dia a dia.
 **Pronto quando** a secretaria piloto tiver seu arquivo intermediário
 cadastrado e localizável, e o primeiro ciclo de empréstimo e devolução
 tiver sido feito pelo sistema.
+
+**Situação (ADR 033):** importação, guia de transferência com aceite,
+empréstimo e etiqueta prontos. A ponte com o Trâmite depende da decisão 0.7
+e do item 7 da seção 6.
 
 ### Fase 3 — Avaliação e eliminação: a esteira das comissões
 

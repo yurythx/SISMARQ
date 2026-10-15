@@ -1081,6 +1081,7 @@ export interface AcervoDetalhe extends AcervoUnidade {
   };
   bloqueios: AcervoBloqueio[];
   movimentacoes: AcervoMovimentacao[];
+  emprestimos: AcervoEmprestimo[];
   pode: { gerir: boolean; bloquear: boolean };
 }
 
@@ -1094,4 +1095,41 @@ export interface AcervoLocal {
   nome: string;
   ativo: boolean;
   caminho: string;
+}
+
+/** Empréstimo de unidade de arquivamento (Lei 10.301/2019, art. 12, II). */
+export interface AcervoEmprestimo {
+  id: string;
+  unidade_arquivamento_id: string;
+  solicitante_id: string;
+  solicitante: string;
+  finalidade: string;
+  devolver_ate: string;
+  retirado_em: string;
+  devolvido_em: string | null;
+  observacao: string;
+  numero?: string;
+  assunto?: string;
+}
+
+/** Guia de transferência ao arquivo intermediário (art. 29; TTDD 2.0.03.01.00). */
+export interface AcervoGuia {
+  id: string;
+  numero: string;
+  origem_id: string;
+  situacao: "ENVIADA" | "RECEBIDA" | "CANCELADA" | string;
+  observacao: string;
+  criada_em: string;
+  recebida_em: string | null;
+  itens: AcervoUnidade[];
+  total_itens: number;
+}
+
+/** Relatório da importação do acervo existente. */
+export interface AcervoImportacao {
+  hash: string;
+  linhas: number;
+  aplicada: boolean;
+  erros: { linha: number; motivo: string }[];
+  numeros: string[];
 }

@@ -67,3 +67,14 @@ export function fmtDia(iso?: string | null): string {
   const [a, m, d] = iso.slice(0, 10).split("-");
   return `${d}/${m}/${a}`;
 }
+
+/** Situação da guia de transferência. */
+export const SITUACAO_GUIA: Record<string, { label: string; tone: Tone }> = {
+  ENVIADA: { label: "Aguardando recebimento", tone: "info" },
+  RECEBIDA: { label: "Recebida", tone: "success" },
+  CANCELADA: { label: "Cancelada", tone: "neutral" },
+};
+
+export function situacaoGuia(s: string) {
+  return SITUACAO_GUIA[s] ?? { label: s, tone: "neutral" as Tone };
+}

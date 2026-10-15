@@ -1,11 +1,12 @@
 "use client";
 
-import { ArrowLeft, ArrowRightLeft, Gavel, MapPin, Pencil } from "lucide-react";
+import { ArrowLeft, ArrowRightLeft, Gavel, HandHelping, MapPin, Pencil, QrCode } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
 
 import { DESTINACOES, FASES, NIVEIS, TIPOS, fmtDia, situacao } from "@/components/acervo/labels";
+import { UserPicker, type PickedUser } from "@/components/iam/UserPicker";
 import { DataState } from "@/components/sismarq/DataState";
 import { PageHeader } from "@/components/sismarq/PageHeader";
 import { fmtDateTime, useAction } from "@/components/sismarq/useAction";
@@ -29,7 +30,7 @@ function Campo({ nome, children }: { nome: string; children: React.ReactNode }) 
   );
 }
 
-type Acao = "transferir" | "localizar" | "bloquear" | { liberar: string } | null;
+type Acao = "transferir" | "localizar" | "bloquear" | "emprestar" | { liberar: string } | { devolver: string } | null;
 
 /** Ficha da unidade de arquivamento (ADR 032). */
 export default function UnidadePage() {
@@ -38,6 +39,7 @@ export default function UnidadePage() {
   const locais = useApiQuery<AcervoLocal[]>("v1/acervo/locais");
   const { run, pending } = useAction();
   const [acao, setAcao] = useState<Acao>(null);
+  const [solicitante, setSolicitante] = useState<PickedUser[]>([]);
   const u = ficha.data;
 
   async function enviar(fn: () => Promise<{ data: AcervoDetalhe }>, ok: string) {
@@ -64,6 +66,18 @@ export default function UnidadePage() {
         () => apiClient.post<AcervoDetalhe>(`v1/acervo/unidades/${id}/bloqueios`, { processo: txt("processo"), motivo: txt("motivo") }),
         "Bloqueio judicial registrado.",
       );
+    } else if (acao === "emprestar") {
+      void enviar(
+        () =>
+          apiClient.post<AcervoDetalhe>(`v1/acervo/unidades/${id}/emprestimos`, {
+            solicitante_id: solicitante[0]?.id ?? "",
+            finalidade: txt("finalidade"),
+            devolver_ate: txt("devolver_ate"),
+          }),
+        "Empréstimo registrado.",
+      );
+    } else if (acao && typeof acao === "object" && "devolver" in acao) {
+      void enviar(() => apiClient.post<AcervoDetalhe>(`v1/acervo/emprestimos/${acao.devolver}/devolver`, { observacao: txt("observacao") }), "Devolução registrada.");
     } else if (acao && typeof acao === "object") {
       void enviar(() => apiClient.post<AcervoDetalhe>(`v1/acervo/bloqueios/${acao.liberar}/liberar`, { motivo: txt("motivo") }), "Bloqueio liberado.");
     }
@@ -73,8 +87,11 @@ export default function UnidadePage() {
     transferir: "Transferir ao arquivo intermediário",
     localizar: "Localização física",
     bloquear: "Registrar bloqueio judicial",
+    emprestar: "Emprestar a unidade",
   };
-  const tituloAcao = acao === null ? "" : typeof acao === "object" ? "Liberar bloqueio judicial" : (titulos[acao] ?? "");
+  const tituloAcao =
+    acao === null ? "" : typeof acao === "object" ? ("devolver" in acao ? "Registrar devolução" : "Liberar bloqueio judicial") : (titulos[acao] ?? "");
+  const emprestimoAberto = u?.emprestimos.find((e) => !e.devolvido_em);
   const info = u ? situacao(u.situacao) : null;
   const final = u?.fase === "ELIMINADO";
 
@@ -101,6 +118,20 @@ export default function UnidadePage() {
                         <MapPin size={16} aria-hidden="true" /> Localizar
                       </Button>
                     </>
+                  )}
+                  <Link href={`/acervo/${id}/etiqueta`} className={buttonClass("ghost", "md")}>
+                    <QrCode size={16} aria-hidden="true" /> Etiqueta
+                  </Link>
+                  {u.pode.gerir && !final && !emprestimoAberto && (
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        setSolicitante([]);
+                        setAcao("emprestar");
+                      }}
+                    >
+                      <HandHelping size={16} aria-hidden="true" /> Emprestar
+                    </Button>
                   )}
                   {u.pode.gerir && u.fase === "CORRENTE" && (
                     <Button onClick={() => setAcao("transferir")} disabled={u.situacao !== "TRANSFERIR"} title={situacao("TRANSFERIR").ajuda}>
@@ -166,6 +197,38 @@ export default function UnidadePage() {
                 </CardContent>
               </Card>
             </div>
+
+            <Card>
+              <CardHeader>
+                <CardTitle as="h2" className="text-base">Empréstimos (art. 12, II)</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {u.emprestimos.length === 0 ? (
+                  <p className="text-sm text-muted">Nenhum empréstimo registrado.</p>
+                ) : (
+                  <ul className="flex flex-col divide-y divide-surface-border text-sm" aria-label="Empréstimos">
+                    {u.emprestimos.map((e) => (
+                      <li key={e.id} className="flex flex-wrap items-start justify-between gap-2 py-2">
+                        <div>
+                          <p>
+                            {e.solicitante || "—"} — {e.finalidade}
+                          </p>
+                          <p className="text-xs text-muted">
+                            Retirada em {fmtDateTime(e.retirado_em)} · devolver até {fmtDia(e.devolver_ate)}
+                            {e.devolvido_em && ` · devolvida em ${fmtDateTime(e.devolvido_em)}`}
+                          </p>
+                        </div>
+                        {!e.devolvido_em && u.pode.gerir && (
+                          <Button size="sm" variant="secondary" onClick={() => setAcao({ devolver: e.id })}>
+                            Registrar devolução
+                          </Button>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </CardContent>
+            </Card>
 
             <Card>
               <CardHeader>
@@ -246,7 +309,17 @@ export default function UnidadePage() {
               <Textarea id="motivo" name="motivo" label="Motivo" maxLength={2000} rows={3} />
             </>
           )}
-          {acao !== null && typeof acao === "object" && (
+          {acao === "emprestar" && (
+            <>
+              <UserPicker idPrefix="solicitante" label="Quem retira *" value={solicitante} onChange={(v) => setSolicitante(v.slice(-1))} />
+              <Input id="finalidade" name="finalidade" label="Finalidade *" required maxLength={500} />
+              <Input id="devolver_ate" name="devolver_ate" type="date" label="Devolver até *" required />
+            </>
+          )}
+          {acao !== null && typeof acao === "object" && "devolver" in acao && (
+            <Input id="observacao" name="observacao" label="Observação (estado da unidade, conferência)" maxLength={500} />
+          )}
+          {acao !== null && typeof acao === "object" && "liberar" in acao && (
             <Textarea id="motivo" name="motivo" label="Motivo da liberação *" required maxLength={2000} rows={3} />
           )}
           <div className="flex justify-end gap-2">

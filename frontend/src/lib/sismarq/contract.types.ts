@@ -38,6 +38,8 @@ export type Contract = [
   Accepts<T.AcervoBloqueio, S["AcervoBloqueio"]>,
   Accepts<T.AcervoMovimentacao, S["AcervoMovimentacao"]>,
   Accepts<T.AcervoLocal, S["AcervoLocal"]>,
+  Accepts<T.AcervoEmprestimo, S["AcervoEmprestimo"]>,
+  Accepts<T.AcervoGuia, S["AcervoGuia"]>,
   Accepts<T.PageMeta, S["PaginationMeta"]>,
   Accepts<T.Me, S["IamMeResponse"]>,
   Accepts<T.PermissionInfo, S["KernelPermissionInfo"]>,

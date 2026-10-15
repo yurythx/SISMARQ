@@ -6,6 +6,7 @@ package application_test
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -179,6 +180,113 @@ func (fr *faultRepo) ListMovimentacoes(ctx context.Context, db database.DBTX, un
 	}
 	defer fr.post(ctx, db)
 	return fr.inner.ListMovimentacoes(ctx, db, unidade)
+}
+
+func (fr *faultRepo) InsertEmprestimo(ctx context.Context, db database.DBTX, e domain.Emprestimo) error {
+	if err := fr.hook("InsertEmprestimo"); err != nil {
+		return err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.InsertEmprestimo(ctx, db, e)
+}
+
+func (fr *faultRepo) GetEmprestimo(ctx context.Context, db database.DBTX, id uuid.UUID) (domain.Emprestimo, error) {
+	if err := fr.hook("GetEmprestimo"); err != nil {
+		var z0 domain.Emprestimo
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.GetEmprestimo(ctx, db, id)
+}
+
+func (fr *faultRepo) DevolverEmprestimo(ctx context.Context, db database.DBTX, e domain.Emprestimo) error {
+	if err := fr.hook("DevolverEmprestimo"); err != nil {
+		return err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.DevolverEmprestimo(ctx, db, e)
+}
+
+func (fr *faultRepo) EmprestimoAberto(ctx context.Context, db database.DBTX, unidade uuid.UUID) (bool, error) {
+	if err := fr.hook("EmprestimoAberto"); err != nil {
+		var z0 bool
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.EmprestimoAberto(ctx, db, unidade)
+}
+
+func (fr *faultRepo) ListEmprestimos(ctx context.Context, db database.DBTX, unidade uuid.UUID) ([]domain.Emprestimo, error) {
+	if err := fr.hook("ListEmprestimos"); err != nil {
+		var z0 []domain.Emprestimo
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.ListEmprestimos(ctx, db, unidade)
+}
+
+func (fr *faultRepo) ListEmprestimosAbertos(ctx context.Context, db database.DBTX, f domain.Filtro, atrasadosEm *time.Time, p pagination.Params) ([]domain.Emprestimo, int64, error) {
+	if err := fr.hook("ListEmprestimosAbertos"); err != nil {
+		var z0 []domain.Emprestimo
+		var z1 int64
+		return z0, z1, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.ListEmprestimosAbertos(ctx, db, f, atrasadosEm, p)
+}
+
+func (fr *faultRepo) InsertGuia(ctx context.Context, db database.DBTX, g domain.Guia, unidades []uuid.UUID) (string, error) {
+	if err := fr.hook("InsertGuia"); err != nil {
+		var z0 string
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.InsertGuia(ctx, db, g, unidades)
+}
+
+func (fr *faultRepo) GetGuia(ctx context.Context, db database.DBTX, id uuid.UUID, paraAtualizar bool) (domain.Guia, error) {
+	if err := fr.hook("GetGuia"); err != nil {
+		var z0 domain.Guia
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.GetGuia(ctx, db, id, paraAtualizar)
+}
+
+func (fr *faultRepo) SetGuiaSituacao(ctx context.Context, db database.DBTX, g domain.Guia) error {
+	if err := fr.hook("SetGuiaSituacao"); err != nil {
+		return err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.SetGuiaSituacao(ctx, db, g)
+}
+
+func (fr *faultRepo) EmGuiaEnviada(ctx context.Context, db database.DBTX, unidade uuid.UUID) (bool, error) {
+	if err := fr.hook("EmGuiaEnviada"); err != nil {
+		var z0 bool
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.EmGuiaEnviada(ctx, db, unidade)
+}
+
+func (fr *faultRepo) ListGuias(ctx context.Context, db database.DBTX, f domain.Filtro, p pagination.Params) ([]domain.Guia, int64, error) {
+	if err := fr.hook("ListGuias"); err != nil {
+		var z0 []domain.Guia
+		var z1 int64
+		return z0, z1, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.ListGuias(ctx, db, f, p)
+}
+
+func (fr *faultRepo) ResolverUnidade(ctx context.Context, db database.DBTX, ref string) (uuid.UUID, error) {
+	if err := fr.hook("ResolverUnidade"); err != nil {
+		var z0 uuid.UUID
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.ResolverUnidade(ctx, db, ref)
 }
 
 func (fr *faultRepo) InsertLocal(ctx context.Context, db database.DBTX, l domain.Local) error {

@@ -1,6 +1,6 @@
 "use client";
 
-import { MapPin, Plus } from "lucide-react";
+import { FileUp, HandHelping, MapPin, Plus, Truck } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -53,13 +53,24 @@ export default function AcervoPage() {
         description="Unidades de arquivamento nas três idades — corrente, intermediária e permanente (Lei 10.301/2019, art. 18) — com os prazos da Tabela de Temporalidade."
         actions={
           <>
+            <Link href="/acervo/guias" className={buttonClass("secondary", "md")}>
+              <Truck size={16} aria-hidden="true" /> Guias
+            </Link>
+            <Link href="/acervo/emprestimos" className={buttonClass("secondary", "md")}>
+              <HandHelping size={16} aria-hidden="true" /> Empréstimos
+            </Link>
             <Link href="/acervo/locais" className={buttonClass("secondary", "md")}>
               <MapPin size={16} aria-hidden="true" /> Locais
             </Link>
             {can("acervo:manage") && (
-              <Link href="/acervo/novo" className={buttonClass("primary", "md")}>
-                <Plus size={16} aria-hidden="true" /> Nova unidade
-              </Link>
+              <>
+                <Link href="/acervo/importar" className={buttonClass("secondary", "md")}>
+                  <FileUp size={16} aria-hidden="true" /> Importar
+                </Link>
+                <Link href="/acervo/novo" className={buttonClass("primary", "md")}>
+                  <Plus size={16} aria-hidden="true" /> Nova unidade
+                </Link>
+              </>
             )}
           </>
         }
@@ -70,6 +81,20 @@ export default function AcervoPage() {
           Painel de situações
         </h2>
         <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {(painel.data?.EMPRESTADAS ?? 0) > 0 && (
+            <li>
+              <Link
+                href="/acervo/emprestimos"
+                className="flex w-full flex-col items-start gap-1 rounded-xl border border-surface-border bg-surface p-4 hover:bg-surface-2"
+              >
+                <span className="text-2xl font-bold text-foreground">{painel.data?.EMPRESTADAS}</span>
+                <Badge tone={(painel.data?.EMPRESTIMOS_ATRASADOS ?? 0) > 0 ? "danger" : "info"}>Emprestadas</Badge>
+                <span className="text-xs text-muted">
+                  {painel.data?.EMPRESTIMOS_ATRASADOS ?? 0} com a devolução atrasada (art. 12, II).
+                </span>
+              </Link>
+            </li>
+          )}
           {ORDEM_PAINEL.filter((s) => (painel.data?.[s] ?? 0) > 0).map((s) => {
             const info = situacao(s);
             const ativo = sit === s;

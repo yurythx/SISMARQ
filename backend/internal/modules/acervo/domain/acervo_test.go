@@ -35,19 +35,19 @@ func TestNormalizarEValidar(t *testing.T) {
 	}
 	longo := func(n int) string { return strings.Repeat("x", n) }
 	casos := map[string]func(*Unidade){
-		"tipo":                 func(u *Unidade) { u.Tipo = "GAVETA" },
-		"codigo":               func(u *Unidade) { u.CodigoClassificacao = "" },
-		"assunto":              func(u *Unidade) { u.Assunto = longo(501) },
-		"unidade":              func(u *Unidade) { u.UnidadeID = uuid.Nil },
-		"datas vazias":         func(u *Unidade) { u.DataInicial = time.Time{} },
-		"datas invertidas":     func(u *Unidade) { u.DataFinal = dia("2017-01-01") },
-		"quantidade":           func(u *Unidade) { u.Quantidade = -1 },
-		"especificacao":        func(u *Unidade) { u.Especificacao = longo(121) },
-		"observacoes":          func(u *Unidade) { u.Observacoes = longo(4001) },
-		"nivel":                func(u *Unidade) { u.NivelAcesso = "SECRETO" },
-		"sigilo sem hipótese":  func(u *Unidade) { u.NivelAcesso = AcessoSigiloso },
-		"hipotese longa":       func(u *Unidade) { u.NivelAcesso, u.HipoteseLegal = AcessoRestrito, longo(501) },
-		"posicao":              func(u *Unidade) { u.Posicao = longo(121) },
+		"tipo":                   func(u *Unidade) { u.Tipo = "GAVETA" },
+		"codigo":                 func(u *Unidade) { u.CodigoClassificacao = "" },
+		"assunto":                func(u *Unidade) { u.Assunto = longo(501) },
+		"unidade":                func(u *Unidade) { u.UnidadeID = uuid.Nil },
+		"datas vazias":           func(u *Unidade) { u.DataInicial = time.Time{} },
+		"datas invertidas":       func(u *Unidade) { u.DataFinal = dia("2017-01-01") },
+		"quantidade":             func(u *Unidade) { u.Quantidade = -1 },
+		"especificacao":          func(u *Unidade) { u.Especificacao = longo(121) },
+		"observacoes":            func(u *Unidade) { u.Observacoes = longo(4001) },
+		"nivel":                  func(u *Unidade) { u.NivelAcesso = "SECRETO" },
+		"sigilo sem hipótese":    func(u *Unidade) { u.NivelAcesso = AcessoSigiloso },
+		"hipotese longa":         func(u *Unidade) { u.NivelAcesso, u.HipoteseLegal = AcessoRestrito, longo(501) },
+		"posicao":                func(u *Unidade) { u.Posicao = longo(121) },
 		"evento antes do início": func(u *Unidade) { e := dia("2000-01-01"); u.DataEvento = &e },
 	}
 	for nome, mudar := range casos {
@@ -235,13 +235,13 @@ func TestPodeEliminar(t *testing.T) {
 		bloqueada bool
 		err       error
 	}{
-		"permanente (arts. 20 e 42)": {func(u *Unidade, _ *Serie) { u.Fase = FasePermanente }, false, ErrPermanente},
-		"já eliminada":               {func(u *Unidade, _ *Serie) { u.Fase = FaseEliminado }, false, ErrEliminado},
+		"permanente (arts. 20 e 42)":  {func(u *Unidade, _ *Serie) { u.Fase = FasePermanente }, false, ErrPermanente},
+		"já eliminada":                {func(u *Unidade, _ *Serie) { u.Fase = FaseEliminado }, false, ErrEliminado},
 		"bloqueio judicial (art. 44)": {func(*Unidade, *Serie) {}, true, ErrBloqueioJudicial},
-		"sem destinação":             {func(_ *Unidade, s *Serie) { s.Destinacao = "" }, false, ErrDestinacaoIndefinida},
+		"sem destinação":              {func(_ *Unidade, s *Serie) { s.Destinacao = "" }, false, ErrDestinacaoIndefinida},
 		"guarda permanente (art. 19)": {func(_ *Unidade, s *Serie) { s.Destinacao = DestinacaoGuardaPermanente }, false, ErrNaoPrevistaNaTTDD},
-		"prazo correndo (art. 30)":   {func(_ *Unidade, s *Serie) { s.IntermAnos = anos(50) }, false, ErrPrazoNaoCumprido},
-		"aguarda evento":             {func(_ *Unidade, s *Serie) { s.CorrenteCondicao = "Enquanto estiver vigorando" }, false, ErrAguardaEvento},
+		"prazo correndo (art. 30)":    {func(_ *Unidade, s *Serie) { s.IntermAnos = anos(50) }, false, ErrPrazoNaoCumprido},
+		"aguarda evento":              {func(_ *Unidade, s *Serie) { s.CorrenteCondicao = "Enquanto estiver vigorando" }, false, ErrAguardaEvento},
 	}
 	for nome, c := range casos {
 		v, s := u, elim

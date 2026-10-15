@@ -49,6 +49,7 @@ const FICHA = {
     { id: "b1", unidade_arquivamento_id: "u1", processo: "0001234-56", motivo: "Ação", criado_em: "2026-10-01T00:00:00Z", liberado_em: null, motivo_liberacao: "" },
   ],
   movimentacoes: [{ id: "m1", tipo: "CADASTRO", fase_de: null, fase_para: "CORRENTE", descricao: "Cadastro na fase corrente", em: "2026-10-15T00:00:00Z" }],
+  emprestimos: [] as unknown[],
   pode: { gerir: true, bloquear: true },
 };
 

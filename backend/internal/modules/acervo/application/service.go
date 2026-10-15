@@ -82,11 +82,19 @@ func MapError(err error) error {
 		return apperrors.NotFound("local não encontrado")
 	case errors.Is(err, domain.ErrBloqueioNaoExiste):
 		return apperrors.NotFound("bloqueio não encontrado")
+	case errors.Is(err, domain.ErrEmprestimoNaoExiste):
+		return apperrors.NotFound("empréstimo não encontrado")
+	case errors.Is(err, domain.ErrGuiaNaoExiste):
+		return apperrors.NotFound("guia de transferência não encontrada")
+	case errors.Is(err, domain.ErrUnidadeProdutora):
+		return apperrors.Validation("unidade_id: " + strings.TrimPrefix(err.Error(), "acervo: "))
 	case errors.Is(err, domain.ErrSerieInvalida):
 		return apperrors.Validation("codigo_classificacao: série inexistente ou revogada na Tabela de Temporalidade em vigor")
 	case errors.Is(err, domain.ErrBloqueioLiberado), errors.Is(err, domain.ErrPermanente), errors.Is(err, domain.ErrBloqueioJudicial),
 		errors.Is(err, domain.ErrNaoPrevistaNaTTDD), errors.Is(err, domain.ErrPrazoNaoCumprido), errors.Is(err, domain.ErrAguardaEvento),
-		errors.Is(err, domain.ErrDestinacaoIndefinida), errors.Is(err, domain.ErrFaseInvalida), errors.Is(err, domain.ErrEliminado):
+		errors.Is(err, domain.ErrDestinacaoIndefinida), errors.Is(err, domain.ErrFaseInvalida), errors.Is(err, domain.ErrEliminado),
+		errors.Is(err, domain.ErrEmprestimoAberto), errors.Is(err, domain.ErrEmprestimoDevolvido), errors.Is(err, domain.ErrEmprestada),
+		errors.Is(err, domain.ErrGuiaSituacao), errors.Is(err, domain.ErrEmOutraGuia):
 		return apperrors.Conflict(strings.TrimPrefix(err.Error(), "acervo: "))
 	}
 	return err
@@ -101,6 +109,7 @@ type Detalhe struct {
 	Prazos        domain.Prazos         `json:"prazos"`
 	Bloqueios     []domain.Bloqueio     `json:"bloqueios"`
 	Movimentacoes []domain.Movimentacao `json:"movimentacoes"`
+	Emprestimos   []domain.Emprestimo   `json:"emprestimos"`
 	Pode          Permissoes            `json:"pode"`
 }
 
@@ -173,40 +182,47 @@ func (s *Service) registrar(ctx context.Context, tx pgx.Tx, identity auth.Identi
 // Criar cadastra a unidade de arquivamento na fase corrente. A série precisa
 // existir e estar em vigor na TTDD; a destinação vem dela (art. 28).
 func (s *Service) Criar(ctx context.Context, identity auth.Identity, u domain.Unidade) (Detalhe, error) {
-	u.Normalizar()
-	if err := u.Validar(); err != nil {
-		return Detalhe{}, MapError(err)
-	}
-	if !gere(identity, u.UnidadeID) {
-		return Detalhe{}, MapError(domain.ErrForaDoEscopo)
-	}
-	u.ID, u.Fase, u.CreatedBy = uuid.New(), domain.FaseCorrente, ator(identity)
+	var criada domain.Unidade
 	err := database.WithTx(ctx, s.pool, func(ctx context.Context, tx pgx.Tx) error {
-		if err := s.conferirLocal(ctx, tx, u.LocalID); err != nil {
-			return err
-		}
-		serie, p, err := s.calcular(ctx, tx, u)
-		if err != nil {
-			return err
-		}
-		if !serie.Vigente {
-			return domain.ErrSerieInvalida
-		}
-		u.Destinacao = domain.DestinacaoDa(serie)
-		if u.Assunto == "" {
-			u.Assunto = serie.Descritor
-		}
-		if u.Numero, err = s.repo.InsertUnidade(ctx, tx, u, calculo(p)); err != nil {
-			return err
-		}
-		fase := u.Fase
-		return s.registrar(ctx, tx, identity, EventCadastrada, u,
-			domain.Movimentacao{Tipo: domain.MovCadastro, FasePara: &fase, Descricao: "Cadastro na fase corrente"}, nil, u)
+		var err error
+		criada, err = s.criarTx(ctx, tx, identity, u, domain.MovCadastro, "Cadastro na fase corrente")
+		return err
 	})
 	if err != nil {
 		return Detalhe{}, MapError(err)
 	}
-	return s.Get(ctx, identity, u.ID)
+	return s.Get(ctx, identity, criada.ID)
+}
+
+// criarTx valida e grava a unidade na transação dada (cadastro e importação).
+func (s *Service) criarTx(ctx context.Context, tx pgx.Tx, identity auth.Identity, u domain.Unidade, mov, desc string) (domain.Unidade, error) {
+	u.Normalizar()
+	if err := u.Validar(); err != nil {
+		return u, err
+	}
+	if !gere(identity, u.UnidadeID) {
+		return u, domain.ErrForaDoEscopo
+	}
+	u.ID, u.Fase, u.CreatedBy = uuid.New(), domain.FaseCorrente, ator(identity)
+	if err := s.conferirLocal(ctx, tx, u.LocalID); err != nil {
+		return u, err
+	}
+	serie, p, err := s.calcular(ctx, tx, u)
+	if err != nil {
+		return u, err
+	}
+	if !serie.Vigente {
+		return u, domain.ErrSerieInvalida
+	}
+	u.Destinacao = domain.DestinacaoDa(serie)
+	if u.Assunto == "" {
+		u.Assunto = serie.Descritor
+	}
+	if u.Numero, err = s.repo.InsertUnidade(ctx, tx, u, calculo(p)); err != nil {
+		return u, err
+	}
+	fase := u.Fase
+	return u, s.registrar(ctx, tx, identity, EventCadastrada, u, domain.Movimentacao{Tipo: mov, FasePara: &fase, Descricao: desc}, nil, u)
 }
 
 func (s *Service) conferirLocal(ctx context.Context, db database.DBTX, id *uuid.UUID) error {
@@ -286,38 +302,28 @@ func (s *Service) Alterar(ctx context.Context, identity auth.Identity, id uuid.U
 	return s.Get(ctx, identity, id)
 }
 
-// Transferir leva a unidade do arquivo corrente ao intermediário do órgão,
-// só com o prazo corrente cumprido (art. 29).
+// Transferir leva uma unidade ao arquivo intermediário de uma vez: gera a
+// guia de transferência dela (a guia é documento de arquivo, TTDD
+// 2.0.03.01.00) e a recebe na mesma transação (art. 29).
 func (s *Service) Transferir(ctx context.Context, identity auth.Identity, id uuid.UUID, observacao string) (Detalhe, error) {
 	err := database.WithTx(ctx, s.pool, func(ctx context.Context, tx pgx.Tx) error {
 		u, err := s.carregar(ctx, tx, identity, id, auth.PermAcervoManage)
 		if err != nil {
 			return err
 		}
-		_, p, err := s.calcular(ctx, tx, u)
+		g, ids, err := domain.NovaGuia(u.UnidadeID, []uuid.UUID{u.ID}, observacao)
 		if err != nil {
 			return err
 		}
-		if err := domain.PodeTransferir(u, p, s.hoje()); err != nil {
+		g.CriadaPor, g.CriadaEm = ator(identity), s.agora().UTC()
+		if err := s.criarGuiaTx(ctx, tx, identity, &g, ids); err != nil {
 			return err
 		}
-		de := u.Fase
-		u.Fase = domain.FaseIntermediaria
-		_, p, err = s.calcular(ctx, tx, u)
+		g, err = s.repo.GetGuia(ctx, tx, g.ID, true)
 		if err != nil {
 			return err
 		}
-		if err := s.repo.SetFase(ctx, tx, u.ID, u.Fase, calculo(p)); err != nil {
-			return err
-		}
-		para := u.Fase
-		desc := "Transferência ao arquivo intermediário (art. 29)"
-		if o := strings.TrimSpace(observacao); o != "" {
-			desc += ": " + o
-		}
-		return s.registrar(ctx, tx, identity, EventTransferida, u,
-			domain.Movimentacao{Tipo: domain.MovTransferencia, FaseDe: &de, FasePara: &para, Descricao: desc},
-			map[string]any{"fase": de}, map[string]any{"fase": para})
+		return s.receberGuiaTx(ctx, tx, identity, g)
 	})
 	if err != nil {
 		return Detalhe{}, MapError(err)
@@ -471,6 +477,9 @@ func (s *Service) Get(ctx context.Context, identity auth.Identity, id uuid.UUID)
 	if d.Movimentacoes, err = s.repo.ListMovimentacoes(ctx, s.pool, u.ID); err != nil {
 		return Detalhe{}, MapError(err)
 	}
+	if d.Emprestimos, err = s.repo.ListEmprestimos(ctx, s.pool, u.ID); err != nil {
+		return Detalhe{}, MapError(err)
+	}
 	d.Pode = Permissoes{Gerir: gere(identity, u.UnidadeID), Bloquear: auth.Can(identity, auth.PermAcervoBloqueio, auth.InUnidade(u.UnidadeID))}
 	return d, nil
 }
@@ -492,9 +501,28 @@ func (s *Service) List(ctx context.Context, identity auth.Identity, f domain.Fil
 // Painel conta as unidades por situação (o que transferir, avaliar,
 // recolher…), no escopo de quem pede.
 func (s *Service) Painel(ctx context.Context, identity auth.Identity, f domain.Filtro) (map[string]int64, error) {
-	out, err := s.repo.Painel(ctx, s.pool, s.filtro(identity, f))
-	return out, MapError(err)
+	f = s.filtro(identity, f)
+	out, err := s.repo.Painel(ctx, s.pool, f)
+	if err != nil {
+		return nil, MapError(err)
+	}
+	// Empréstimos em aberto e atrasados (art. 12, II).
+	um := pagination.New(1, 1, 1)
+	if _, out[PainelEmprestadas], err = s.repo.ListEmprestimosAbertos(ctx, s.pool, f, nil, um); err != nil {
+		return nil, MapError(err)
+	}
+	hoje := s.hoje()
+	if _, out[PainelAtrasadas], err = s.repo.ListEmprestimosAbertos(ctx, s.pool, f, &hoje, um); err != nil {
+		return nil, MapError(err)
+	}
+	return out, nil
 }
+
+// Chaves do painel para os empréstimos.
+const (
+	PainelEmprestadas = "EMPRESTADAS"
+	PainelAtrasadas   = "EMPRESTIMOS_ATRASADOS"
+)
 
 // Recalcular refaz o cálculo de todas as unidades das fases corrente e
 // intermediária (os prazos andam com o calendário e com a TTDD). Devolve
