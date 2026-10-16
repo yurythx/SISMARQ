@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
@@ -43,6 +44,45 @@ func TestEveryRepositoryFailureIsPropagated(t *testing.T) {
 	solicitante := dbtest.User(t, e.pool)
 	planilha := "tipo;codigo_classificacao;unidade;data_inicial;data_final;local\nCAIXA;" + codElim + ";" + e.unidade.String() +
 		";01/01/2018;31/12/2018;" + predio.Caminho + "\n"
+	_, membros := e.cspad(t, real)
+	cspad := avaliador(e.unidade)
+	orig, base := e.agora, dia("2026-09-01")
+	// rito monta uma relação até a etapa dada: 0 rascunho, 1 aprovada,
+	// 2 autorizada, 3 em edital, 4 com pedido, 5 amostrada.
+	rito := func(etapa int) domain.Listagem {
+		e.agora = base
+		defer func() { e.agora = orig }()
+		u, u2 := comLocal(), comLocal()
+		l, err := real.CriarListagem(ctx, cspad, application.NovaListagem{UnidadeID: e.unidade, ParecerJuridico: "P", Unidades: []uuid.UUID{u.ID, u2.ID}})
+		passos := []func() (domain.Listagem, error){
+			func() (domain.Listagem, error) {
+				return real.Aprovar(ctx, cspad, l.ID, application.Ata{Numero: "1", Em: base, Presentes: membros[:3]})
+			},
+			func() (domain.Listagem, error) { return real.Autorizar(ctx, admin, l.ID) },
+			func() (domain.Listagem, error) {
+				return real.PublicarEdital(ctx, cspad, l.ID, application.Edital{Numero: "1", PublicadoEm: base})
+			},
+			func() (domain.Listagem, error) {
+				return real.RegistrarPedido(ctx, cspad, l.ID, domain.Pedido{UnidadeID: &u.ID, Requerente: "R", Pedido: "P", RecebidoEm: base})
+			},
+			func() (domain.Listagem, error) { return real.Amostrar(ctx, cspad, l.ID, "c", 1) },
+		}
+		for i := 0; err == nil && i < etapa; i++ {
+			l, err = passos[i]()
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		return l
+	}
+	// naData roda a operação com o relógio na data dada.
+	naData := func(d time.Time, op func(*application.Service) error) func(*application.Service) error {
+		return func(s *application.Service) error {
+			e.agora = d
+			defer func() { e.agora = orig }()
+			return op(s)
+		}
+	}
 	bloqueada := func() (application.Detalhe, uuid.UUID) {
 		d := comLocal()
 		d, err := real.Bloquear(ctx, admin, d.ID, "1", "")
@@ -167,6 +207,105 @@ func TestEveryRepositoryFailureIsPropagated(t *testing.T) {
 			}
 			return func(s *application.Service) error {
 				_, err := s.Importar(ctx, admin, planilha, sim.Hash, true)
+				return err
+			}
+		},
+		"Comissoes": func() func(*application.Service) error {
+			return func(s *application.Service) error { _, err := s.Comissoes(ctx); return err }
+		},
+		"SalvarComissao": func() func(*application.Service) error {
+			return func(s *application.Service) error {
+				c := domain.Comissao{Tipo: domain.ComissaoCentral, Nome: "CCPAD", Ativa: false, Membros: []domain.Membro{
+					{UserID: membros[0], Papel: domain.PapelPresidente, Area: domain.AreaArquivologia},
+					{UserID: membros[1], Papel: domain.PapelMembro, Area: domain.AreaJuridico},
+					{UserID: membros[2], Papel: domain.PapelMembro, Area: domain.AreaAdmFinancas},
+					{UserID: membros[3], Papel: domain.PapelMembro, Area: domain.AreaArquivoPublico},
+					{UserID: membros[4], Papel: domain.PapelMembro, Area: domain.AreaOutra}}}
+				salva, err := s.SalvarComissao(ctx, admin, nil, c)
+				if err != nil {
+					return err
+				}
+				_, err = s.SalvarComissao(ctx, admin, &salva.ID, c)
+				return err
+			}
+		},
+		"CriarListagem": func() func(*application.Service) error {
+			u := comLocal()
+			return naData(base, func(s *application.Service) error {
+				_, err := s.CriarListagem(ctx, cspad, application.NovaListagem{UnidadeID: e.unidade, Unidades: []uuid.UUID{u.ID}})
+				return err
+			})
+		},
+		"AlterarListagem": func() func(*application.Service) error {
+			l, u := rito(0), comLocal()
+			return naData(base, func(s *application.Service) error {
+				_, err := s.AlterarListagem(ctx, cspad, l.ID, application.NovaListagem{ParecerJuridico: "P2", Unidades: []uuid.UUID{u.ID}},
+					[]uuid.UUID{l.Itens[0].ID})
+				return err
+			})
+		},
+		"Aprovar": func() func(*application.Service) error {
+			l := rito(0)
+			return naData(base, func(s *application.Service) error {
+				_, err := s.Aprovar(ctx, cspad, l.ID, application.Ata{Numero: "1", Em: base, Presentes: membros[:3]})
+				return err
+			})
+		},
+		"Autorizar": func() func(*application.Service) error {
+			l := rito(1)
+			return naData(base, func(s *application.Service) error { _, err := s.Autorizar(ctx, admin, l.ID); return err })
+		},
+		"DevolverListagem": func() func(*application.Service) error {
+			l := rito(1)
+			return naData(base, func(s *application.Service) error {
+				_, err := s.DevolverListagem(ctx, admin, l.ID, "motivo")
+				return err
+			})
+		},
+		"PublicarEdital": func() func(*application.Service) error {
+			l := rito(2)
+			return naData(base, func(s *application.Service) error {
+				_, err := s.PublicarEdital(ctx, cspad, l.ID, application.Edital{Numero: "1", PublicadoEm: base})
+				return err
+			})
+		},
+		"RegistrarPedido": func() func(*application.Service) error {
+			l := rito(3)
+			return naData(base, func(s *application.Service) error {
+				_, err := s.RegistrarPedido(ctx, cspad, l.ID, domain.Pedido{Requerente: "R", Pedido: "P", RecebidoEm: base})
+				return err
+			})
+		},
+		"DecidirPedido": func() func(*application.Service) error {
+			l := rito(4)
+			return naData(base, func(s *application.Service) error {
+				_, err := s.DecidirPedido(ctx, cspad, l.ID, l.Pedidos[0].ID, true, true, "ok")
+				return err
+			})
+		},
+		"Amostrar": func() func(*application.Service) error {
+			l := rito(3)
+			return naData(base, func(s *application.Service) error { _, err := s.Amostrar(ctx, cspad, l.ID, "c", 1); return err })
+		},
+		"RegistrarTermo": func() func(*application.Service) error {
+			l := rito(3)
+			e.agora = base
+			if _, err := real.Amostrar(ctx, cspad, l.ID, "c", 1); err != nil {
+				t.Fatal(err)
+			}
+			e.agora = orig
+			return naData(base.AddDate(0, 0, 31), func(s *application.Service) error {
+				_, err := s.RegistrarTermo(ctx, cspad, l.ID, application.Termo{EliminadoEm: base.AddDate(0, 0, 31), Acompanhamento: "X"})
+				return err
+			})
+		},
+		"CancelarListagem": func() func(*application.Service) error {
+			l := rito(0)
+			return naData(base, func(s *application.Service) error { _, err := s.CancelarListagem(ctx, cspad, l.ID); return err })
+		},
+		"Listagens": func() func(*application.Service) error {
+			return func(s *application.Service) error {
+				_, _, err := s.Listagens(ctx, cspad, pagination.New(1, 5, 100))
 				return err
 			}
 		},

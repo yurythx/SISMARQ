@@ -86,6 +86,17 @@ func MapError(err error) error {
 		return apperrors.NotFound("empréstimo não encontrado")
 	case errors.Is(err, domain.ErrGuiaNaoExiste):
 		return apperrors.NotFound("guia de transferência não encontrada")
+	case errors.Is(err, domain.ErrComissaoNaoExiste):
+		return apperrors.NotFound("comissão não encontrada")
+	case errors.Is(err, domain.ErrListagemNaoExiste):
+		return apperrors.NotFound("relação de eliminação não encontrada")
+	case errors.Is(err, domain.ErrPedidoNaoExiste):
+		return apperrors.NotFound("pedido não encontrado")
+	case errors.Is(err, domain.ErrSemComissao), errors.Is(err, domain.ErrListagemSituacao), errors.Is(err, domain.ErrListagemVazia),
+		errors.Is(err, domain.ErrSemParecer), errors.Is(err, domain.ErrQuorum), errors.Is(err, domain.ErrEmOutraListagem),
+		errors.Is(err, domain.ErrEditalNoPrazo), errors.Is(err, domain.ErrPedidoPendente), errors.Is(err, domain.ErrSemAmostra),
+		errors.Is(err, domain.ErrAmostraFeita), errors.Is(err, domain.ErrPedidoForaDoPrazo), errors.Is(err, domain.ErrPedidoDecidido):
+		return apperrors.Conflict(strings.TrimPrefix(err.Error(), "acervo: "))
 	case errors.Is(err, domain.ErrUnidadeProdutora):
 		return apperrors.Validation("unidade_id: " + strings.TrimPrefix(err.Error(), "acervo: "))
 	case errors.Is(err, domain.ErrSerieInvalida):

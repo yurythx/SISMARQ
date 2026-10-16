@@ -66,6 +66,23 @@ type Repository interface {
 	EmGuiaEnviada(ctx context.Context, db database.DBTX, unidade uuid.UUID) (bool, error)
 	ListGuias(ctx context.Context, db database.DBTX, f Filtro, p pagination.Params) ([]Guia, int64, error)
 
+	// Fase 3 (ADR 034).
+	SalvarComissao(ctx context.Context, db database.DBTX, c Comissao, nova bool) error
+	GetComissao(ctx context.Context, db database.DBTX, id uuid.UUID) (Comissao, error)
+	ListComissoes(ctx context.Context, db database.DBTX) ([]Comissao, error)
+	ComissaoDaUnidade(ctx context.Context, db database.DBTX, unidade uuid.UUID) (Comissao, error)
+
+	InsertListagem(ctx context.Context, db database.DBTX, l Listagem) (string, error)
+	UpdateListagem(ctx context.Context, db database.DBTX, l Listagem) error
+	GetListagem(ctx context.Context, db database.DBTX, id uuid.UUID, paraAtualizar bool) (Listagem, error)
+	ListListagens(ctx context.Context, db database.DBTX, f Filtro, p pagination.Params) ([]Listagem, int64, error)
+	AddItemListagem(ctx context.Context, db database.DBTX, listagem, unidade uuid.UUID) error
+	RemoveItemListagem(ctx context.Context, db database.DBTX, listagem, unidade uuid.UUID) error
+	MarcarItem(ctx context.Context, db database.DBTX, listagem, unidade uuid.UUID, amostra, retirada bool) error
+	EmListagemAtiva(ctx context.Context, db database.DBTX, unidade uuid.UUID) (bool, error)
+	InsertPedido(ctx context.Context, db database.DBTX, listagem uuid.UUID, p Pedido) error
+	DecidirPedido(ctx context.Context, db database.DBTX, p Pedido) error
+
 	// ResolverUnidade acha a unidade produtora ativa pela sigla (ou id).
 	ResolverUnidade(ctx context.Context, db database.DBTX, ref string) (uuid.UUID, error)
 

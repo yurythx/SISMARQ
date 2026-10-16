@@ -32,7 +32,7 @@ var ScopedPermissions = []Permission{
 	PermCalendarManage, PermMercurioManage, PermDirectoryManage,
 	PermContactRead, PermContactManage, PermAuditRead, PermFilesManage,
 	PermIAMManage, PermUsersRead, PermUsersManage,
-	PermAcervoRead, PermAcervoManage, PermAcervoBloqueio,
+	PermAcervoRead, PermAcervoManage, PermAcervoBloqueio, PermAcervoAvaliacao,
 }
 
 // IsScoped reporta se a permissão (concreta, sem curinga) vale com escopo.

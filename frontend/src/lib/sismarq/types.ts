@@ -1133,3 +1133,76 @@ export interface AcervoImportacao {
   erros: { linha: number; motivo: string }[];
   numeros: string[];
 }
+
+// --- Eliminação (Fase 3; Lei 10.301/2019, arts. 31 a 40; ADR 034) ----------
+
+/** Membro de comissão de avaliação (art. 31, §§ 6º e 7º). */
+export interface AcervoMembro {
+  user_id: string;
+  nome: string;
+  papel: "PRESIDENTE" | "SECRETARIO" | "MEMBRO" | string;
+  area: string;
+}
+
+/** CSPAD do órgão ou a CCPAD (art. 31). */
+export interface AcervoComissao {
+  id: string;
+  tipo: "SETORIAL" | "CENTRAL" | string;
+  entidade_id: string | null;
+  nome: string;
+  portaria: string;
+  ativa: boolean;
+  membros: AcervoMembro[];
+  avisos: string[];
+}
+
+/** Unidade relacionada na relação de eliminação. */
+export interface AcervoItemListagem extends AcervoUnidade {
+  amostra: boolean;
+  retirada: boolean;
+}
+
+/** Pedido de interessado no prazo do edital (art. 37). */
+export interface AcervoPedido {
+  id: string;
+  unidade_arquivamento_id: string | null;
+  requerente: string;
+  pedido: string;
+  recebido_em: string;
+  situacao: "PENDENTE" | "DEFERIDO" | "INDEFERIDO" | string;
+  decisao: string;
+  decidido_em: string | null;
+}
+
+/** Relação de Eliminação de Documentos (Anexo I) e o rito até o termo. */
+export interface AcervoListagem {
+  id: string;
+  numero: string;
+  comissao_id: string;
+  unidade_id: string;
+  situacao: "RASCUNHO" | "APROVADA" | "AUTORIZADA" | "EM_EDITAL" | "ELIMINADA" | "CANCELADA" | string;
+  responsavel_selecao: string | null;
+  parecer_juridico: string;
+  contas_exercicios: string;
+  contas_aprovadas_em: string | null;
+  ata_numero: string;
+  ata_em: string | null;
+  ata_local: string;
+  ata_manifestacoes: string;
+  ata_presentes: string[];
+  autorizada_em: string | null;
+  devolucao_motivo: string;
+  edital_numero: string;
+  edital_publicado_em: string | null;
+  edital_diario: string;
+  amostra_criterios: string;
+  amostra_percentual: number | null;
+  amostra_em: string | null;
+  termo_eliminado_em: string | null;
+  termo_acompanhamento: string;
+  termo_destinacao_papel: string;
+  criada_em: string;
+  itens: AcervoItemListagem[];
+  pedidos: AcervoPedido[];
+  total_itens: number;
+}

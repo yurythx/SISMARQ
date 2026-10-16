@@ -280,6 +280,126 @@ func (fr *faultRepo) ListGuias(ctx context.Context, db database.DBTX, f domain.F
 	return fr.inner.ListGuias(ctx, db, f, p)
 }
 
+func (fr *faultRepo) SalvarComissao(ctx context.Context, db database.DBTX, c domain.Comissao, nova bool) error {
+	if err := fr.hook("SalvarComissao"); err != nil {
+		return err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.SalvarComissao(ctx, db, c, nova)
+}
+
+func (fr *faultRepo) GetComissao(ctx context.Context, db database.DBTX, id uuid.UUID) (domain.Comissao, error) {
+	if err := fr.hook("GetComissao"); err != nil {
+		var z0 domain.Comissao
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.GetComissao(ctx, db, id)
+}
+
+func (fr *faultRepo) ListComissoes(ctx context.Context, db database.DBTX) ([]domain.Comissao, error) {
+	if err := fr.hook("ListComissoes"); err != nil {
+		var z0 []domain.Comissao
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.ListComissoes(ctx, db)
+}
+
+func (fr *faultRepo) ComissaoDaUnidade(ctx context.Context, db database.DBTX, unidade uuid.UUID) (domain.Comissao, error) {
+	if err := fr.hook("ComissaoDaUnidade"); err != nil {
+		var z0 domain.Comissao
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.ComissaoDaUnidade(ctx, db, unidade)
+}
+
+func (fr *faultRepo) InsertListagem(ctx context.Context, db database.DBTX, l domain.Listagem) (string, error) {
+	if err := fr.hook("InsertListagem"); err != nil {
+		var z0 string
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.InsertListagem(ctx, db, l)
+}
+
+func (fr *faultRepo) UpdateListagem(ctx context.Context, db database.DBTX, l domain.Listagem) error {
+	if err := fr.hook("UpdateListagem"); err != nil {
+		return err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.UpdateListagem(ctx, db, l)
+}
+
+func (fr *faultRepo) GetListagem(ctx context.Context, db database.DBTX, id uuid.UUID, paraAtualizar bool) (domain.Listagem, error) {
+	if err := fr.hook("GetListagem"); err != nil {
+		var z0 domain.Listagem
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.GetListagem(ctx, db, id, paraAtualizar)
+}
+
+func (fr *faultRepo) ListListagens(ctx context.Context, db database.DBTX, f domain.Filtro, p pagination.Params) ([]domain.Listagem, int64, error) {
+	if err := fr.hook("ListListagens"); err != nil {
+		var z0 []domain.Listagem
+		var z1 int64
+		return z0, z1, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.ListListagens(ctx, db, f, p)
+}
+
+func (fr *faultRepo) AddItemListagem(ctx context.Context, db database.DBTX, listagem uuid.UUID, unidade uuid.UUID) error {
+	if err := fr.hook("AddItemListagem"); err != nil {
+		return err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.AddItemListagem(ctx, db, listagem, unidade)
+}
+
+func (fr *faultRepo) RemoveItemListagem(ctx context.Context, db database.DBTX, listagem uuid.UUID, unidade uuid.UUID) error {
+	if err := fr.hook("RemoveItemListagem"); err != nil {
+		return err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.RemoveItemListagem(ctx, db, listagem, unidade)
+}
+
+func (fr *faultRepo) MarcarItem(ctx context.Context, db database.DBTX, listagem uuid.UUID, unidade uuid.UUID, amostra bool, retirada bool) error {
+	if err := fr.hook("MarcarItem"); err != nil {
+		return err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.MarcarItem(ctx, db, listagem, unidade, amostra, retirada)
+}
+
+func (fr *faultRepo) EmListagemAtiva(ctx context.Context, db database.DBTX, unidade uuid.UUID) (bool, error) {
+	if err := fr.hook("EmListagemAtiva"); err != nil {
+		var z0 bool
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.EmListagemAtiva(ctx, db, unidade)
+}
+
+func (fr *faultRepo) InsertPedido(ctx context.Context, db database.DBTX, listagem uuid.UUID, p domain.Pedido) error {
+	if err := fr.hook("InsertPedido"); err != nil {
+		return err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.InsertPedido(ctx, db, listagem, p)
+}
+
+func (fr *faultRepo) DecidirPedido(ctx context.Context, db database.DBTX, p domain.Pedido) error {
+	if err := fr.hook("DecidirPedido"); err != nil {
+		return err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.DecidirPedido(ctx, db, p)
+}
+
 func (fr *faultRepo) ResolverUnidade(ctx context.Context, db database.DBTX, ref string) (uuid.UUID, error) {
 	if err := fr.hook("ResolverUnidade"); err != nil {
 		var z0 uuid.UUID

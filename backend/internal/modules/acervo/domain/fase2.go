@@ -29,6 +29,9 @@ const (
 	MovDevolucao  = "DEVOLUCAO"
 	MovGuia       = "GUIA"
 	MovImportacao = "IMPORTACAO"
+	MovListagem   = "LISTAGEM"   // Fase 3: passos da relação de eliminação
+	MovAmostra    = "AMOSTRA"    // art. 39
+	MovEliminacao = "ELIMINACAO" // Termo de Eliminação (Anexo II)
 )
 
 // Emprestimo é a saída controlada de uma unidade (art. 12, II).

@@ -78,3 +78,53 @@ export const SITUACAO_GUIA: Record<string, { label: string; tone: Tone }> = {
 export function situacaoGuia(s: string) {
   return SITUACAO_GUIA[s] ?? { label: s, tone: "neutral" as Tone };
 }
+
+/** Etapas da relação de eliminação (arts. 31 a 40). */
+export const SITUACAO_LISTAGEM: Record<string, { label: string; tone: Tone; ajuda: string }> = {
+  RASCUNHO: { label: "Em seleção", tone: "neutral", ajuda: "A CSPAD monta a relação e junta o parecer jurídico (art. 32, § 4º)." },
+  APROVADA: { label: "Aprovada pela CSPAD", tone: "info", ajuda: "Aguarda a autorização do Arquivo Público (arts. 19 e 65)." },
+  AUTORIZADA: { label: "Autorizada", tone: "info", ajuda: "Publique o Edital de Ciência no Diário Oficial do Município (art. 37)." },
+  EM_EDITAL: { label: "Em edital", tone: "warning", ajuda: "Prazo de 30 dias para pedidos; faça a amostragem (art. 39)." },
+  ELIMINADA: { label: "Eliminada", tone: "success", ajuda: "Termo de Eliminação registrado (Anexo II)." },
+  CANCELADA: { label: "Cancelada", tone: "neutral", ajuda: "As unidades ficaram livres." },
+};
+
+export function situacaoListagem(s: string) {
+  return SITUACAO_LISTAGEM[s] ?? { label: s, tone: "neutral" as Tone, ajuda: "" };
+}
+
+export const PAPEIS: Record<string, string> = {
+  PRESIDENTE: "Presidente",
+  SECRETARIO: "Secretário(a)",
+  MEMBRO: "Membro",
+};
+
+/** Áreas exigidas na composição (art. 31, §§ 6º e 7º). */
+export const AREAS: Record<string, string> = {
+  ARQUIVOLOGIA_HISTORIA: "Arquivologia ou História",
+  JURIDICO: "Área jurídica",
+  ADMINISTRACAO_FINANCAS: "Administração ou finanças",
+  UNIDADE_PRODUTORA: "Unidade produtora",
+  ARQUIVO_PUBLICO: "Arquivo Público",
+  OUTRA: "Outra área",
+};
+
+/** Ano (AAAA) de uma data ISO. */
+export function ano(iso?: string | null): string {
+  return iso ? iso.slice(0, 4) : "—";
+}
+
+/** Data ISO + n dias, em "AAAA-MM-DD" (sem fuso). */
+export function somarDias(iso: string, n: number): string {
+  const d = new Date(`${iso.slice(0, 10)}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + n);
+  return d.toISOString().slice(0, 10);
+}
+
+const MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+
+/** "2026-09-01…" → { dia: "1", mes: "setembro", ano: "2026" } (sem fuso). */
+export function porExtenso(iso?: string | null): { dia: string; mes: string; ano: string } {
+  if (!iso) return { dia: "___", mes: "_______", ano: "____" };
+  return { dia: String(Number(iso.slice(8, 10))), mes: MESES[Number(iso.slice(5, 7)) - 1] ?? "", ano: iso.slice(0, 4) };
+}

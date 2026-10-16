@@ -41,7 +41,8 @@ escopo AS (
         'users:manage',
         'acervo:read',
         'acervo:manage',
-        'acervo:bloqueio'
+        'acervo:bloqueio',
+        'acervo:avaliacao'
     ]) AS perm
 )
 SELECT c.origem, c.quem, c.perfil,

@@ -61,6 +61,8 @@ const (
 	PermAcervoManage   Permission = "acervo:manage"
 	PermAcervoBloqueio Permission = "acervo:bloqueio"
 	PermAcervoCentral  Permission = "acervo:central"
+	// PermAcervoAvaliacao: o trabalho da CSPAD no rito da eliminação (ADR 034).
+	PermAcervoAvaliacao Permission = "acervo:avaliacao"
 )
 
 // HasPermission reporta se identity possui permission, considerando os

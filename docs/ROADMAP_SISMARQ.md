@@ -14,7 +14,7 @@ e a divergência é registrada na seção 6.
 | **Tabela de Temporalidade (TTDD)** | As TTDDs aprovadas pela CCPAD e publicadas no DIORONDON-e, de ago/2025 a set/2026: 13 tabelas, por secretaria. É o mesmo arquivo de `docs/ttdd.pdf`, já carregado no Atlas com 1.686 séries. |
 | **Artigo científico (SISMARQ e RDC-Arq)** | A solução técnica. O SEI cuida da fase corrente e o SISMARQ das fases intermediária e permanente. O artigo descreve três módulos (pipeline, taxonomia e descarte), as exigências do Decreto 10.278/2020 e a busca no Typesense. |
 
-Registrado em 2026-10-15; **Fases 1 e 2 entregues** no mesmo dia (ADRs 032 e 033 — falta a validação da contagem dos prazos pela Divisão de Arquivo e a ponte com o Trâmite). Os artigos citados são da Lei 10.301/2019, salvo
+Registrado em 2026-10-15; **Fases 1, 2 e 3 entregues** no mesmo dia (ADRs 032, 033 e 034 — falta a validação da contagem dos prazos e dos Anexos pela Divisão de Arquivo, a ponte com o Trâmite e os ritos especiais da eliminação). Os artigos citados são da Lei 10.301/2019, salvo
 indicação em contrário.
 
 ---
@@ -229,6 +229,11 @@ item 2.3) e protege o gestor da responsabilidade penal (art. 66).
    - ao ser publicada, a nova versão entra no Atlas pela atualização com
      relatório de impacto que já existe (ADR 022).
 
+**Situação (ADR 034):** comissões, relação, ata, autorização, edital com
+trava de 30 dias, pedidos, amostragem, termo e os Anexos I a IV prontos.
+Faltam os ritos especiais (item 7), a aprovação da TTDD (item 8), a
+assinatura no Signum e o envio da cópia do termo (art. 38, parágrafo único).
+
 **Pronto quando:**
 - uma eliminação real da secretaria piloto tiver sido feita de ponta a
   ponta pelo sistema;
@@ -413,17 +418,17 @@ Fase 0 ──► Fase 1 ──► Fase 2 ──► Fase 3 ──► Fase 4 ─�
 | Órgão central e órgãos setoriais | Arts. 8º a 12 | 1 | **Pronto** (escopo do Acervo e `acervo:central` — ADR 032) |
 | Sistema informatizado que atenda ao e-ARQ Brasil | Art. 13 | 8 | Falta |
 | Três idades (corrente, intermediária, permanente) | Art. 18 | 1 | **Pronto** (ADR 032) |
-| Eliminação só prevista na TTDD e autorizada | Arts. 19 e 65 | 1 e 3 | Parcial (travas prontas — ADR 032; rito na Fase 3) |
+| Eliminação só prevista na TTDD e autorizada | Arts. 19 e 65 | 1 e 3 | **Pronto** (travas — ADR 032; rito com autorização — ADR 034) |
 | Permanente inalienável | Arts. 20 e 42 | 1 | **Pronto** (domínio e banco — ADR 032) |
 | Classificação duplex com código de 5 níveis | Arts. 24 e 25 | 1 | **Pronto** (unidade classificada pela TTDD — ADR 032) |
 | Classes das atividades-meio do CONARQ | Art. 26 | 0 e 1 | Falta |
 | TTDD com prazos e destinação | Arts. 27 a 30 | — | **Pronto** (Atlas) |
-| Comissões CCPAD e CSPAD | Arts. 31 e 32 | 3 | Falta |
+| Comissões CCPAD e CSPAD | Arts. 31 e 32 | 3 | **Pronto** (composição conferida — ADR 034) |
 | Aprovação da TTDD de atividades-fim | Art. 32, §§ 4º a 8º | 3 | Parcial (carga com impacto) |
-| Relação, Ata, Edital e Termo | Arts. 33, 34, 37 e 38 | 3 | Falta |
-| Trava de 30 dias do edital | Art. 37, § 2º | 3 | Falta |
-| Amostragem | Art. 39 | 3 | Falta |
-| Fragmentação e doação | Art. 40 | 3 | Falta |
+| Relação, Ata, Edital e Termo | Arts. 33, 34, 37 e 38 | 3 | **Pronto** (Anexos I a IV — ADR 034; falta a cópia do termo do art. 38, parágrafo único) |
+| Trava de 30 dias do edital | Art. 37, § 2º | 3 | **Pronto** (domínio e CHECK no banco — ADR 034) |
+| Amostragem | Art. 39 | 3 | **Pronto** (sorteio; a amostra vira permanente — ADR 034) |
+| Fragmentação e doação | Art. 40 | 3 | **Pronto** (registrada no termo — ADR 034) |
 | Bloqueio por ação judicial | Arts. 32, II e 44 | 1 | **Pronto** (ADR 032) |
 | TTDD nos sistemas informatizados | Art. 45 | 7 | Parcial (API pública) |
 | Documentos digitais e híbridos | Art. 48 | 5 | Falta |

@@ -127,6 +127,42 @@ components:
                         $ref: '#/components/schemas/Envelope'
             description: Dados inválidos (VALIDATION_ERROR) ou regra de negócio violada.
     schemas:
+        AcervoAmostragemRequest:
+            properties:
+                criterios:
+                    maxLength: 2000
+                    type: string
+                percentual:
+                    type: number
+            required:
+                - criterios
+                - percentual
+            type: object
+            x-sismarq-generated: true
+        AcervoAtaRequest:
+            properties:
+                ata_em:
+                    type: string
+                ata_local:
+                    maxLength: 200
+                    type: string
+                ata_manifestacoes:
+                    maxLength: 8000
+                    type: string
+                ata_numero:
+                    maxLength: 40
+                    type: string
+                presentes:
+                    items:
+                        format: uuid
+                        type: string
+                    maxItems: 30
+                    type: array
+            required:
+                - ata_em
+                - ata_numero
+            type: object
+            x-sismarq-generated: true
         AcervoBloquearRequest:
             properties:
                 motivo:
@@ -178,6 +214,83 @@ components:
                 - motivo_liberacao
                 - processo
                 - unidade_arquivamento_id
+            type: object
+            x-sismarq-generated: true
+        AcervoComissao:
+            properties:
+                ativa:
+                    type: boolean
+                avisos:
+                    items:
+                        type: string
+                    type: array
+                entidade_id:
+                    format: uuid
+                    nullable: true
+                    type: string
+                id:
+                    format: uuid
+                    type: string
+                membros:
+                    items:
+                        $ref: '#/components/schemas/AcervoMembro'
+                    type: array
+                nome:
+                    type: string
+                portaria:
+                    type: string
+                tipo:
+                    type: string
+            required:
+                - ativa
+                - avisos
+                - entidade_id
+                - id
+                - membros
+                - nome
+                - portaria
+                - tipo
+            type: object
+            x-sismarq-generated: true
+        AcervoComissaoRequest:
+            properties:
+                ativa:
+                    nullable: true
+                    type: boolean
+                entidade_id:
+                    format: uuid
+                    nullable: true
+                    type: string
+                membros:
+                    items:
+                        $ref: '#/components/schemas/AcervoMembroInput'
+                    maxItems: 30
+                    type: array
+                nome:
+                    maxLength: 200
+                    type: string
+                portaria:
+                    maxLength: 200
+                    type: string
+                tipo:
+                    maxLength: 16
+                    type: string
+            required:
+                - nome
+                - tipo
+            type: object
+            x-sismarq-generated: true
+        AcervoDecisaoRequest:
+            properties:
+                decisao:
+                    maxLength: 4000
+                    type: string
+                deferido:
+                    type: boolean
+                retirar:
+                    type: boolean
+            required:
+                - decisao
             type: object
             x-sismarq-generated: true
         AcervoDetalhe:
@@ -334,6 +447,21 @@ components:
                     type: string
             type: object
             x-sismarq-generated: true
+        AcervoEditalRequest:
+            properties:
+                edital_diario:
+                    maxLength: 200
+                    type: string
+                edital_numero:
+                    maxLength: 40
+                    type: string
+                edital_publicado_em:
+                    type: string
+            required:
+                - edital_numero
+                - edital_publicado_em
+            type: object
+            x-sismarq-generated: true
         AcervoEmprestarRequest:
             properties:
                 devolver_ate:
@@ -472,6 +600,135 @@ components:
                 - unidades
             type: object
             x-sismarq-generated: true
+        AcervoItemListagem:
+            properties:
+                amostra:
+                    type: boolean
+                assunto:
+                    type: string
+                codigo_classificacao:
+                    type: string
+                contas_aprovadas_em:
+                    format: date-time
+                    nullable: true
+                    type: string
+                created_at:
+                    format: date-time
+                    type: string
+                created_by:
+                    format: uuid
+                    nullable: true
+                    type: string
+                data_evento:
+                    format: date-time
+                    nullable: true
+                    type: string
+                data_final:
+                    format: date-time
+                    type: string
+                data_inicial:
+                    format: date-time
+                    type: string
+                destinacao:
+                    enum:
+                        - ELIMINACAO
+                        - GUARDA_PERMANENTE
+                        - INDEFINIDA
+                    type: string
+                especificacao:
+                    type: string
+                fase:
+                    enum:
+                        - CORRENTE
+                        - ELIMINADO
+                        - INTERMEDIARIA
+                        - PERMANENTE
+                    type: string
+                fim_corrente:
+                    format: date-time
+                    nullable: true
+                    type: string
+                fim_intermediaria:
+                    format: date-time
+                    nullable: true
+                    type: string
+                hipotese_legal:
+                    type: string
+                id:
+                    format: uuid
+                    type: string
+                local_caminho:
+                    type: string
+                local_id:
+                    format: uuid
+                    nullable: true
+                    type: string
+                nivel_acesso:
+                    enum:
+                        - PUBLICO
+                        - RESTRITO
+                        - SIGILOSO
+                    type: string
+                numero:
+                    type: string
+                observacoes:
+                    type: string
+                posicao:
+                    type: string
+                quantidade:
+                    type: integer
+                retirada:
+                    type: boolean
+                situacao:
+                    type: string
+                tipo:
+                    enum:
+                        - CAIXA
+                        - DOCUMENTO
+                        - DOSSIE
+                        - LIVRO
+                        - MAPA
+                        - OUTRO
+                        - PASTA
+                        - PROCESSO
+                    type: string
+                unidade_id:
+                    format: uuid
+                    type: string
+                updated_at:
+                    format: date-time
+                    type: string
+            required:
+                - amostra
+                - assunto
+                - codigo_classificacao
+                - contas_aprovadas_em
+                - created_at
+                - created_by
+                - data_evento
+                - data_final
+                - data_inicial
+                - destinacao
+                - especificacao
+                - fase
+                - fim_corrente
+                - fim_intermediaria
+                - hipotese_legal
+                - id
+                - local_caminho
+                - local_id
+                - nivel_acesso
+                - numero
+                - observacoes
+                - posicao
+                - quantidade
+                - retirada
+                - situacao
+                - tipo
+                - unidade_id
+                - updated_at
+            type: object
+            x-sismarq-generated: true
         AcervoLiberarRequest:
             properties:
                 motivo:
@@ -479,6 +736,172 @@ components:
                     type: string
             required:
                 - motivo
+            type: object
+            x-sismarq-generated: true
+        AcervoListagem:
+            properties:
+                amostra_criterios:
+                    type: string
+                amostra_em:
+                    format: date-time
+                    nullable: true
+                    type: string
+                amostra_percentual:
+                    nullable: true
+                    type: number
+                ata_em:
+                    format: date-time
+                    nullable: true
+                    type: string
+                ata_local:
+                    type: string
+                ata_manifestacoes:
+                    type: string
+                ata_numero:
+                    type: string
+                ata_presentes:
+                    items:
+                        format: uuid
+                        type: string
+                    type: array
+                autorizada_em:
+                    format: date-time
+                    nullable: true
+                    type: string
+                autorizada_por:
+                    format: uuid
+                    nullable: true
+                    type: string
+                comissao_id:
+                    format: uuid
+                    type: string
+                contas_aprovadas_em:
+                    format: date-time
+                    nullable: true
+                    type: string
+                contas_exercicios:
+                    type: string
+                criada_em:
+                    format: date-time
+                    type: string
+                criada_por:
+                    format: uuid
+                    nullable: true
+                    type: string
+                devolucao_motivo:
+                    type: string
+                edital_diario:
+                    type: string
+                edital_numero:
+                    type: string
+                edital_publicado_em:
+                    format: date-time
+                    nullable: true
+                    type: string
+                id:
+                    format: uuid
+                    type: string
+                itens:
+                    items:
+                        $ref: '#/components/schemas/AcervoItemListagem'
+                    type: array
+                numero:
+                    type: string
+                parecer_juridico:
+                    type: string
+                pedidos:
+                    items:
+                        $ref: '#/components/schemas/AcervoPedido'
+                    type: array
+                responsavel_selecao:
+                    format: uuid
+                    nullable: true
+                    type: string
+                situacao:
+                    type: string
+                termo_acompanhamento:
+                    type: string
+                termo_destinacao_papel:
+                    type: string
+                termo_eliminado_em:
+                    format: date-time
+                    nullable: true
+                    type: string
+                termo_registrado_por:
+                    format: uuid
+                    nullable: true
+                    type: string
+                total_itens:
+                    type: integer
+                unidade_id:
+                    format: uuid
+                    type: string
+            required:
+                - amostra_criterios
+                - amostra_em
+                - amostra_percentual
+                - ata_em
+                - ata_local
+                - ata_manifestacoes
+                - ata_numero
+                - ata_presentes
+                - autorizada_em
+                - autorizada_por
+                - comissao_id
+                - contas_aprovadas_em
+                - contas_exercicios
+                - criada_em
+                - criada_por
+                - devolucao_motivo
+                - edital_diario
+                - edital_numero
+                - edital_publicado_em
+                - id
+                - itens
+                - numero
+                - parecer_juridico
+                - pedidos
+                - responsavel_selecao
+                - situacao
+                - termo_acompanhamento
+                - termo_destinacao_papel
+                - termo_eliminado_em
+                - termo_registrado_por
+                - total_itens
+                - unidade_id
+            type: object
+            x-sismarq-generated: true
+        AcervoListagemRequest:
+            properties:
+                contas_aprovadas_em:
+                    type: string
+                contas_exercicios:
+                    maxLength: 200
+                    type: string
+                parecer_juridico:
+                    maxLength: 4000
+                    type: string
+                responsavel_selecao:
+                    format: uuid
+                    nullable: true
+                    type: string
+                retirar:
+                    items:
+                        format: uuid
+                        type: string
+                    maxItems: 2000
+                    type: array
+                unidade_id:
+                    format: uuid
+                    type: string
+                unidades:
+                    items:
+                        format: uuid
+                        type: string
+                    maxItems: 2000
+                    type: array
+            required:
+                - unidade_id
             type: object
             x-sismarq-generated: true
         AcervoLocal:
@@ -545,6 +968,46 @@ components:
                     type: string
             type: object
             x-sismarq-generated: true
+        AcervoMembro:
+            properties:
+                area:
+                    type: string
+                nome:
+                    type: string
+                papel:
+                    type: string
+                user_id:
+                    format: uuid
+                    type: string
+            required:
+                - area
+                - nome
+                - papel
+                - user_id
+            type: object
+            x-sismarq-generated: true
+        AcervoMembroInput:
+            properties:
+                area:
+                    type: string
+                nome:
+                    type: string
+                papel:
+                    type: string
+                user_id:
+                    format: uuid
+                    type: string
+            type: object
+            x-sismarq-generated: true
+        AcervoMotivoRequest:
+            properties:
+                motivo:
+                    maxLength: 2000
+                    type: string
+            required:
+                - motivo
+            type: object
+            x-sismarq-generated: true
         AcervoMovimentacao:
             properties:
                 descricao:
@@ -585,6 +1048,66 @@ components:
                 - id
                 - por
                 - tipo
+            type: object
+            x-sismarq-generated: true
+        AcervoPedido:
+            properties:
+                decidido_em:
+                    format: date-time
+                    nullable: true
+                    type: string
+                decidido_por:
+                    format: uuid
+                    nullable: true
+                    type: string
+                decisao:
+                    type: string
+                id:
+                    format: uuid
+                    type: string
+                pedido:
+                    type: string
+                recebido_em:
+                    format: date-time
+                    type: string
+                requerente:
+                    type: string
+                situacao:
+                    type: string
+                unidade_arquivamento_id:
+                    format: uuid
+                    nullable: true
+                    type: string
+            required:
+                - decidido_em
+                - decidido_por
+                - decisao
+                - id
+                - pedido
+                - recebido_em
+                - requerente
+                - situacao
+                - unidade_arquivamento_id
+            type: object
+            x-sismarq-generated: true
+        AcervoPedidoRequest:
+            properties:
+                pedido:
+                    maxLength: 4000
+                    type: string
+                recebido_em:
+                    type: string
+                requerente:
+                    maxLength: 200
+                    type: string
+                unidade_arquivamento_id:
+                    format: uuid
+                    nullable: true
+                    type: string
+            required:
+                - pedido
+                - recebido_em
+                - requerente
             type: object
             x-sismarq-generated: true
         AcervoPermissoes:
@@ -637,6 +1160,21 @@ components:
                 - descritor
                 - destinacao
                 - vigente
+            type: object
+            x-sismarq-generated: true
+        AcervoTermoRequest:
+            properties:
+                termo_acompanhamento:
+                    maxLength: 200
+                    type: string
+                termo_destinacao_papel:
+                    maxLength: 500
+                    type: string
+                termo_eliminado_em:
+                    type: string
+            required:
+                - termo_acompanhamento
+                - termo_eliminado_em
             type: object
             x-sismarq-generated: true
         AcervoTransferirRequest:
@@ -5818,6 +6356,150 @@ paths:
             summary: Liberar bloqueio judicial
             tags:
                 - acervo
+    /api/v1/acervo/comissoes:
+        get:
+            description: As CSPAD de cada órgão e a CCPAD, com os membros (art. 31). Avisa quando a composição foge da recomendação (número ímpar de membros).
+            operationId: getAcervoComissoes
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            items:
+                                                $ref: '#/components/schemas/AcervoComissao'
+                                            type: array
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Comissões de avaliação
+            tags:
+                - acervo
+        post:
+            description: Só o Arquivo Público (acervo:central, global). A CSPAD exige servidores das áreas de arquivologia/história, jurídica, administração/finanças e da unidade produtora (art. 31, § 6º); a CCPAD, também do Arquivo Público (§ 7º). Um único presidente; uma comissão ativa por órgão.
+            operationId: postAcervoComissoes
+            parameters:
+                - $ref: '#/components/parameters/IdempotencyKey'
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AcervoComissaoRequest'
+                required: true
+                x-sismarq-generated: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoComissao'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "201":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoComissao'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Cadastrar comissão
+            tags:
+                - acervo
+    /api/v1/acervo/comissoes/{id}:
+        put:
+            description: Troca dados e membros da comissão (portaria de designação). Mesmas regras do cadastro.
+            operationId: putAcervoComissoesId
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                    type: string
+                - $ref: '#/components/parameters/IdempotencyKey'
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AcervoComissaoRequest'
+                required: true
+                x-sismarq-generated: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoComissao'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "201":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoComissao'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Alterar comissão
+            tags:
+                - acervo
     /api/v1/acervo/emprestimos:
         get:
             description: Empréstimos em aberto no escopo, do prazo mais antigo ao mais novo; ?atrasados=true traz só os vencidos.
@@ -6185,6 +6867,573 @@ paths:
             security:
                 - bearerAuth: []
             summary: Simular importação
+            tags:
+                - acervo
+    /api/v1/acervo/listagens:
+        get:
+            description: Relações de Eliminação de Documentos (Anexo I) no escopo, mais recentes primeiro.
+            operationId: getAcervoListagens
+            parameters:
+                - $ref: '#/components/parameters/Page'
+                - $ref: '#/components/parameters/PageSize'
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            items:
+                                                $ref: '#/components/schemas/AcervoListagem'
+                                            type: array
+                                        meta:
+                                            $ref: '#/components/schemas/PaginationMeta'
+                                      type: object
+                    description: Página de itens em `data`, paginação em `meta`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Relações de eliminação
+            tags:
+                - acervo
+        post:
+            description: 'Abre a relação na unidade com a CSPAD ativa do órgão (art. 31) e inclui as unidades elegíveis: prazo cumprido, destinação eliminação, sem bloqueio judicial, fora de empréstimo e de outra relação (arts. 19, 20, 30, 42 e 44).'
+            operationId: postAcervoListagens
+            parameters:
+                - $ref: '#/components/parameters/IdempotencyKey'
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AcervoListagemRequest'
+                required: true
+                x-sismarq-generated: true
+            responses:
+                "201":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoListagem'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Abrir relação de eliminação
+            tags:
+                - acervo
+    /api/v1/acervo/listagens/{id}:
+        get:
+            description: A relação com os itens, a ata, a autorização, o edital, os pedidos, a amostra e o termo — base dos Anexos I a IV.
+            operationId: getAcervoListagensId
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoListagem'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Relação de eliminação
+            tags:
+                - acervo
+        put:
+            description: 'Só em rascunho: cabeçalho (parecer jurídico, contas aprovadas), inclusão e retirada de unidades.'
+            operationId: putAcervoListagensId
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                    type: string
+                - $ref: '#/components/parameters/IdempotencyKey'
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AcervoListagemRequest'
+                required: true
+                x-sismarq-generated: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoListagem'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Alterar relação
+            tags:
+                - acervo
+    /api/v1/acervo/listagens/{id}/amostragem:
+        post:
+            description: Sorteia o percentual dado das unidades a eliminar (ao menos uma), conforme os critérios da CSPAD; a amostra vai à guarda permanente e não pode mais ser eliminada (arts. 20 e 42).
+            operationId: postAcervoListagensIdAmostragem
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                    type: string
+                - $ref: '#/components/parameters/IdempotencyKey'
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AcervoAmostragemRequest'
+                required: true
+                x-sismarq-generated: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoListagem'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Amostragem (art. 39)
+            tags:
+                - acervo
+    /api/v1/acervo/listagens/{id}/aprovar:
+        post:
+            description: 'Registra a ata da reunião (Anexo IV). Exige o parecer jurídico (art. 32, § 4º) e quórum: presidente presente e maioria dos membros. Cada unidade é conferida de novo.'
+            operationId: postAcervoListagensIdAprovar
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                    type: string
+                - $ref: '#/components/parameters/IdempotencyKey'
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AcervoAtaRequest'
+                required: true
+                x-sismarq-generated: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoListagem'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Aprovar relação (ata da CSPAD)
+            tags:
+                - acervo
+    /api/v1/acervo/listagens/{id}/autorizar:
+        post:
+            description: O Arquivo Público autoriza a relação aprovada (arts. 19 e 65), conferindo de novo cada unidade (bloqueio judicial posterior trava).
+            operationId: postAcervoListagensIdAutorizar
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                    type: string
+                - $ref: '#/components/parameters/IdempotencyKey'
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoListagem'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Autorizar eliminação
+            tags:
+                - acervo
+    /api/v1/acervo/listagens/{id}/cancelar:
+        post:
+            description: Cancela a relação antes da amostragem; as unidades ficam livres.
+            operationId: postAcervoListagensIdCancelar
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                    type: string
+                - $ref: '#/components/parameters/IdempotencyKey'
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoListagem'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Cancelar relação
+            tags:
+                - acervo
+    /api/v1/acervo/listagens/{id}/devolver:
+        post:
+            description: O Arquivo Público devolve a relação aprovada, com motivo; ela volta a rascunho e a ata é descartada.
+            operationId: postAcervoListagensIdDevolver
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                    type: string
+                - $ref: '#/components/parameters/IdempotencyKey'
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AcervoMotivoRequest'
+                required: true
+                x-sismarq-generated: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoListagem'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Devolver relação à CSPAD
+            tags:
+                - acervo
+    /api/v1/acervo/listagens/{id}/edital:
+        post:
+            description: Registra a publicação do Edital de Ciência de Eliminação (Anexo III) no Diário Oficial do Município e abre o prazo de 30 dias (art. 37).
+            operationId: postAcervoListagensIdEdital
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                    type: string
+                - $ref: '#/components/parameters/IdempotencyKey'
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AcervoEditalRequest'
+                required: true
+                x-sismarq-generated: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoListagem'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Publicar edital de ciência
+            tags:
+                - acervo
+    /api/v1/acervo/listagens/{id}/pedidos:
+        post:
+            description: Pedido de desentranhamento ou cópia recebido dentro dos 30 dias do edital (art. 37).
+            operationId: postAcervoListagensIdPedidos
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                    type: string
+                - $ref: '#/components/parameters/IdempotencyKey'
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AcervoPedidoRequest'
+                required: true
+                x-sismarq-generated: true
+            responses:
+                "201":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoListagem'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Registrar pedido do interessado
+            tags:
+                - acervo
+    /api/v1/acervo/listagens/{id}/pedidos/{pedido}/decidir:
+        post:
+            description: Defere ou indefere o pedido com fundamentação; deferido, pode retirar a unidade da relação.
+            operationId: postAcervoListagensIdPedidosPedidoDecidir
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                    type: string
+                - in: path
+                  name: pedido
+                  required: true
+                  schema:
+                    type: string
+                - $ref: '#/components/parameters/IdempotencyKey'
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AcervoDecisaoRequest'
+                required: true
+                x-sismarq-generated: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoListagem'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Decidir pedido
+            tags:
+                - acervo
+    /api/v1/acervo/listagens/{id}/termo:
+        post:
+            description: Termo de Eliminação (Anexo II), só depois dos 30 dias do edital, com a amostragem feita e sem pedidos pendentes. As unidades restantes passam a eliminadas; o papel segue para fragmentação ou doação (art. 40).
+            operationId: postAcervoListagensIdTermo
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                    type: string
+                - $ref: '#/components/parameters/IdempotencyKey'
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AcervoTermoRequest'
+                required: true
+                x-sismarq-generated: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoListagem'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Registrar termo de eliminação
             tags:
                 - acervo
     /api/v1/acervo/locais:

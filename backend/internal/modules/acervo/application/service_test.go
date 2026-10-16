@@ -439,10 +439,12 @@ func TestRecalculo(t *testing.T) {
 	if err := s.RunRecalculo(10 * time.Millisecond)(cctx); err != nil {
 		t.Fatal(err)
 	}
+	// Sem erro: para logo depois de registrar o recálculo (sem prazo de relógio).
 	e.ttdd.err = nil
-	cctx2, cancel2 := context.WithTimeout(ctx, 30*time.Millisecond)
+	cctx2, cancel2 := context.WithCancel(ctx)
 	defer cancel2()
-	if err := s.RunRecalculo(time.Hour)(cctx2); err != nil {
+	ok := application.NewService(e.pool, infrastructure.NewRepository(), e.ttdd, outbox.NewWriter("test"), slog.New(cancelaAoLogar{cancel2}))
+	if err := ok.RunRecalculo(time.Hour)(cctx2); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -473,3 +475,14 @@ func TestMapError(t *testing.T) {
 		t.Fatal("nil e erro desconhecido passam")
 	}
 }
+
+// cancelaAoLogar encerra o worker no primeiro registro de log.
+type cancelaAoLogar struct{ cancel context.CancelFunc }
+
+func (h cancelaAoLogar) Enabled(context.Context, slog.Level) bool { return true }
+func (h cancelaAoLogar) Handle(context.Context, slog.Record) error {
+	h.cancel()
+	return nil
+}
+func (h cancelaAoLogar) WithAttrs([]slog.Attr) slog.Handler { return h }
+func (h cancelaAoLogar) WithGroup(string) slog.Handler      { return h }
