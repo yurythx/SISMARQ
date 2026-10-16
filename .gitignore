@@ -23,6 +23,8 @@ bin/
 *.dylib
 *.test
 *.out
+# Saída do go test do CI local (scripts de verificação).
+backend/test.log
 
 # IDEs e Editores
 .vscode/
