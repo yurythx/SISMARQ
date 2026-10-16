@@ -205,3 +205,29 @@ export const DECISOES_ALIENACAO: Record<string, string> = {
   INTERESSE: "O município tem interesse",
   SEM_INTERESSE: "O município não tem interesse",
 };
+
+/** Situação do representante digital (Fase 5). */
+export const SITUACAO_DIGITAL: Record<string, { label: string; tone: Tone }> = {
+  ENVIADO: { label: "Na fila do processamento", tone: "neutral" },
+  PROCESSANDO: { label: "Processando (OCR e PDF/A)", tone: "info" },
+  PRONTO: { label: "Pronto — PDF/A guardado", tone: "success" },
+  REPROVADO: { label: "Reprovado — digitalize de novo", tone: "warning" },
+  FALHOU: { label: "Falhou no processamento", tone: "danger" },
+};
+
+export function situacaoDigital(s: string) {
+  return SITUACAO_DIGITAL[s] ?? { label: s, tone: "neutral" as Tone };
+}
+
+/** Tamanho legível (KB, MB, GB). */
+export function fmtBytes(n: number): string {
+  if (n < 1024) return `${n} B`;
+  const u = ["KB", "MB", "GB"];
+  let v = n / 1024;
+  let i = 0;
+  while (v >= 1024 && i < u.length - 1) {
+    v /= 1024;
+    i++;
+  }
+  return `${v.toLocaleString("pt-BR", { maximumFractionDigits: 1 })} ${u[i]}`;
+}

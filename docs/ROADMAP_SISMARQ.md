@@ -14,7 +14,7 @@ e a divergência é registrada na seção 6.
 | **Tabela de Temporalidade (TTDD)** | As TTDDs aprovadas pela CCPAD e publicadas no DIORONDON-e, de ago/2025 a set/2026: 13 tabelas, por secretaria. É o mesmo arquivo de `docs/ttdd.pdf`, já carregado no Atlas com 1.686 séries. |
 | **Artigo científico (SISMARQ e RDC-Arq)** | A solução técnica. O SEI cuida da fase corrente e o SISMARQ das fases intermediária e permanente. O artigo descreve três módulos (pipeline, taxonomia e descarte), as exigências do Decreto 10.278/2020 e a busca no Typesense. |
 
-Registrado em 2026-10-15; **Fases 1 a 4 entregues** em 15 e 16/10/2026 (ADRs 032 a 036 — falta a validação da contagem dos prazos e dos Anexos pela Divisão de Arquivo, a ponte com o Trâmite e os ritos especiais da eliminação). Os artigos citados são da Lei 10.301/2019, salvo
+Registrado em 2026-10-15; **Fases 1 a 5 entregues** em 15 e 16/10/2026 (ADRs 032 a 037 — falta a validação da contagem dos prazos e dos Anexos pela Divisão de Arquivo, a ponte com o Trâmite e os ritos especiais da eliminação). Os artigos citados são da Lei 10.301/2019, salvo
 indicação em contrário.
 
 ---
@@ -315,6 +315,11 @@ Quadro 2 (módulo SISMARQ_PIPELINE).
 - **Art. 42 no domínio:** digitalizar um permanente nunca libera a
   eliminação do papel.
 
+**Situação (ADR 037):** entrada pela tela, pipeline (ocrmypdf, PDF/A-2b,
+OCR, DPI, XMP do Decreto, SHA-256), guarda com object lock, verificação de
+integridade com alerta e visualizador em fluxo prontos; o pipeline real roda
+no CI. Faltam o PAdES ICP-Brasil e a pasta monitorada (decisão 0.6).
+
 **Pronto quando:**
 - um lote real for digitalizado com os metadados conferidos;
 - a verificação de integridade detectar um arquivo adulterado num teste;
@@ -441,7 +446,7 @@ Fase 0 ──► Fase 1 ──► Fase 2 ──► Fase 3 ──► Fase 4 ─�
 | Recolhimento com registro de entrada | Arts. 5º, VII e 53 | 4 | **Pronto** (preparo, instrumento descritivo, registro e cópia à origem — ADR 035) |
 | Arquivos privados de interesse público | Arts. 55 a 58 | 4 | **Pronto** (parecer, decreto, guarda e preferência — ADR 036) |
 | Capacitação | Arts. 5º, VIII e 11, VIII | 8 | Falta |
-| Digitalização com PDF/A, metadados e hash | Decreto 10.278; artigo 4.1 | 5 | Falta |
+| Digitalização com PDF/A, metadados e hash | Decreto 10.278; artigo 4.1 | 5 | **Pronto** (PDF/A-2b, XMP do Decreto, SHA-256, fixity — ADR 037; falta o PAdES) |
 | Assinatura ICP-Brasil (PAdES) | Artigo, Quadro 3 | 5 | Falta (Signum é eletrônico) |
 | Auditoria imutável | Artigo, Quadro 2 | — | **Pronto** |
 | Busca facetada (Typesense) | Artigo, item 4.4 | 6 | Parcial (infraestrutura, ADR 031) |

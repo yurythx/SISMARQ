@@ -66,6 +66,13 @@ async function proxy(req: NextRequest, path: string[]): Promise<NextResponse> {
   // por usuário + chave e devolve a resposta original num reenvio.
   const idempotencyKey = req.headers.get("x-idempotency-key");
   if (idempotencyKey && /^[A-Za-z0-9_-]{8,128}$/.test(idempotencyKey)) upstreamHeaders["X-Idempotency-Key"] = idempotencyKey;
+  // Leitura por trecho (ADR 037): o visualizador de PDF (pdf.js) pede só
+  // as páginas visíveis de um documento digitalizado de centenas de
+  // páginas — sem repassar o Range, o proxy baixaria o arquivo inteiro.
+  const range = req.headers.get("range");
+  if (range && /^bytes=\d*-\d*$/.test(range)) upstreamHeaders.Range = range;
+  const ifRange = req.headers.get("if-range");
+  if (ifRange && ifRange.length <= 200) upstreamHeaders["If-Range"] = ifRange;
 
   const init: RequestInit = {
     method: req.method,
@@ -118,6 +125,12 @@ async function proxy(req: NextRequest, path: string[]): Promise<NextResponse> {
   const contentDisposition = backendResponse.headers.get("content-disposition");
   if (contentDisposition) {
     headers["Content-Disposition"] = contentDisposition;
+  }
+  // 206/416 do visualizador em fluxo: o pdf.js precisa saber o trecho que
+  // recebeu e o tamanho total; o ETag (SHA-256) valida o cache.
+  for (const h of ["content-range", "accept-ranges", "etag", "cache-control"]) {
+    const v = backendResponse.headers.get(h);
+    if (v) headers[h.replace(/(^|-)([a-z])/g, (_m, sep: string, c: string) => sep + c.toUpperCase())] = v;
   }
   // 204/205/304 não podem ter corpo — nem string vazia: o construtor de
   // Response lança TypeError e a chamada virava 500 (ex.: POST

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
 
+import { DigitaisDaUnidade } from "@/components/acervo/DigitaisDaUnidade";
 import { DESTINACOES, FASES, NIVEIS, TIPOS, fmtDia, situacao } from "@/components/acervo/labels";
 import { UserPicker, type PickedUser } from "@/components/iam/UserPicker";
 import { DataState } from "@/components/sismarq/DataState";
@@ -206,6 +207,8 @@ export default function UnidadePage() {
                 </CardContent>
               </Card>
             </div>
+
+            <DigitaisDaUnidade unidadeId={u.id} podeGerir={u.pode.gerir && !final} />
 
             <Card>
               <CardHeader>

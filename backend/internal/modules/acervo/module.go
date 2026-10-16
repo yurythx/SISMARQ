@@ -43,7 +43,15 @@ type Module struct {
 // New constrói o módulo. ttdd é a porta para a Tabela de Temporalidade
 // (adaptador do Atlas, ligado em internal/app).
 func New(deps modkit.Deps, ttdd domain.TTDD) *Module {
-	svc := application.NewService(deps.Pool, infrastructure.NewRepository(), ttdd, deps.Outbox, deps.Logger).WithNotificacoes(deps.Notificacoes)
+	cfg := deps.Config.AcervoDigital
+	svc := application.NewService(deps.Pool, infrastructure.NewRepository(), ttdd, deps.Outbox, deps.Logger).
+		WithNotificacoes(deps.Notificacoes).
+		WithDigitalizacao(application.ConfigDigital{
+			Store: deps.Storage, Bucket: deps.Config.MinIO.Bucket, WORMBucket: cfg.Bucket, MaxBytes: cfg.MaxFileBytes,
+			URLExpiry: deps.Config.Upload.URLExpiry, DPITexto: cfg.DPITexto, DPIPlanta: cfg.DPIPlanta, TmpDir: cfg.TmpDir,
+			Pipeline:    infrastructure.NovoPipeline(infrastructure.Ferramentas{OCRmyPDF: cfg.OCRmyPDF, Python: cfg.Python, Timeout: cfg.Timeout}),
+			Verificacao: cfg.Fixity,
+		})
 	return &Module{deps: deps, svc: svc, handlers: transport.NewHandlers(svc, deps.Logger, deps.Config.MaxPageSize)}
 }
 
@@ -80,7 +88,14 @@ func (m *Module) RegisterRoutes(r kernel.Routes) {
 
 // Workers implementa kernel.WorkerProvider.
 func (m *Module) Workers() []kernel.Worker {
-	return []kernel.Worker{{Name: "prazos", Process: kernel.ProcessWorker, Run: m.svc.RunRecalculo(IntervaloRecalculo)}}
+	cfg := m.deps.Config.AcervoDigital
+	return []kernel.Worker{
+		{Name: "prazos", Process: kernel.ProcessWorker, Run: m.svc.RunRecalculo(IntervaloRecalculo)},
+		// Fase 5 (ADR 037): o pipeline da digitalização e a verificação
+		// periódica de integridade (fixity) dos PDF/A guardados.
+		{Name: "digitalizacao", Process: kernel.ProcessWorker, Run: m.svc.RunDigitalizacao(cfg.Intervalo)},
+		{Name: "integridade", Process: kernel.ProcessWorker, Run: m.svc.RunIntegridade(min(cfg.Fixity, time.Hour))},
+	}
 }
 
 // Consumers implementa kernel.ConsumerProvider.

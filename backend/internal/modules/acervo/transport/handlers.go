@@ -55,6 +55,7 @@ func (h *Handlers) RegisterRoutes(r chi.Router) {
 		h.registerFase4(r, ler, gerir, central)
 		h.registerNormas(r, central)
 		h.registerPrivados(r, central)
+		h.registerDigital(r, ler, gerir, central)
 	})
 }
 

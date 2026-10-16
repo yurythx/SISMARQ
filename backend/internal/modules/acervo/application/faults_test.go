@@ -19,6 +19,7 @@ import (
 	"github.com/yurythx/sismarq/internal/modules/acervo/transport"
 	"github.com/yurythx/sismarq/internal/platform/auth"
 	"github.com/yurythx/sismarq/internal/platform/database/dbtest"
+	"github.com/yurythx/sismarq/internal/platform/storage/storagetest"
 )
 
 // Matriz de falhas: cada chamada ao repositório falha (ou envenena a
@@ -131,6 +132,26 @@ func TestEveryRepositoryFailureIsPropagated(t *testing.T) {
 			t.Fatal(err)
 		}
 		return p
+	}
+	// digital: o representante na situação pedida (processado com o
+	// pipeline falso).
+	dstore := &wormMem{Memory: storagetest.New(), dias: map[string]int{}}
+	dcfg := func(s *application.Service) *application.Service {
+		return s.WithDigitalizacao(application.ConfigDigital{Store: dstore, Bucket: "app", WORMBucket: "worm", MaxBytes: 1 << 20,
+			URLExpiry: time.Minute, DPITexto: 300, DPIPlanta: 600, TmpDir: t.TempDir(), Pipeline: &pipeFalso{paginas: 1, dpi: 300}})
+	}
+	dreal := dcfg(e.real())
+	dquem := digitalizador(t, e, e.unidade)
+	digital := func(pronto bool) application.DetalheDigital {
+		u := comLocal()
+		e.limparFila(t)
+		d := enviar(t, dreal, dstore, dquem, u.ID, "TEXTO")
+		if pronto {
+			if _, err := dreal.ProcessarProximo(ctx); err != nil {
+				t.Fatal(err)
+			}
+		}
+		return d
 	}
 	bloqueada := func() (application.Detalhe, uuid.UUID) {
 		d := comLocal()
@@ -375,6 +396,46 @@ func TestEveryRepositoryFailureIsPropagated(t *testing.T) {
 		"Privados": func() func(*application.Service) error {
 			return func(s *application.Service) error {
 				_, _, err := s.Privados(ctx, admin, "", pagination.New(1, 5, 100))
+				return err
+			}
+		},
+		"RegistrarDigital": func() func(*application.Service) error {
+			u := comLocal()
+			tk, err := dreal.UploadDigital(ctx, dquem, u.ID, "a.pdf")
+			if err != nil {
+				t.Fatal(err)
+			}
+			_ = dstore.Put(ctx, "app", tk.ObjectKey, strings.NewReader(pdfOriginal), int64(len(pdfOriginal)), "application/pdf")
+			return func(s *application.Service) error {
+				_, err := dcfg(s).RegistrarDigital(ctx, dquem, u.ID, application.NovoEnvio{ObjectKey: tk.ObjectKey, TipoDoc: "TEXTO", Equipamento: "e", DPI: 300})
+				return err
+			}
+		},
+		"UploadDigital": func() func(*application.Service) error {
+			u := comLocal()
+			return func(s *application.Service) error {
+				_, err := dcfg(s).UploadDigital(ctx, dquem, u.ID, "a.pdf")
+				return err
+			}
+		},
+		"Reprocessar": func() func(*application.Service) error {
+			d := digital(false)
+			if _, err := e.pool.Exec(ctx, `UPDATE acervo_digitais SET situacao = 'FALHOU' WHERE id = $1`, d.ID); err != nil {
+				t.Fatal(err)
+			}
+			return func(s *application.Service) error { _, err := dcfg(s).Reprocessar(ctx, admin, d.ID); return err }
+		},
+		"VerificarAgora": func() func(*application.Service) error {
+			d := digital(true)
+			return func(s *application.Service) error { _, err := dcfg(s).VerificarAgora(ctx, admin, d.ID); return err }
+		},
+		"AbrirArquivo": func() func(*application.Service) error {
+			d := digital(true)
+			return func(s *application.Service) error { _, err := dcfg(s).AbrirArquivo(ctx, dquem, d.ID); return err }
+		},
+		"Digitais": func() func(*application.Service) error {
+			return func(s *application.Service) error {
+				_, _, err := dcfg(s).Digitais(ctx, dquem, nil, false, pagination.New(1, 5, 100))
 				return err
 			}
 		},

@@ -1,6 +1,6 @@
 "use client";
 
-import { Archive, BookOpen, FileUp, HandHelping, Landmark, MapPin, Plus, Trash2, Truck } from "lucide-react";
+import { Archive, BookOpen, FileUp, HandHelping, Landmark, MapPin, Plus, ScanLine, Trash2, Truck } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -65,6 +65,9 @@ export default function AcervoPage() {
             </Link>
             <Link href="/acervo/emprestimos" className={buttonClass("secondary", "md")}>
               <HandHelping size={16} aria-hidden="true" /> Empréstimos
+            </Link>
+            <Link href="/acervo/digitais" className={buttonClass("secondary", "md")}>
+              <ScanLine size={16} aria-hidden="true" /> Digitalização
             </Link>
             <Link href="/acervo/normas" className={buttonClass("secondary", "md")}>
               <BookOpen size={16} aria-hidden="true" /> Normas

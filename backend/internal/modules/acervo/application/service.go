@@ -50,6 +50,7 @@ type Service struct {
 	logger *slog.Logger
 	agora  func() time.Time
 	avisos *notificacoes.Service
+	dig    ConfigDigital
 }
 
 // NewService cria o serviço.
@@ -96,6 +97,10 @@ func MapError(err error) error {
 		return apperrors.NotFound("pedido não encontrado")
 	case errors.Is(err, domain.ErrRecolhimentoNaoExiste):
 		return apperrors.NotFound("recolhimento não encontrado")
+	case errors.Is(err, domain.ErrDigitalNaoExiste):
+		return apperrors.NotFound("representante digital não encontrado")
+	case errors.Is(err, domain.ErrDigitalSituacao):
+		return apperrors.Conflict(strings.TrimPrefix(err.Error(), "acervo: "))
 	case errors.Is(err, domain.ErrNormaNaoExiste):
 		return apperrors.NotFound("instrução normativa não encontrada")
 	case errors.Is(err, domain.ErrPrivadoNaoExiste):

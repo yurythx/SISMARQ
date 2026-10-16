@@ -103,6 +103,33 @@ func (m *Memory) Stat(_ context.Context, bucket, name string) (storage.ObjectInf
 	return storage.ObjectInfo{Size: int64(len(o.data)), ContentType: o.contentType}, nil
 }
 
+// GetRange devolve o trecho [offset, offset+length) do objeto (Range).
+func (m *Memory) GetRange(ctx context.Context, bucket, name string, offset, length int64) (io.ReadCloser, error) {
+	rc, err := m.Get(ctx, bucket, name)
+	if err != nil {
+		return nil, err
+	}
+	b, err := io.ReadAll(rc)
+	if err != nil {
+		return nil, err
+	}
+	fim := min(offset+length, int64(len(b)))
+	if offset > fim {
+		offset = fim
+	}
+	return io.NopCloser(bytes.NewReader(b[offset:fim])), nil
+}
+
+// Corromper troca o conteúdo de um objeto (teste de integridade: o hash
+// gravado deixa de bater).
+func (m *Memory) Corromper(bucket, name string, data []byte) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	o := m.objects[bucket+"/"+name]
+	o.data = data
+	m.objects[bucket+"/"+name] = o
+}
+
 // Has reporta se o objeto existe.
 func (m *Memory) Has(bucket, name string) bool {
 	m.mu.Lock()

@@ -3,7 +3,7 @@
 	demo-keycloak demo-generate demo-seed demo-test demo-popular \
 	migrate-up migrate-down migrate-status migrate-redo seed-admin \
 	backend-shell frontend-shell rabbitmq-status clean \
-	backend-build backend-test backend-lint backend-sec backend-format \
+	backend-build backend-test backend-lint backend-sec backend-format pipeline-real \
 	frontend-build frontend-test frontend-lint frontend-format \
 	infra-init infra-plan infra-apply infra-destroy infra-deploy
 
@@ -123,6 +123,12 @@ frontend-test:
 	cd frontend && npm test
 
 ## --- Lint / format ---
+
+pipeline-real: ## Roda o pipeline da digitalização com os programas de verdade (ocrmypdf, poppler, pikepdf) na imagem do worker (ADR 037)
+	docker build -f backend/Dockerfile.worker -t sismarq-worker:pipeline backend
+	docker run --rm -v "$(CURDIR)/backend:/src" -w /src -e CGO_ENABLED=0 golang:1.26 go test -c -o /src/pipeline.test ./internal/modules/acervo/infrastructure/
+	docker run --rm -v "$(CURDIR)/backend/pipeline.test:/tmp/pipeline.test:ro" -e ACERVO_PIPELINE_REAL=1 --entrypoint /tmp/pipeline.test sismarq-worker:pipeline -test.run TestPipelineReal -test.v
+	rm -f backend/pipeline.test
 
 lint: backend-lint frontend-lint ## Roda lint no backend e no frontend
 

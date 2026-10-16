@@ -68,6 +68,106 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/acervo/digitais": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Representantes digitais
+         * @description Os representantes digitais no escopo (?unidade_id=); o Arquivo Público vê todos e, com ?falhas=true, os que falharam na integridade ou no pipeline.
+         */
+        get: operations["getAcervoDigitais"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/acervo/digitais/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Representante digital
+         * @description Metadados do Decreto 10.278, hashes do original e do PDF/A, páginas, resolução medida, retenção imutável e as últimas verificações de integridade.
+         */
+        get: operations["getAcervoDigitaisId"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/acervo/digitais/{id}/arquivo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * PDF/A em fluxo
+         * @description Entrega o PDF/A com suporte a Range (HTTP 206): o visualizador busca só as páginas visíveis de um processo de centenas de páginas. ETag é o SHA-256.
+         */
+        get: operations["getAcervoDigitaisIdArquivo"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/acervo/digitais/{id}/reprocessar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reprocessar digitalização
+         * @description Só o Arquivo Público. Devolve ao pipeline o que falhou nas tentativas (o reprovado por resolução precisa de nova digitalização).
+         */
+        post: operations["postAcervoDigitaisIdReprocessar"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/acervo/digitais/{id}/verificar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Verificar integridade agora
+         * @description Só o Arquivo Público. Recalcula o SHA-256 do PDF/A guardado; se não bater (ou o arquivo sumir), registra, audita e avisa a equipe.
+         */
+        post: operations["postAcervoDigitaisIdVerificar"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/acervo/emprestimos": {
         parameters: {
             query?: never;
@@ -1006,6 +1106,46 @@ export interface paths {
          * @description Retém a unidade por ação judicial (arts. 32, II, e 44): enquanto ativo, nada a elimina. Exige acervo:bloqueio na unidade.
          */
         post: operations["postAcervoUnidadesIdBloqueios"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/acervo/unidades/{id}/digitais": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Registrar digitalização
+         * @description Confirma o envio, guarda o SHA-256 do original e põe na fila do pipeline com os metadados do Decreto Federal 10.278/2020: equipamento, resolução, tipo (texto ou planta) e o responsável (CPF guardado mascarado).
+         */
+        post: operations["postAcervoUnidadesIdDigitais"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/acervo/unidades/{id}/digitais/upload": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * URL de envio do PDF digitalizado
+         * @description Autoriza o envio direto do PDF do scanner ao armazenamento (URL pré-assinada; o arquivo não passa pela API). Exige a gestão da unidade de arquivamento; a eliminada não se digitaliza.
+         */
+        post: operations["postAcervoUnidadesIdDigitaisUpload"];
         delete?: never;
         options?: never;
         head?: never;
@@ -4652,8 +4792,92 @@ export interface components {
             /** Format: date-time */
             updated_at: string;
         };
+        AcervoDetalheDigital: {
+            codigo_classificacao: string;
+            conformidade: string;
+            /** Format: date-time */
+            criado_em: string;
+            descricao: string;
+            /** Format: date-time */
+            digitalizado_em: string;
+            dpi_declarado: number;
+            dpi_medido: number;
+            equipamento: string;
+            /** Format: uuid */
+            id: string;
+            integro: boolean | null;
+            motivo: string;
+            numero: string;
+            original_bytes: number;
+            original_sha256: string;
+            paginas: number;
+            pdfa_bytes: number;
+            pdfa_sha256: string;
+            /** Format: date-time */
+            processado_em: string | null;
+            responsavel_cpf: string;
+            /** Format: uuid */
+            responsavel_id: string;
+            responsavel_nome: string;
+            /** Format: date-time */
+            retencao_ate: string | null;
+            situacao: string;
+            tentativas: number;
+            tipo_documento: string;
+            /** Format: uuid */
+            unidade_arquivamento_id: string;
+            unidade_numero: string;
+            verificacoes: components["schemas"]["AcervoVerificacao"][];
+            /** Format: date-time */
+            verificado_em: string | null;
+        };
         AcervoDevolverRequest: {
             observacao?: string;
+        };
+        AcervoDigital: {
+            codigo_classificacao: string;
+            conformidade: string;
+            /** Format: date-time */
+            criado_em: string;
+            descricao: string;
+            /** Format: date-time */
+            digitalizado_em: string;
+            dpi_declarado: number;
+            dpi_medido: number;
+            equipamento: string;
+            /** Format: uuid */
+            id: string;
+            integro: boolean | null;
+            motivo: string;
+            numero: string;
+            original_bytes: number;
+            original_sha256: string;
+            paginas: number;
+            pdfa_bytes: number;
+            pdfa_sha256: string;
+            /** Format: date-time */
+            processado_em: string | null;
+            responsavel_cpf: string;
+            /** Format: uuid */
+            responsavel_id: string;
+            responsavel_nome: string;
+            /** Format: date-time */
+            retencao_ate: string | null;
+            situacao: string;
+            tentativas: number;
+            tipo_documento: string;
+            /** Format: uuid */
+            unidade_arquivamento_id: string;
+            /** Format: date-time */
+            verificado_em: string | null;
+        };
+        AcervoDigitalRequest: {
+            descricao?: string;
+            dpi_declarado: number;
+            equipamento: string;
+            object_key: string;
+            responsavel_cpf?: string;
+            tipo_documento: string;
         };
         AcervoEditalRequest: {
             edital_diario?: string;
@@ -5159,6 +5383,16 @@ export interface components {
             tipo: string;
             /** Format: uuid */
             unidade_id: string;
+        };
+        AcervoUploadDigitalRequest: {
+            filename: string;
+        };
+        AcervoVerificacao: {
+            /** Format: date-time */
+            em: string;
+            erro: string;
+            integro: boolean;
+            sha256_lido: string;
         };
         AtlasAlterarModeloRequest: {
             ativo?: boolean;
@@ -7315,6 +7549,191 @@ export interface operations {
             429: components["responses"]["TooManyRequests"];
         };
     };
+    getAcervoDigitais: {
+        parameters: {
+            query?: {
+                page?: components["parameters"]["Page"];
+                page_size?: components["parameters"]["PageSize"];
+                unidade_id?: string;
+                falhas?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Página de itens em `data`, paginação em `meta`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoDigital"][];
+                        meta?: components["schemas"]["PaginationMeta"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    getAcervoDigitaisId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: components["responses"]["Success"];
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    getAcervoDigitaisIdArquivo: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Um único intervalo, ex.: bytes=0-65535 (o visualizador pede só as páginas visíveis). */
+                Range?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description O PDF/A inteiro. */
+            200: {
+                headers: {
+                    /** @description bytes */
+                    "Accept-Ranges"?: string;
+                    /** @description O SHA-256 do PDF/A, entre aspas. */
+                    ETag?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": string;
+                };
+            };
+            /** @description O trecho pedido em Range. */
+            206: {
+                headers: {
+                    /** @description bytes */
+                    "Accept-Ranges"?: string;
+                    /** @description bytes início-fim/tamanho */
+                    "Content-Range"?: string;
+                    /** @description O SHA-256 do PDF/A, entre aspas. */
+                    ETag?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": string;
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            /** @description O representante digital ainda não está pronto. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Intervalo fora do arquivo (Content-Range: bytes *\/tamanho). */
+            416: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    postAcervoDigitaisIdReprocessar: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
+                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
+                 */
+                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoDetalheDigital"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    postAcervoDigitaisIdVerificar: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
+                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
+                 */
+                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoDetalheDigital"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
     getAcervoEmprestimos: {
         parameters: {
             query?: {
@@ -9232,6 +9651,84 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Envelope"] & {
                         data?: components["schemas"]["AcervoDetalhe"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    postAcervoUnidadesIdDigitais: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
+                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
+                 */
+                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AcervoDigitalRequest"];
+            };
+        };
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoDetalheDigital"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    postAcervoUnidadesIdDigitaisUpload: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
+                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
+                 */
+                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AcervoUploadDigitalRequest"];
+            };
+        };
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["ModkitUploadTicket"];
                     };
                 };
             };

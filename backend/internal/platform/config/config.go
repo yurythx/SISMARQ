@@ -214,6 +214,21 @@ type AuditWORMConfig struct {
 	RetentionDays int    // AUDIT_WORM_RETENTION_DAYS (default 1825 = 5 anos)
 }
 
+// AcervoDigitalConfig parametriza a digitalização com valor probatório
+// (ADR 037; Decreto 10.278/2020).
+type AcervoDigitalConfig struct {
+	Bucket       string        // ACERVO_DIGITAL_BUCKET — PDF/A com object lock (bucket dedicado)
+	MaxFileBytes int64         // ACERVO_DIGITAL_MAX_MB (default 2048)
+	DPITexto     int           // ACERVO_DPI_TEXTO (default 300)
+	DPIPlanta    int           // ACERVO_DPI_PLANTA (default 600)
+	TmpDir       string        // ACERVO_DIGITAL_TMP (default: o temporário do sistema)
+	Intervalo    time.Duration // ACERVO_DIGITAL_INTERVALO: espera do worker com a fila vazia
+	Fixity       time.Duration // ACERVO_FIXITY_INTERVALO: entre verificações de cada arquivo
+	Timeout      time.Duration // ACERVO_OCR_TIMEOUT: de cada programa do pipeline
+	OCRmyPDF     string        // ACERVO_OCRMYPDF_BIN (default "ocrmypdf")
+	Python       string        // ACERVO_PYTHON_BIN (default "python3")
+}
+
 // WorkerConfig guarda as configurações do listener HTTP mínimo próprio do
 // cmd/worker, usado só para /health e /metrics (healthcheck do Docker +
 // scrape do Prometheus) — nunca para tráfego de negócio.
@@ -259,6 +274,8 @@ type Config struct {
 	Upload    UploadConfig
 
 	AuditWORM AuditWORMConfig
+
+	AcervoDigital AcervoDigitalConfig
 
 	// APIRateLimit é o teto por identidade autenticada (fallback: IP)
 	// aplicado a todo o grupo /api/v1 (gap G-01).
@@ -509,6 +526,18 @@ func Load() (*Config, error) {
 		AuditWORM: AuditWORMConfig{
 			Bucket:        l.str("AUDIT_WORM_BUCKET", false, "nexus-audit-worm"),
 			RetentionDays: l.intVal("AUDIT_WORM_RETENTION_DAYS", false, 1825),
+		},
+		AcervoDigital: AcervoDigitalConfig{
+			Bucket:       l.str("ACERVO_DIGITAL_BUCKET", false, "sismarq-acervo-digital"),
+			MaxFileBytes: int64(l.intVal("ACERVO_DIGITAL_MAX_MB", false, 2048)) * 1024 * 1024,
+			DPITexto:     l.intVal("ACERVO_DPI_TEXTO", false, 300),
+			DPIPlanta:    l.intVal("ACERVO_DPI_PLANTA", false, 600),
+			TmpDir:       l.str("ACERVO_DIGITAL_TMP", false, ""),
+			Intervalo:    l.durationVal("ACERVO_DIGITAL_INTERVALO", 15*time.Second),
+			Fixity:       l.durationVal("ACERVO_FIXITY_INTERVALO", 24*time.Hour),
+			Timeout:      l.durationVal("ACERVO_OCR_TIMEOUT", 2*time.Hour),
+			OCRmyPDF:     l.str("ACERVO_OCRMYPDF_BIN", false, "ocrmypdf"),
+			Python:       l.str("ACERVO_PYTHON_BIN", false, "python3"),
 		},
 		Worker: WorkerConfig{
 			MetricsHost: l.str("WORKER_METRICS_HOST", false, "0.0.0.0"),

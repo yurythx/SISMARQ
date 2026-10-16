@@ -23,9 +23,9 @@ import (
 )
 
 const (
-	RequestIDHeader    = "X-Request-ID"
-	TraceparentHeader  = "traceparent"
-	TracestateHeader   = "tracestate"
+	RequestIDHeader   = "X-Request-ID"
+	TraceparentHeader = "traceparent"
+	TracestateHeader  = "tracestate"
 )
 
 // RequestID respeita um header X-Request-ID de entrada ou gera um novo,

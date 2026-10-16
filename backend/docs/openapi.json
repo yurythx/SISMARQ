@@ -663,6 +663,145 @@
         "type": "object",
         "x-sismarq-generated": true
       },
+      "AcervoDetalheDigital": {
+        "properties": {
+          "codigo_classificacao": {
+            "type": "string"
+          },
+          "conformidade": {
+            "type": "string"
+          },
+          "criado_em": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "descricao": {
+            "type": "string"
+          },
+          "digitalizado_em": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "dpi_declarado": {
+            "type": "integer"
+          },
+          "dpi_medido": {
+            "type": "integer"
+          },
+          "equipamento": {
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "integro": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "motivo": {
+            "type": "string"
+          },
+          "numero": {
+            "type": "string"
+          },
+          "original_bytes": {
+            "type": "integer"
+          },
+          "original_sha256": {
+            "type": "string"
+          },
+          "paginas": {
+            "type": "integer"
+          },
+          "pdfa_bytes": {
+            "type": "integer"
+          },
+          "pdfa_sha256": {
+            "type": "string"
+          },
+          "processado_em": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "responsavel_cpf": {
+            "type": "string"
+          },
+          "responsavel_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "responsavel_nome": {
+            "type": "string"
+          },
+          "retencao_ate": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "situacao": {
+            "type": "string"
+          },
+          "tentativas": {
+            "type": "integer"
+          },
+          "tipo_documento": {
+            "type": "string"
+          },
+          "unidade_arquivamento_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "unidade_numero": {
+            "type": "string"
+          },
+          "verificacoes": {
+            "items": {
+              "$ref": "#/components/schemas/AcervoVerificacao"
+            },
+            "type": "array"
+          },
+          "verificado_em": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "codigo_classificacao",
+          "conformidade",
+          "criado_em",
+          "descricao",
+          "digitalizado_em",
+          "dpi_declarado",
+          "dpi_medido",
+          "equipamento",
+          "id",
+          "integro",
+          "motivo",
+          "numero",
+          "original_bytes",
+          "original_sha256",
+          "paginas",
+          "pdfa_bytes",
+          "pdfa_sha256",
+          "processado_em",
+          "responsavel_cpf",
+          "responsavel_id",
+          "responsavel_nome",
+          "retencao_ate",
+          "situacao",
+          "tentativas",
+          "tipo_documento",
+          "unidade_arquivamento_id",
+          "unidade_numero",
+          "verificacoes",
+          "verificado_em"
+        ],
+        "type": "object",
+        "x-sismarq-generated": true
+      },
       "AcervoDevolverRequest": {
         "properties": {
           "observacao": {
@@ -670,6 +809,169 @@
             "type": "string"
           }
         },
+        "type": "object",
+        "x-sismarq-generated": true
+      },
+      "AcervoDigital": {
+        "properties": {
+          "codigo_classificacao": {
+            "type": "string"
+          },
+          "conformidade": {
+            "type": "string"
+          },
+          "criado_em": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "descricao": {
+            "type": "string"
+          },
+          "digitalizado_em": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "dpi_declarado": {
+            "type": "integer"
+          },
+          "dpi_medido": {
+            "type": "integer"
+          },
+          "equipamento": {
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "integro": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "motivo": {
+            "type": "string"
+          },
+          "numero": {
+            "type": "string"
+          },
+          "original_bytes": {
+            "type": "integer"
+          },
+          "original_sha256": {
+            "type": "string"
+          },
+          "paginas": {
+            "type": "integer"
+          },
+          "pdfa_bytes": {
+            "type": "integer"
+          },
+          "pdfa_sha256": {
+            "type": "string"
+          },
+          "processado_em": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "responsavel_cpf": {
+            "type": "string"
+          },
+          "responsavel_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "responsavel_nome": {
+            "type": "string"
+          },
+          "retencao_ate": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "situacao": {
+            "type": "string"
+          },
+          "tentativas": {
+            "type": "integer"
+          },
+          "tipo_documento": {
+            "type": "string"
+          },
+          "unidade_arquivamento_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "verificado_em": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "codigo_classificacao",
+          "conformidade",
+          "criado_em",
+          "descricao",
+          "digitalizado_em",
+          "dpi_declarado",
+          "dpi_medido",
+          "equipamento",
+          "id",
+          "integro",
+          "motivo",
+          "numero",
+          "original_bytes",
+          "original_sha256",
+          "paginas",
+          "pdfa_bytes",
+          "pdfa_sha256",
+          "processado_em",
+          "responsavel_cpf",
+          "responsavel_id",
+          "responsavel_nome",
+          "retencao_ate",
+          "situacao",
+          "tentativas",
+          "tipo_documento",
+          "unidade_arquivamento_id",
+          "verificado_em"
+        ],
+        "type": "object",
+        "x-sismarq-generated": true
+      },
+      "AcervoDigitalRequest": {
+        "properties": {
+          "descricao": {
+            "maxLength": 500,
+            "type": "string"
+          },
+          "dpi_declarado": {
+            "type": "integer"
+          },
+          "equipamento": {
+            "maxLength": 200,
+            "type": "string"
+          },
+          "object_key": {
+            "maxLength": 300,
+            "type": "string"
+          },
+          "responsavel_cpf": {
+            "maxLength": 20,
+            "type": "string"
+          },
+          "tipo_documento": {
+            "maxLength": 10,
+            "type": "string"
+          }
+        },
+        "required": [
+          "dpi_declarado",
+          "equipamento",
+          "object_key",
+          "tipo_documento"
+        ],
         "type": "object",
         "x-sismarq-generated": true
       },
@@ -2506,6 +2808,44 @@
           "data_inicial",
           "tipo",
           "unidade_id"
+        ],
+        "type": "object",
+        "x-sismarq-generated": true
+      },
+      "AcervoUploadDigitalRequest": {
+        "properties": {
+          "filename": {
+            "maxLength": 255,
+            "type": "string"
+          }
+        },
+        "required": [
+          "filename"
+        ],
+        "type": "object",
+        "x-sismarq-generated": true
+      },
+      "AcervoVerificacao": {
+        "properties": {
+          "em": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "erro": {
+            "type": "string"
+          },
+          "integro": {
+            "type": "boolean"
+          },
+          "sha256_lido": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "em",
+          "erro",
+          "integro",
+          "sha256_lido"
         ],
         "type": "object",
         "x-sismarq-generated": true
@@ -9523,6 +9863,389 @@
         ]
       }
     },
+    "/api/v1/acervo/digitais": {
+      "get": {
+        "description": "Os representantes digitais no escopo (?unidade_id=); o Arquivo Público vê todos e, com ?falhas=true, os que falharam na integridade ou no pipeline.",
+        "operationId": "getAcervoDigitais",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Page"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          },
+          {
+            "in": "query",
+            "name": "unidade_id",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "x-sismarq-generated": true
+          },
+          {
+            "in": "query",
+            "name": "falhas",
+            "required": false,
+            "schema": {
+              "maxLength": 5,
+              "type": "string"
+            },
+            "x-sismarq-generated": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "items": {
+                            "$ref": "#/components/schemas/AcervoDigital"
+                          },
+                          "type": "array"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/PaginationMeta"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Página de itens em `data`, paginação em `meta`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Representantes digitais",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/digitais/{id}": {
+      "get": {
+        "description": "Metadados do Decreto 10.278, hashes do original e do PDF/A, páginas, resolução medida, retenção imutável e as últimas verificações de integridade.",
+        "operationId": "getAcervoDigitaisId",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Representante digital",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/digitais/{id}/arquivo": {
+      "get": {
+        "description": "Entrega o PDF/A com suporte a Range (HTTP 206): o visualizador busca só as páginas visíveis de um processo de centenas de páginas. ETag é o SHA-256.",
+        "operationId": "getAcervoDigitaisIdArquivo",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Um único intervalo, ex.: bytes=0-65535 (o visualizador pede só as páginas visíveis).",
+            "in": "header",
+            "name": "Range",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "O PDF/A inteiro.",
+            "headers": {
+              "Accept-Ranges": {
+                "description": "bytes",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "ETag": {
+                "description": "O SHA-256 do PDF/A, entre aspas.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "206": {
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "O trecho pedido em Range.",
+            "headers": {
+              "Accept-Ranges": {
+                "description": "bytes",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Content-Range": {
+                "description": "bytes início-fim/tamanho",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "ETag": {
+                "description": "O SHA-256 do PDF/A, entre aspas.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "409": {
+            "description": "O representante digital ainda não está pronto."
+          },
+          "416": {
+            "description": "Intervalo fora do arquivo (Content-Range: bytes */tamanho)."
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "PDF/A em fluxo",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/digitais/{id}/reprocessar": {
+      "post": {
+        "description": "Só o Arquivo Público. Devolve ao pipeline o que falhou nas tentativas (o reprovado por resolução precisa de nova digitalização).",
+        "operationId": "postAcervoDigitaisIdReprocessar",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoDetalheDigital"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Reprocessar digitalização",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/digitais/{id}/verificar": {
+      "post": {
+        "description": "Só o Arquivo Público. Recalcula o SHA-256 do PDF/A guardado; se não bater (ou o arquivo sumir), registra, audita e avisa a equipe.",
+        "operationId": "postAcervoDigitaisIdVerificar",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoDetalheDigital"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Verificar integridade agora",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
     "/api/v1/acervo/emprestimos": {
       "get": {
         "description": "Empréstimos em aberto no escopo, do prazo mais antigo ao mais novo; ?atrasados=true traz só os vencidos.",
@@ -13545,6 +14268,164 @@
           }
         ],
         "summary": "Registrar bloqueio judicial",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/unidades/{id}/digitais": {
+      "post": {
+        "description": "Confirma o envio, guarda o SHA-256 do original e põe na fila do pipeline com os metadados do Decreto Federal 10.278/2020: equipamento, resolução, tipo (texto ou planta) e o responsável (CPF guardado mascarado).",
+        "operationId": "postAcervoUnidadesIdDigitais",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcervoDigitalRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-sismarq-generated": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoDetalheDigital"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Registrar digitalização",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/unidades/{id}/digitais/upload": {
+      "post": {
+        "description": "Autoriza o envio direto do PDF do scanner ao armazenamento (URL pré-assinada; o arquivo não passa pela API). Exige a gestão da unidade de arquivamento; a eliminada não se digitaliza.",
+        "operationId": "postAcervoUnidadesIdDigitaisUpload",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcervoUploadDigitalRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-sismarq-generated": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/ModkitUploadTicket"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "URL de envio do PDF digitalizado",
         "tags": [
           "acervo"
         ]

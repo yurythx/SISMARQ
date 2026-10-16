@@ -166,6 +166,23 @@ func (p *MinioProvider) Get(ctx context.Context, bucketName, objectName string) 
 	return obj, nil
 }
 
+// GetRange lê length bytes a partir de offset (Range).
+func (p *MinioProvider) GetRange(ctx context.Context, bucketName, objectName string, offset, length int64) (io.ReadCloser, error) {
+	opts := minio.GetObjectOptions{}
+	if err := opts.SetRange(offset, offset+length-1); err != nil {
+		return nil, fmt.Errorf("storage: range: %w", err)
+	}
+	obj, err := p.client.GetObject(ctx, bucketName, objectName, opts)
+	if err != nil {
+		return nil, fmt.Errorf("storage: get range: %w", err)
+	}
+	if _, err := obj.Stat(); err != nil {
+		_ = obj.Close()
+		return nil, mapObjectErr("get", bucketName, objectName, err)
+	}
+	return obj, nil
+}
+
 // mapObjectErr traduz "objeto não existe" para ErrObjectNotFound.
 func mapObjectErr(op, bucket, object string, err error) error {
 	if minio.ToErrorResponse(err).Code == "NoSuchKey" {

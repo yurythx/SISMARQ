@@ -1324,3 +1324,48 @@ export interface AcervoPrivado {
   eventos: AcervoEvento[];
   alienacoes: AcervoAlienacao[];
 }
+
+// --- Digitalização com valor probatório (Fase 5; Decreto 10.278/2020; ADR 037)
+
+/** Representante digital de (parte de) uma unidade de arquivamento. */
+export interface AcervoDigital {
+  id: string;
+  numero: string;
+  unidade_arquivamento_id: string;
+  descricao: string;
+  tipo_documento: "TEXTO" | "PLANTA" | string;
+  equipamento: string;
+  dpi_declarado: number;
+  responsavel_nome: string;
+  responsavel_cpf: string;
+  codigo_classificacao: string;
+  digitalizado_em: string;
+  situacao: "ENVIADO" | "PROCESSANDO" | "PRONTO" | "REPROVADO" | "FALHOU" | string;
+  motivo: string;
+  tentativas: number;
+  original_sha256: string;
+  original_bytes: number;
+  pdfa_sha256: string;
+  pdfa_bytes: number;
+  paginas: number;
+  dpi_medido: number;
+  conformidade: string;
+  retencao_ate: string | null;
+  processado_em: string | null;
+  verificado_em: string | null;
+  integro: boolean | null;
+  criado_em: string;
+}
+
+/** Uma verificação de integridade (fixity) do PDF/A guardado. */
+export interface AcervoVerificacao {
+  em: string;
+  integro: boolean;
+  sha256_lido: string;
+  erro: string;
+}
+
+export interface AcervoDetalheDigital extends AcervoDigital {
+  verificacoes: AcervoVerificacao[];
+  unidade_numero: string;
+}

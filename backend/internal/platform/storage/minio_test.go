@@ -69,6 +69,19 @@ func TestMinioObjectLifecycle(t *testing.T) {
 	if !bytes.Equal(got, body) {
 		t.Fatalf("get = %q", got)
 	}
+	// Range: só o trecho pedido (o visualizador de PDF em fluxo).
+	rr, err := p.GetRange(ctx, bucket, "a/b.txt", 3, 4)
+	if err != nil {
+		t.Fatal(err)
+	}
+	trecho, _ := io.ReadAll(rr)
+	_ = rr.Close()
+	if !bytes.Equal(trecho, body[3:7]) {
+		t.Fatalf("range = %q", trecho)
+	}
+	if _, err := p.GetRange(ctx, bucket, "nao-existe", 0, 1); !errors.Is(err, ErrObjectNotFound) {
+		t.Fatalf("range de objeto inexistente: %v", err)
+	}
 
 	// presigned PUT funciona de verdade, sem passar pelo backend
 	putURL, err := p.PresignedPutURL(ctx, bucket, "direto.bin", time.Minute)
@@ -226,6 +239,12 @@ func TestMinioFailures(t *testing.T) {
 	check("get nome inválido", err, "storage: get object")
 	_, err = p.Stat(ctx, "bucket", "o")
 	check("stat", err, "storage: stat bucket/o")
+	_, err = p.GetRange(ctx, "bucket", "o", 0, 1)
+	check("get range", err, "storage: get bucket/o")
+	_, err = p.GetRange(ctx, "Nome Inválido", "o", 0, 1)
+	check("get range nome inválido", err, "storage: get range")
+	_, err = p.GetRange(ctx, "bucket", "o", 5, 0)
+	check("range inválido", err, "storage: range")
 	_, err = p.PresignedPutURL(ctx, "Nome Inválido", "o", time.Minute)
 	check("presign put", err, "presigned put")
 	_, err = p.PresignedGetURL(ctx, "Nome Inválido", "o", time.Minute)

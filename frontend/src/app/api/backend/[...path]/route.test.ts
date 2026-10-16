@@ -87,6 +87,32 @@ describe("proxy BFF autenticado", () => {
     expect(upstream.mock.calls[0]![1].body).toBeInstanceOf(ArrayBuffer);
   });
 
+  it("Range: repassa o trecho pedido e devolve 206 com Content-Range e ETag (visualizador de PDF)", async () => {
+    upstream.mockResolvedValueOnce(
+      new Response(new Uint8Array([1, 2, 3, 4]), {
+        status: 206,
+        headers: { "content-type": "application/pdf", "content-range": "bytes 0-3/9000", "accept-ranges": "bytes", etag: '"abc"', "cache-control": "private, max-age=300" },
+      }),
+    );
+    const res = await GET(new NextRequest("http://app/x", { headers: { range: "bytes=0-3", "if-range": '"abc"' } }), params("v1", "acervo", "digitais", "d1", "arquivo"));
+    const init = upstream.mock.calls[0]![1];
+    expect(init.headers.Range).toBe("bytes=0-3");
+    expect(init.headers["If-Range"]).toBe('"abc"');
+    expect(res.status).toBe(206);
+    expect(res.headers.get("content-range")).toBe("bytes 0-3/9000");
+    expect(res.headers.get("accept-ranges")).toBe("bytes");
+    expect(res.headers.get("etag")).toBe('"abc"');
+    expect(res.headers.get("cache-control")).toBe("private, max-age=300");
+    expect(new Uint8Array(await res.arrayBuffer())).toEqual(new Uint8Array([1, 2, 3, 4]));
+  });
+
+  it("Range malformado ou If-Range enorme não é repassado", async () => {
+    await GET(new NextRequest("http://app/x", { headers: { range: "bytes=0-1,5-9", "if-range": "x".repeat(300) } }), params("v1", "x"));
+    const init = upstream.mock.calls[0]![1];
+    expect(init.headers.Range).toBeUndefined();
+    expect(init.headers["If-Range"]).toBeUndefined();
+  });
+
   it("CSV passa com o BOM (o Excel em português depende dele)", async () => {
     const csv = new Uint8Array([0xef, 0xbb, 0xbf, ...new TextEncoder().encode("Código;Série\n")]);
     upstream.mockResolvedValueOnce(new Response(csv, { status: 200, headers: { "content-type": "text/csv; charset=utf-8" } }));

@@ -117,6 +117,21 @@ type Repository interface {
 	InsertAlienacao(ctx context.Context, db database.DBTX, privado uuid.UUID, a Alienacao, por *uuid.UUID) error
 	DecidirAlienacao(ctx context.Context, db database.DBTX, a Alienacao, por *uuid.UUID) error
 
+	// Fase 5 (ADR 037): representantes digitais.
+	InsertDigital(ctx context.Context, db database.DBTX, d Digital) (string, error)
+	GetDigital(ctx context.Context, db database.DBTX, id uuid.UUID) (Digital, error)
+	ListDigitais(ctx context.Context, db database.DBTX, f FiltroDigital, p pagination.Params) ([]Digital, int64, error)
+	// ProximoDigital reserva o próximo da fila (ENVIADO, ou PROCESSANDO
+	// abandonado antes de travadoAntes) para o worker.
+	ProximoDigital(ctx context.Context, db database.DBTX, travadoAntes time.Time) (Digital, bool, error)
+	// ConcluirDigital grava o resultado do pipeline (e o texto do OCR).
+	ConcluirDigital(ctx context.Context, db database.DBTX, d Digital, texto string) error
+	ParaVerificar(ctx context.Context, db database.DBTX, antesDe time.Time, limite int) ([]Digital, error)
+	RegistrarVerificacao(ctx context.Context, db database.DBTX, id uuid.UUID, v Verificacao) error
+	ListVerificacoes(ctx context.Context, db database.DBTX, id uuid.UUID, limite int) ([]Verificacao, error)
+	// EquipeCentral: quem tem acervo:central global (alertas de integridade).
+	EquipeCentral(ctx context.Context, db database.DBTX) ([]uuid.UUID, error)
+
 	// ResolverUnidade acha a unidade produtora ativa pela sigla (ou id).
 	ResolverUnidade(ctx context.Context, db database.DBTX, ref string) (uuid.UUID, error)
 

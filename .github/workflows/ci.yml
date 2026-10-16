@@ -207,7 +207,15 @@ jobs:
 
       # Equivalente ao govulncheck do backend: dependência com CVE alta ou
       # crítica quebra o build (ex.: RCE do Next 16.3.2, GHSA-2xp9-vwfh-vxw4).
-      - name: Vulnerability audit (npm audit) — bloqueante
+      # Bloqueia o que vai para produção. As ferramentas de desenvolvimento
+      # (lint) ficam no relatório informativo abaixo: em out/2026 o braces
+      # 3.0.3 (via eslint-config-next → fast-glob) tem alerta alto sem versão
+      # corrigida publicada — não roda no servidor nem no navegador.
+      - name: Vulnerability audit (npm audit, dependências de produção) — bloqueante
+        run: cd frontend && npm audit --omit=dev --audit-level=high
+
+      - name: Vulnerability audit (npm audit, todas as dependências) — informativo
+        continue-on-error: true
         run: cd frontend && npm audit --audit-level=high
 
       - name: ESLint & e-MAG Accessibility Check (jsx-a11y via eslint-config-next)
@@ -256,6 +264,9 @@ jobs:
 
       - name: Build all images
         run: docker compose -f docker-compose.yml -f docker-compose.dev.yml build
+
+      - name: Pipeline real da digitalização (ocrmypdf + poppler + pikepdf na imagem do worker — ADR 037)
+        run: make pipeline-real
 
       - name: Start the stack
         run: docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d

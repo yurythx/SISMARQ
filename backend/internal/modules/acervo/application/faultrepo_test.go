@@ -598,6 +598,87 @@ func (fr *faultRepo) DecidirAlienacao(ctx context.Context, db database.DBTX, a d
 	return fr.inner.DecidirAlienacao(ctx, db, a, por)
 }
 
+func (fr *faultRepo) InsertDigital(ctx context.Context, db database.DBTX, d domain.Digital) (string, error) {
+	if err := fr.hook("InsertDigital"); err != nil {
+		var z0 string
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.InsertDigital(ctx, db, d)
+}
+
+func (fr *faultRepo) GetDigital(ctx context.Context, db database.DBTX, id uuid.UUID) (domain.Digital, error) {
+	if err := fr.hook("GetDigital"); err != nil {
+		var z0 domain.Digital
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.GetDigital(ctx, db, id)
+}
+
+func (fr *faultRepo) ListDigitais(ctx context.Context, db database.DBTX, f domain.FiltroDigital, p pagination.Params) ([]domain.Digital, int64, error) {
+	if err := fr.hook("ListDigitais"); err != nil {
+		var z0 []domain.Digital
+		var z1 int64
+		return z0, z1, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.ListDigitais(ctx, db, f, p)
+}
+
+func (fr *faultRepo) ProximoDigital(ctx context.Context, db database.DBTX, travadoAntes time.Time) (domain.Digital, bool, error) {
+	if err := fr.hook("ProximoDigital"); err != nil {
+		var z0 domain.Digital
+		var z1 bool
+		return z0, z1, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.ProximoDigital(ctx, db, travadoAntes)
+}
+
+func (fr *faultRepo) ConcluirDigital(ctx context.Context, db database.DBTX, d domain.Digital, texto string) error {
+	if err := fr.hook("ConcluirDigital"); err != nil {
+		return err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.ConcluirDigital(ctx, db, d, texto)
+}
+
+func (fr *faultRepo) ParaVerificar(ctx context.Context, db database.DBTX, antesDe time.Time, limite int) ([]domain.Digital, error) {
+	if err := fr.hook("ParaVerificar"); err != nil {
+		var z0 []domain.Digital
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.ParaVerificar(ctx, db, antesDe, limite)
+}
+
+func (fr *faultRepo) RegistrarVerificacao(ctx context.Context, db database.DBTX, id uuid.UUID, v domain.Verificacao) error {
+	if err := fr.hook("RegistrarVerificacao"); err != nil {
+		return err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.RegistrarVerificacao(ctx, db, id, v)
+}
+
+func (fr *faultRepo) ListVerificacoes(ctx context.Context, db database.DBTX, id uuid.UUID, limite int) ([]domain.Verificacao, error) {
+	if err := fr.hook("ListVerificacoes"); err != nil {
+		var z0 []domain.Verificacao
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.ListVerificacoes(ctx, db, id, limite)
+}
+
+func (fr *faultRepo) EquipeCentral(ctx context.Context, db database.DBTX) ([]uuid.UUID, error) {
+	if err := fr.hook("EquipeCentral"); err != nil {
+		var z0 []uuid.UUID
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.EquipeCentral(ctx, db)
+}
+
 func (fr *faultRepo) ResolverUnidade(ctx context.Context, db database.DBTX, ref string) (uuid.UUID, error) {
 	if err := fr.hook("ResolverUnidade"); err != nil {
 		var z0 uuid.UUID

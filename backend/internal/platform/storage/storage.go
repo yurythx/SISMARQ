@@ -21,6 +21,14 @@ type WORMWriter interface {
 	PutImmutable(ctx context.Context, bucket, object string, reader io.Reader, size int64, contentType string, retentionDays int) error
 }
 
+// RangeReader é implementado por providers que leem um trecho do objeto
+// (HTTP Range) — o visualizador de documentos digitalizados pede só as
+// páginas visíveis de um PDF de centenas de páginas, sem baixá-lo inteiro.
+type RangeReader interface {
+	// GetRange devolve length bytes a partir de offset.
+	GetRange(ctx context.Context, bucket, object string, offset, length int64) (io.ReadCloser, error)
+}
+
 // Provider define a interface de armazenamento de blobs/objetos (ex: PDFs).
 type Provider interface {
 	// Ping verifica conectividade + credenciais válidas contra o storage —
