@@ -97,6 +97,26 @@ type Repository interface {
 	// cópia do registro de entrada, art. 5º, VII).
 	GestoresDaUnidade(ctx context.Context, db database.DBTX, unidade uuid.UUID) ([]uuid.UUID, error)
 
+	// Fase 4, segunda parte (ADR 036): instruções normativas.
+	InsertNorma(ctx context.Context, db database.DBTX, n Norma) error
+	GetNorma(ctx context.Context, db database.DBTX, id uuid.UUID, paraAtualizar bool) (Norma, error)
+	ListNormas(ctx context.Context, db database.DBTX, q string, publicas bool, p pagination.Params) ([]Norma, int64, error)
+	UpdateNorma(ctx context.Context, db database.DBTX, n Norma) error
+	DeleteNorma(ctx context.Context, db database.DBTX, id uuid.UUID) error
+	// SalvarRedacao grava a redação em rascunho (nova ou alterada).
+	SalvarRedacao(ctx context.Context, db database.DBTX, norma uuid.UUID, r Redacao, nova bool, por *uuid.UUID) error
+	PublicarRedacao(ctx context.Context, db database.DBTX, norma uuid.UUID, r Redacao, por *uuid.UUID) error
+	ApagarRascunho(ctx context.Context, db database.DBTX, norma uuid.UUID) error
+
+	// Arquivos privados de interesse público e social.
+	InsertPrivado(ctx context.Context, db database.DBTX, p Privado, por *uuid.UUID) (string, error)
+	GetPrivado(ctx context.Context, db database.DBTX, id uuid.UUID, paraAtualizar bool) (Privado, error)
+	ListPrivados(ctx context.Context, db database.DBTX, q string, p pagination.Params) ([]Privado, int64, error)
+	UpdatePrivado(ctx context.Context, db database.DBTX, p Privado) error
+	InsertEventoPrivado(ctx context.Context, db database.DBTX, privado uuid.UUID, e Evento) error
+	InsertAlienacao(ctx context.Context, db database.DBTX, privado uuid.UUID, a Alienacao, por *uuid.UUID) error
+	DecidirAlienacao(ctx context.Context, db database.DBTX, a Alienacao, por *uuid.UUID) error
+
 	// ResolverUnidade acha a unidade produtora ativa pela sigla (ou id).
 	ResolverUnidade(ctx context.Context, db database.DBTX, ref string) (uuid.UUID, error)
 

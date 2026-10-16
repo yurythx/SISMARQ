@@ -38,6 +38,15 @@ describe("proxy BFF público (allowlist)", () => {
     expect(upstream.mock.calls[0]![1].headers["X-Forwarded-For"]).toBeUndefined();
   });
 
+  it("normas do Acervo: a consulta pública passa; a gestão, não", async () => {
+    const ok = await GET(new NextRequest("http://app/api/public/v1/acervo/publico/normas"), params("v1", "acervo", "publico", "normas"));
+    expect(ok.status).toBe(200);
+    expect(String(upstream.mock.calls[0]![0])).toBe("http://api:8080/api/v1/acervo/publico/normas");
+    const gestao = await GET(new NextRequest("http://app/api/public/v1/acervo/normas"), params("v1", "acervo", "normas"));
+    expect(gestao.status).toBe(404);
+    expect(upstream).toHaveBeenCalledTimes(1);
+  });
+
   it("encaminha rotas da allowlist, sem token, com o IP do visitante (atrás de proxy confiável)", async () => {
     vi.stubEnv("TRUST_PROXY_HEADERS", "true");
     const res = await GET(

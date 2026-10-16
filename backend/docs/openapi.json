@@ -187,6 +187,55 @@
       }
     },
     "schemas": {
+      "AcervoAlienacao": {
+        "properties": {
+          "adquirente": {
+            "type": "string"
+          },
+          "condicoes": {
+            "type": "string"
+          },
+          "decidido_em": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "decisao": {
+            "type": "string"
+          },
+          "fundamento": {
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "notificado_em": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "prazo_final": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "vencida": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "adquirente",
+          "condicoes",
+          "decidido_em",
+          "decisao",
+          "fundamento",
+          "id",
+          "notificado_em",
+          "prazo_final",
+          "vencida"
+        ],
+        "type": "object",
+        "x-sismarq-generated": true
+      },
       "AcervoAmostragemRequest": {
         "properties": {
           "criterios": {
@@ -744,6 +793,33 @@
             "type": "string"
           }
         },
+        "type": "object",
+        "x-sismarq-generated": true
+      },
+      "AcervoEvento": {
+        "properties": {
+          "descricao": {
+            "type": "string"
+          },
+          "em": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "por": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "tipo": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "descricao",
+          "em",
+          "por",
+          "tipo"
+        ],
         "type": "object",
         "x-sismarq-generated": true
       },
@@ -1439,6 +1515,98 @@
         "type": "object",
         "x-sismarq-generated": true
       },
+      "AcervoNorma": {
+        "properties": {
+          "criada_em": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "ementa": {
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "numero": {
+            "type": "string"
+          },
+          "publicada_em": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "redacoes": {
+            "items": {
+              "$ref": "#/components/schemas/AcervoRedacao"
+            },
+            "type": "array"
+          },
+          "revogacao_ato": {
+            "type": "string"
+          },
+          "revogada_em": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "situacao": {
+            "type": "string"
+          },
+          "tem_rascunho": {
+            "type": "boolean"
+          },
+          "total_redacoes": {
+            "type": "integer"
+          },
+          "versao": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "criada_em",
+          "ementa",
+          "id",
+          "numero",
+          "publicada_em",
+          "redacoes",
+          "revogacao_ato",
+          "revogada_em",
+          "situacao",
+          "tem_rascunho",
+          "total_redacoes",
+          "versao"
+        ],
+        "type": "object",
+        "x-sismarq-generated": true
+      },
+      "AcervoNormaRequest": {
+        "properties": {
+          "ementa": {
+            "maxLength": 500,
+            "type": "string"
+          },
+          "motivo": {
+            "maxLength": 500,
+            "type": "string"
+          },
+          "numero": {
+            "maxLength": 9,
+            "type": "string"
+          },
+          "texto": {
+            "maxLength": 100000,
+            "type": "string"
+          }
+        },
+        "required": [
+          "ementa",
+          "numero",
+          "texto"
+        ],
+        "type": "object",
+        "x-sismarq-generated": true
+      },
       "AcervoPedido": {
         "properties": {
           "decidido_em": {
@@ -1615,6 +1783,214 @@
         "type": "object",
         "x-sismarq-generated": true
       },
+      "AcervoPrivado": {
+        "properties": {
+          "acesso_autorizado": {
+            "type": "boolean"
+          },
+          "acesso_condicoes": {
+            "type": "string"
+          },
+          "alienacoes": {
+            "items": {
+              "$ref": "#/components/schemas/AcervoAlienacao"
+            },
+            "type": "array"
+          },
+          "contato": {
+            "type": "string"
+          },
+          "convenio": {
+            "type": "string"
+          },
+          "criado_em": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "datas_limite": {
+            "type": "string"
+          },
+          "decreto_diario": {
+            "type": "string"
+          },
+          "decreto_em": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "decreto_numero": {
+            "type": "string"
+          },
+          "descricao": {
+            "type": "string"
+          },
+          "documento": {
+            "type": "string"
+          },
+          "eventos": {
+            "items": {
+              "$ref": "#/components/schemas/AcervoEvento"
+            },
+            "type": "array"
+          },
+          "guarda": {
+            "type": "string"
+          },
+          "guarda_em": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "guarda_termo": {
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "local_guarda": {
+            "type": "string"
+          },
+          "mensuracao": {
+            "type": "string"
+          },
+          "numero": {
+            "type": "string"
+          },
+          "parecer_comissao": {
+            "type": "string"
+          },
+          "parecer_em": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "parecer_favoravel": {
+            "nullable": true,
+            "type": "boolean"
+          },
+          "parecer_texto": {
+            "type": "string"
+          },
+          "servico_publico": {
+            "type": "boolean"
+          },
+          "situacao": {
+            "type": "string"
+          },
+          "tipo_titular": {
+            "type": "string"
+          },
+          "titular": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "acesso_autorizado",
+          "acesso_condicoes",
+          "alienacoes",
+          "contato",
+          "convenio",
+          "criado_em",
+          "datas_limite",
+          "decreto_diario",
+          "decreto_em",
+          "decreto_numero",
+          "descricao",
+          "documento",
+          "eventos",
+          "guarda",
+          "guarda_em",
+          "guarda_termo",
+          "id",
+          "local_guarda",
+          "mensuracao",
+          "numero",
+          "parecer_comissao",
+          "parecer_em",
+          "parecer_favoravel",
+          "parecer_texto",
+          "servico_publico",
+          "situacao",
+          "tipo_titular",
+          "titular"
+        ],
+        "type": "object",
+        "x-sismarq-generated": true
+      },
+      "AcervoPrivadoRequest": {
+        "properties": {
+          "acesso_autorizado": {
+            "type": "boolean"
+          },
+          "acesso_condicoes": {
+            "maxLength": 2000,
+            "type": "string"
+          },
+          "contato": {
+            "maxLength": 500,
+            "type": "string"
+          },
+          "convenio": {
+            "maxLength": 1000,
+            "type": "string"
+          },
+          "datas_limite": {
+            "maxLength": 100,
+            "type": "string"
+          },
+          "descricao": {
+            "maxLength": 8000,
+            "type": "string"
+          },
+          "documento": {
+            "maxLength": 20,
+            "type": "string"
+          },
+          "local_guarda": {
+            "maxLength": 500,
+            "type": "string"
+          },
+          "mensuracao": {
+            "maxLength": 200,
+            "type": "string"
+          },
+          "servico_publico": {
+            "type": "boolean"
+          },
+          "tipo_titular": {
+            "maxLength": 2,
+            "type": "string"
+          },
+          "titular": {
+            "maxLength": 200,
+            "type": "string"
+          }
+        },
+        "required": [
+          "descricao",
+          "tipo_titular",
+          "titular"
+        ],
+        "type": "object",
+        "x-sismarq-generated": true
+      },
+      "AcervoPublicacaoRequest": {
+        "properties": {
+          "diario": {
+            "maxLength": 200,
+            "type": "string"
+          },
+          "publicada_em": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "publicada_em"
+        ],
+        "type": "object",
+        "x-sismarq-generated": true
+      },
       "AcervoRecolhimento": {
         "properties": {
           "criado_em": {
@@ -1748,6 +2124,94 @@
           "motivo",
           "origem_id",
           "unidades"
+        ],
+        "type": "object",
+        "x-sismarq-generated": true
+      },
+      "AcervoRedacao": {
+        "properties": {
+          "criada_em": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "diario": {
+            "type": "string"
+          },
+          "ementa": {
+            "type": "string"
+          },
+          "motivo": {
+            "type": "string"
+          },
+          "publicada_em": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "situacao": {
+            "type": "string"
+          },
+          "texto": {
+            "type": "string"
+          },
+          "versao": {
+            "type": "integer"
+          },
+          "vigente_ate": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "criada_em",
+          "diario",
+          "ementa",
+          "motivo",
+          "publicada_em",
+          "situacao",
+          "texto",
+          "versao",
+          "vigente_ate"
+        ],
+        "type": "object",
+        "x-sismarq-generated": true
+      },
+      "AcervoRedacaoRequest": {
+        "properties": {
+          "ementa": {
+            "maxLength": 500,
+            "type": "string"
+          },
+          "motivo": {
+            "maxLength": 500,
+            "type": "string"
+          },
+          "texto": {
+            "maxLength": 100000,
+            "type": "string"
+          }
+        },
+        "required": [
+          "ementa",
+          "texto"
+        ],
+        "type": "object",
+        "x-sismarq-generated": true
+      },
+      "AcervoRevogacaoRequest": {
+        "properties": {
+          "ato": {
+            "maxLength": 500,
+            "type": "string"
+          },
+          "revogada_em": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "ato",
+          "revogada_em"
         ],
         "type": "object",
         "x-sismarq-generated": true
@@ -10874,6 +11338,519 @@
         ]
       }
     },
+    "/api/v1/acervo/normas": {
+      "get": {
+        "description": "Só o Arquivo Público. Todas as normas, inclusive as nunca publicadas, com a redação em vigor e se há rascunho (?q= busca no número, na ementa e no texto publicado).",
+        "operationId": "getAcervoNormas",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Page"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            },
+            "x-sismarq-generated": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "items": {
+                            "$ref": "#/components/schemas/AcervoNorma"
+                          },
+                          "type": "array"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/PaginationMeta"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Página de itens em `data`, paginação em `meta`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Instruções normativas (gestão)",
+        "tags": [
+          "acervo"
+        ]
+      },
+      "post": {
+        "description": "Só o Arquivo Público. Abre a norma (número N/AAAA) com a primeira redação em rascunho; o público só a vê depois de publicada (art. 54).",
+        "operationId": "postAcervoNormas",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcervoNormaRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-sismarq-generated": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoNorma"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Criar instrução normativa",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/normas/{id}": {
+      "get": {
+        "description": "A norma com todas as redações — as publicadas e o rascunho — a mais nova primeiro.",
+        "operationId": "getAcervoNormasId",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoNorma"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Instrução normativa (gestão)",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/normas/{id}/publicar": {
+      "post": {
+        "description": "O rascunho passa a ser a redação em vigor, com a data e o Diário Oficial; a anterior fica no histórico, vigente até esta data.",
+        "operationId": "postAcervoNormasIdPublicar",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcervoPublicacaoRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-sismarq-generated": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoNorma"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Publicar redação",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/normas/{id}/rascunho": {
+      "delete": {
+        "description": "Apaga a redação em rascunho. Se a norma nunca foi publicada, ela é apagada junto (204).",
+        "operationId": "deleteAcervoNormasIdRascunho",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoNorma"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Descartar rascunho",
+        "tags": [
+          "acervo"
+        ]
+      },
+      "put": {
+        "description": "Altera o rascunho existente ou abre uma nova redação da norma em vigor, com o motivo (o ato que altera). A redação publicada nunca muda.",
+        "operationId": "putAcervoNormasIdRascunho",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcervoRedacaoRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-sismarq-generated": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoNorma"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Salvar redação em rascunho",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/normas/{id}/revogar": {
+      "post": {
+        "description": "Encerra a vigência com o ato e a data; o texto continua consultável no histórico. Um rascunho pendente é descartado.",
+        "operationId": "postAcervoNormasIdRevogar",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcervoRevogacaoRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-sismarq-generated": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoNorma"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Revogar instrução normativa",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
     "/api/v1/acervo/painel": {
       "get": {
         "description": "Conta as unidades por situação (no corrente, transferir, no intermediário, avaliar eliminação, recolher, aguardando evento, bloqueada…), no escopo de quem pede.",
@@ -10979,6 +11956,757 @@
           }
         ],
         "summary": "Painel de situações",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/privados": {
+      "get": {
+        "description": "Só o Arquivo Público (o cadastro tem dados pessoais do titular — LGPD). ?q= busca no titular, no número e na descrição.",
+        "operationId": "getAcervoPrivados",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Page"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            },
+            "x-sismarq-generated": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "items": {
+                            "$ref": "#/components/schemas/AcervoPrivado"
+                          },
+                          "type": "array"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/PaginationMeta"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Página de itens em `data`, paginação em `meta`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Arquivos privados de interesse público",
+        "tags": [
+          "acervo"
+        ]
+      },
+      "post": {
+        "description": "Cadastro do arquivo de pessoa física ou jurídica (art. 55). A entidade privada de serviço público municipal já é de interesse público e social (art. 56, § 3º); as demais aguardam o parecer da Comissão Especial.",
+        "operationId": "postAcervoPrivados",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcervoPrivadoRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-sismarq-generated": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoPrivado"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Cadastrar arquivo privado",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/privados/{id}": {
+      "get": {
+        "description": "O cadastro, as etapas, o histórico e as alienações, com o prazo do direito de preferência calculado na hora (art. 58).",
+        "operationId": "getAcervoPrivadosId",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoPrivado"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Arquivo privado",
+        "tags": [
+          "acervo"
+        ]
+      },
+      "put": {
+        "description": "Corrige titular, descrição, acesso autorizado pelo titular (§ 2º) e convênio (art. 57). A etapa e a guarda não mudam por aqui.",
+        "operationId": "putAcervoPrivadosId",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoPrivado"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Alterar cadastro do arquivo privado",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/privados/{id}/alienacoes": {
+      "post": {
+        "description": "O titular que vai vender notifica o município, que tem 60 dias para manifestar interesse (art. 58).",
+        "operationId": "postAcervoPrivadosIdAlienacoes",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoPrivado"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Registrar notificação de alienação",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/privados/{id}/alienacoes/{alienacao}/decidir": {
+      "post": {
+        "description": "Interesse ou não na aquisição, com fundamento, dentro dos 60 dias; depois deles, a preferência caducou.",
+        "operationId": "postAcervoPrivadosIdAlienacoesAlienacaoDecidir",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "alienacao",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoPrivado"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Manifestação do município",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/privados/{id}/declarar": {
+      "post": {
+        "description": "Decreto que declara o arquivo de interesse público e social, depois do parecer favorável (art. 56).",
+        "operationId": "postAcervoPrivadosIdDeclarar",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoPrivado"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Registrar decreto de declaração",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/privados/{id}/guarda": {
+      "post": {
+        "description": "Doação (definitiva) ou depósito revogável no Arquivo Público, ou a revogação do depósito (art. 56, §§ 4º e 5º).",
+        "operationId": "postAcervoPrivadosIdGuarda",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoPrivado"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Registrar doação ou depósito",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/privados/{id}/parecer": {
+      "post": {
+        "description": "Parecer com a avaliação técnica (art. 56, § 1º): favorável, segue ao decreto; contrário, encerra a declaração.",
+        "operationId": "postAcervoPrivadosIdParecer",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoPrivado"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Registrar parecer da Comissão Especial",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/publico/normas": {
+      "get": {
+        "description": "Consulta pública, sem login: as normas vigentes e revogadas do Arquivo Público (art. 54), com a redação em vigor. ?q= busca no número, na ementa e no texto.",
+        "operationId": "getAcervoPublicoNormas",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Page"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            },
+            "x-sismarq-generated": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "items": {
+                            "$ref": "#/components/schemas/AcervoNorma"
+                          },
+                          "type": "array"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/PaginationMeta"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Página de itens em `data`, paginação em `meta`.",
+            "x-sismarq-generated": true
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [],
+        "summary": "Instruções normativas publicadas",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/publico/normas/{id}": {
+      "get": {
+        "description": "Consulta pública: a redação em vigor e todas as anteriores, cada uma com o período em que vigorou e o motivo da alteração (texto compilado).",
+        "operationId": "getAcervoPublicoNormasId",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoNorma"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [],
+        "summary": "Instrução normativa publicada",
         "tags": [
           "acervo"
         ]
@@ -26933,7 +28661,7 @@
   ],
   "tags": [
     {
-      "description": "Acervo — Gestão Arquivística. Plug-in — Unidades de arquivamento nas três idades (Lei 10.301/2019): classificação pela TTDD, prazos de guarda, localização física, bloqueio judicial, eliminação e recolhimento ao Arquivo Público. Depende de: atlas.",
+      "description": "Acervo — Gestão Arquivística. Plug-in — Unidades de arquivamento nas três idades (Lei 10.301/2019): classificação pela TTDD, prazos de guarda, localização física, bloqueio judicial, eliminação, recolhimento ao Arquivo Público, instruções normativas e arquivos privados de interesse público. Depende de: atlas.",
       "name": "acervo"
     },
     {

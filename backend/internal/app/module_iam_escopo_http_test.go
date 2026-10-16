@@ -283,7 +283,13 @@ func TestIAMDelegado(t *testing.T) {
 	lotar(http.StatusCreated, admin, deBID, perfilBlog, o.sub)
 	h.expect(http.StatusOK, http.MethodGet, "/api/v1/users/"+novoID.String(), delegado, "")
 	h.expect(http.StatusOK, http.MethodGet, "/api/v1/users/"+deBID.String(), delegado, "") // tem uma lotação na área
-	if lista := h.expect(http.StatusOK, http.MethodGet, "/api/v1/users?page_size=100&q=t_", delegado, "").Body.String(); !strings.Contains(lista, novoID.String()) {
+	// Busca pelo nome exato: todos os testes criam contas "t_…", e o prefixo
+	// passava de uma página (o teste falhava conforme a ordem alfabética).
+	var novoNome string
+	if err := h.d.DB.QueryRow(context.Background(), `SELECT username FROM users WHERE id = $1`, novoID).Scan(&novoNome); err != nil {
+		t.Fatal(err)
+	}
+	if lista := h.expect(http.StatusOK, http.MethodGet, "/api/v1/users?page_size=100&q="+novoNome, delegado, "").Body.String(); !strings.Contains(lista, novoID.String()) {
 		t.Fatalf("conta sem lotação aparece para o delegado: %s", lista)
 	}
 	if lotacoes := data[[]idResp](t, h.expect(http.StatusOK, http.MethodGet, "/api/v1/users/"+deBID.String()+"/lotacoes", delegado, "")); len(lotacoes) != 1 {

@@ -168,3 +168,40 @@ export function recolhiveis(itens: AcervoUnidade[], motivo: string): AcervoUnida
       : u.destinacao === "GUARDA_PERMANENTE" && !u.recolhida_em && u.fase !== "ELIMINADO",
   );
 }
+
+/** Situação da instrução normativa. */
+export const SITUACAO_NORMA: Record<string, { label: string; tone: Tone }> = {
+  RASCUNHO: { label: "Em elaboração", tone: "neutral" },
+  VIGENTE: { label: "Vigente", tone: "success" },
+  REVOGADA: { label: "Revogada", tone: "danger" },
+};
+
+export function situacaoNorma(s: string) {
+  return SITUACAO_NORMA[s] ?? { label: s, tone: "neutral" as Tone };
+}
+
+/** Etapa do arquivo privado (arts. 55 e 56). */
+export const SITUACAO_PRIVADO: Record<string, { label: string; tone: Tone }> = {
+  CADASTRADO: { label: "Aguardando parecer", tone: "info" },
+  COM_PARECER: { label: "Parecer favorável — aguardando decreto", tone: "warning" },
+  NAO_DECLARADO: { label: "Parecer contrário", tone: "neutral" },
+  DECLARADO: { label: "De interesse público e social", tone: "success" },
+};
+
+export function situacaoPrivado(s: string) {
+  return SITUACAO_PRIVADO[s] ?? { label: s, tone: "neutral" as Tone };
+}
+
+/** Guarda do arquivo declarado (art. 56, §§ 4º e 5º). */
+export const GUARDAS: Record<string, string> = {
+  TITULAR: "Com o titular",
+  DEPOSITADO: "Depositado no Arquivo Público (revogável)",
+  DOADO: "Doado ao Arquivo Público",
+};
+
+/** Manifestação do município na alienação (art. 58). */
+export const DECISOES_ALIENACAO: Record<string, string> = {
+  PENDENTE: "Aguardando a manifestação",
+  INTERESSE: "O município tem interesse",
+  SEM_INTERESSE: "O município não tem interesse",
+};

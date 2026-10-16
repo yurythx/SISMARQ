@@ -96,6 +96,16 @@ func MapError(err error) error {
 		return apperrors.NotFound("pedido não encontrado")
 	case errors.Is(err, domain.ErrRecolhimentoNaoExiste):
 		return apperrors.NotFound("recolhimento não encontrado")
+	case errors.Is(err, domain.ErrNormaNaoExiste):
+		return apperrors.NotFound("instrução normativa não encontrada")
+	case errors.Is(err, domain.ErrPrivadoNaoExiste):
+		return apperrors.NotFound("arquivo privado não encontrado")
+	case errors.Is(err, domain.ErrAlienacaoNaoExiste):
+		return apperrors.NotFound("alienação não encontrada")
+	case errors.Is(err, domain.ErrNormaSituacao), errors.Is(err, domain.ErrSemRascunho), errors.Is(err, domain.ErrNumeroNorma),
+		errors.Is(err, domain.ErrPrivadoSituacao), errors.Is(err, domain.ErrAlienacaoPendente), errors.Is(err, domain.ErrAlienacaoDecidida),
+		errors.Is(err, domain.ErrPreferenciaVencida):
+		return apperrors.Conflict(strings.TrimPrefix(err.Error(), "acervo: "))
 	case errors.Is(err, domain.ErrRecolhimentoSituacao), errors.Is(err, domain.ErrEmOutroRecolhimento), errors.Is(err, domain.ErrRecolhida),
 		errors.Is(err, domain.ErrNaoPermanente), errors.Is(err, domain.ErrRecolherDoCorrente):
 		return apperrors.Conflict(strings.TrimPrefix(err.Error(), "acervo: "))

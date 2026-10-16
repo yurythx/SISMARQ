@@ -90,6 +90,14 @@ func TestEveryRepositoryFailureIsPropagated(t *testing.T) {
 				return err
 			}
 		},
+		// Despublicar: o evento de desativação também tem de falhar junto.
+		"Despublicar": func() func(*application.Service) error {
+			svc := e.service(true)
+			return func(s *application.Service) error {
+				_, err := s.SetStatus(ctx, gestor, svc.ID, domain.StatusDraft)
+				return err
+			}
+		},
 		"Delete": func() func(*application.Service) error {
 			svc := e.service(false)
 			return func(s *application.Service) error { return s.Delete(ctx, gestor, svc.ID) }

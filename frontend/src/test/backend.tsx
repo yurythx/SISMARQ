@@ -71,6 +71,8 @@ export function mockBackend(routes: Record<string, Route>) {
     const route: Route = routes[key] ?? (prefix ? routes[prefix] : undefined) ?? { status: 404, error: { code: "NOT_FOUND", message: `sem rota: ${key}` } };
     const reply = typeof route === "function" ? await route(req) : route;
     const status = reply.status ?? 200;
+    // 204/205/304 não têm corpo (o construtor de Response lança).
+    if (status === 204 || status === 205 || status === 304) return new Response(null, { status });
     return new Response(
       JSON.stringify({ data: reply.data ?? null, meta: reply.meta, error: reply.error ?? null }),
       { status, headers: { "Content-Type": "application/json" } },

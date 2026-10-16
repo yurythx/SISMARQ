@@ -65,6 +65,12 @@ async function request<T>(
     },
   });
 
+  // 204 (ex.: rascunho de norma descartado, sala do Mercúrio marcada como
+  // lida) é sucesso sem corpo — não "resposta ilegível".
+  if (res.status === 204) {
+    return { data: undefined as T };
+  }
+
   let json: Envelope<T> | null = null;
   try {
     json = await res.json();
@@ -98,6 +104,7 @@ async function request<T>(
     "/tramite",
     "/atlas",
     "/gestao",
+    "/acervo",
     "/exemplos",
   ];
 

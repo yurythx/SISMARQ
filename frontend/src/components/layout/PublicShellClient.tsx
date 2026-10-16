@@ -23,6 +23,7 @@ const PUBLIC_LINKS: { href: string; label: string; module?: string }[] = [
   { href: "/contato", label: "Contato", module: "contact" },
   { href: "/procedimentos", label: "Procedimentos", module: "atlas" },
   { href: "/temporalidade", label: "Temporalidade", module: "atlas" },
+  { href: "/normas", label: "Normas", module: "acervo" },
 ];
 
 /** Shell do site institucional (visitante anônimo). Os links de plugins

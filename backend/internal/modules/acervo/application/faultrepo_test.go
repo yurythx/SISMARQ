@@ -471,6 +471,133 @@ func (fr *faultRepo) GestoresDaUnidade(ctx context.Context, db database.DBTX, un
 	return fr.inner.GestoresDaUnidade(ctx, db, unidade)
 }
 
+func (fr *faultRepo) InsertNorma(ctx context.Context, db database.DBTX, n domain.Norma) error {
+	if err := fr.hook("InsertNorma"); err != nil {
+		return err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.InsertNorma(ctx, db, n)
+}
+
+func (fr *faultRepo) GetNorma(ctx context.Context, db database.DBTX, id uuid.UUID, paraAtualizar bool) (domain.Norma, error) {
+	if err := fr.hook("GetNorma"); err != nil {
+		var z0 domain.Norma
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.GetNorma(ctx, db, id, paraAtualizar)
+}
+
+func (fr *faultRepo) ListNormas(ctx context.Context, db database.DBTX, q string, publicas bool, p pagination.Params) ([]domain.Norma, int64, error) {
+	if err := fr.hook("ListNormas"); err != nil {
+		var z0 []domain.Norma
+		var z1 int64
+		return z0, z1, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.ListNormas(ctx, db, q, publicas, p)
+}
+
+func (fr *faultRepo) UpdateNorma(ctx context.Context, db database.DBTX, n domain.Norma) error {
+	if err := fr.hook("UpdateNorma"); err != nil {
+		return err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.UpdateNorma(ctx, db, n)
+}
+
+func (fr *faultRepo) DeleteNorma(ctx context.Context, db database.DBTX, id uuid.UUID) error {
+	if err := fr.hook("DeleteNorma"); err != nil {
+		return err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.DeleteNorma(ctx, db, id)
+}
+
+func (fr *faultRepo) SalvarRedacao(ctx context.Context, db database.DBTX, norma uuid.UUID, r domain.Redacao, nova bool, por *uuid.UUID) error {
+	if err := fr.hook("SalvarRedacao"); err != nil {
+		return err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.SalvarRedacao(ctx, db, norma, r, nova, por)
+}
+
+func (fr *faultRepo) PublicarRedacao(ctx context.Context, db database.DBTX, norma uuid.UUID, r domain.Redacao, por *uuid.UUID) error {
+	if err := fr.hook("PublicarRedacao"); err != nil {
+		return err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.PublicarRedacao(ctx, db, norma, r, por)
+}
+
+func (fr *faultRepo) ApagarRascunho(ctx context.Context, db database.DBTX, norma uuid.UUID) error {
+	if err := fr.hook("ApagarRascunho"); err != nil {
+		return err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.ApagarRascunho(ctx, db, norma)
+}
+
+func (fr *faultRepo) InsertPrivado(ctx context.Context, db database.DBTX, p domain.Privado, por *uuid.UUID) (string, error) {
+	if err := fr.hook("InsertPrivado"); err != nil {
+		var z0 string
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.InsertPrivado(ctx, db, p, por)
+}
+
+func (fr *faultRepo) GetPrivado(ctx context.Context, db database.DBTX, id uuid.UUID, paraAtualizar bool) (domain.Privado, error) {
+	if err := fr.hook("GetPrivado"); err != nil {
+		var z0 domain.Privado
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.GetPrivado(ctx, db, id, paraAtualizar)
+}
+
+func (fr *faultRepo) ListPrivados(ctx context.Context, db database.DBTX, q string, p pagination.Params) ([]domain.Privado, int64, error) {
+	if err := fr.hook("ListPrivados"); err != nil {
+		var z0 []domain.Privado
+		var z1 int64
+		return z0, z1, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.ListPrivados(ctx, db, q, p)
+}
+
+func (fr *faultRepo) UpdatePrivado(ctx context.Context, db database.DBTX, p domain.Privado) error {
+	if err := fr.hook("UpdatePrivado"); err != nil {
+		return err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.UpdatePrivado(ctx, db, p)
+}
+
+func (fr *faultRepo) InsertEventoPrivado(ctx context.Context, db database.DBTX, privado uuid.UUID, e domain.Evento) error {
+	if err := fr.hook("InsertEventoPrivado"); err != nil {
+		return err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.InsertEventoPrivado(ctx, db, privado, e)
+}
+
+func (fr *faultRepo) InsertAlienacao(ctx context.Context, db database.DBTX, privado uuid.UUID, a domain.Alienacao, por *uuid.UUID) error {
+	if err := fr.hook("InsertAlienacao"); err != nil {
+		return err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.InsertAlienacao(ctx, db, privado, a, por)
+}
+
+func (fr *faultRepo) DecidirAlienacao(ctx context.Context, db database.DBTX, a domain.Alienacao, por *uuid.UUID) error {
+	if err := fr.hook("DecidirAlienacao"); err != nil {
+		return err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.DecidirAlienacao(ctx, db, a, por)
+}
+
 func (fr *faultRepo) ResolverUnidade(ctx context.Context, db database.DBTX, ref string) (uuid.UUID, error) {
 	if err := fr.hook("ResolverUnidade"); err != nil {
 		var z0 uuid.UUID

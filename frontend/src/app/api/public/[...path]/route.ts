@@ -24,6 +24,8 @@ const ALLOW: { method: string; prefix: string }[] = [
   { method: "GET", prefix: "v1/atlas/ttdd" },
   { method: "GET", prefix: "v1/atlas/workflows" },
   { method: "GET", prefix: "v1/atlas/modelos" },
+  // Acervo (ADR 036): instruções normativas publicadas, com o histórico.
+  { method: "GET", prefix: "v1/acervo/publico/" },
 ];
 
 async function forward(req: NextRequest, path: string[]): Promise<NextResponse> {

@@ -1,6 +1,6 @@
 "use client";
 
-import { Archive, FileUp, HandHelping, MapPin, Plus, Trash2, Truck } from "lucide-react";
+import { Archive, BookOpen, FileUp, HandHelping, Landmark, MapPin, Plus, Trash2, Truck } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -35,7 +35,7 @@ const ORDEM_PAINEL = [
 /** Acervo (ADR 032): as unidades de arquivamento no escopo de quem consulta,
  * com o painel do que transferir, avaliar ou recolher (Lei 10.301/2019). */
 export default function AcervoPage() {
-  const { can } = useSismarq();
+  const { can, canGlobal } = useSismarq();
   const [q, setQ] = useState("");
   const [fase, setFase] = useState("");
   const [sit, setSit] = useState("");
@@ -66,6 +66,14 @@ export default function AcervoPage() {
             <Link href="/acervo/emprestimos" className={buttonClass("secondary", "md")}>
               <HandHelping size={16} aria-hidden="true" /> Empréstimos
             </Link>
+            <Link href="/acervo/normas" className={buttonClass("secondary", "md")}>
+              <BookOpen size={16} aria-hidden="true" /> Normas
+            </Link>
+            {canGlobal("acervo:central") && (
+              <Link href="/acervo/privados" className={buttonClass("secondary", "md")}>
+                <Landmark size={16} aria-hidden="true" /> Arquivos privados
+              </Link>
+            )}
             <Link href="/acervo/locais" className={buttonClass("secondary", "md")}>
               <MapPin size={16} aria-hidden="true" /> Locais
             </Link>

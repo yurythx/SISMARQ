@@ -1241,3 +1241,86 @@ export interface AcervoRecolhimento {
   itens: AcervoUnidade[];
   total_itens: number;
 }
+
+// --- Instruções normativas e arquivos privados (Fase 4; arts. 54 a 58; ADR 036)
+
+/** Uma redação (versão) da instrução normativa. */
+export interface AcervoRedacao {
+  versao: number;
+  ementa: string;
+  texto: string;
+  motivo: string;
+  situacao: "RASCUNHO" | "PUBLICADA" | string;
+  publicada_em: string | null;
+  diario: string;
+  /** Até quando vigorou (a publicação da seguinte ou a revogação). */
+  vigente_ate: string | null;
+  criada_em: string;
+}
+
+/** Instrução normativa do Arquivo Público (art. 54). */
+export interface AcervoNorma {
+  id: string;
+  numero: string;
+  situacao: "RASCUNHO" | "VIGENTE" | "REVOGADA" | string;
+  ementa: string;
+  versao: number;
+  publicada_em: string | null;
+  revogada_em: string | null;
+  revogacao_ato: string;
+  tem_rascunho: boolean;
+  criada_em: string;
+  redacoes: AcervoRedacao[];
+  total_redacoes: number;
+}
+
+export interface AcervoEvento {
+  tipo: string;
+  descricao: string;
+  em: string;
+}
+
+/** Notificação de alienação e o direito de preferência (art. 58). */
+export interface AcervoAlienacao {
+  id: string;
+  notificado_em: string;
+  adquirente: string;
+  condicoes: string;
+  decisao: "PENDENTE" | "INTERESSE" | "SEM_INTERESSE" | string;
+  fundamento: string;
+  decidido_em: string | null;
+  prazo_final: string;
+  vencida: boolean;
+}
+
+/** Arquivo privado de interesse público e social (arts. 55 a 58). */
+export interface AcervoPrivado {
+  id: string;
+  numero: string;
+  titular: string;
+  tipo_titular: "PF" | "PJ" | string;
+  documento: string;
+  contato: string;
+  descricao: string;
+  datas_limite: string;
+  mensuracao: string;
+  local_guarda: string;
+  servico_publico: boolean;
+  situacao: "CADASTRADO" | "COM_PARECER" | "NAO_DECLARADO" | "DECLARADO" | string;
+  parecer_comissao: string;
+  parecer_texto: string;
+  parecer_favoravel: boolean | null;
+  parecer_em: string | null;
+  decreto_numero: string;
+  decreto_em: string | null;
+  decreto_diario: string;
+  acesso_autorizado: boolean;
+  acesso_condicoes: string;
+  guarda: "TITULAR" | "DOADO" | "DEPOSITADO" | string;
+  guarda_em: string | null;
+  guarda_termo: string;
+  convenio: string;
+  criado_em: string;
+  eventos: AcervoEvento[];
+  alienacoes: AcervoAlienacao[];
+}

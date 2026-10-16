@@ -100,6 +100,38 @@ func TestEveryRepositoryFailureIsPropagated(t *testing.T) {
 		}
 		return r
 	}
+	// norma: com a primeira redação em rascunho ou já publicada.
+	norma := func(publicada bool) domain.Norma {
+		n, err := real.CriarNorma(ctx, admin, numeroNum(), domain.Redacao{Ementa: "e", Texto: "t"})
+		if err == nil && publicada {
+			n, err = real.PublicarNorma(ctx, admin, n.ID, application.Publicacao{Em: e.agora})
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		return n
+	}
+	// privado: até a etapa dada (0 cadastrado, 1 com parecer, 2 declarado,
+	// 3 com alienação pendente).
+	privado := func(etapa int) domain.Privado {
+		p, err := real.CadastrarPrivado(ctx, admin, fundoFamilia())
+		passos := []func() (domain.Privado, error){
+			func() (domain.Privado, error) {
+				return real.RegistrarParecer(ctx, admin, p.ID, application.Parecer{Comissao: "c", Texto: "t", Favoravel: true, Em: e.agora})
+			},
+			func() (domain.Privado, error) { return real.Declarar(ctx, admin, p.ID, "D", "", e.agora) },
+			func() (domain.Privado, error) {
+				return real.NotificarAlienacao(ctx, admin, p.ID, domain.Alienacao{NotificadoEm: e.agora})
+			},
+		}
+		for i := 0; err == nil && i < etapa; i++ {
+			p, err = passos[i]()
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		return p
+	}
 	bloqueada := func() (application.Detalhe, uuid.UUID) {
 		d := comLocal()
 		d, err := real.Bloquear(ctx, admin, d.ID, "1", "")
@@ -245,6 +277,104 @@ func TestEveryRepositoryFailureIsPropagated(t *testing.T) {
 		"Recolhimentos": func() func(*application.Service) error {
 			return func(s *application.Service) error {
 				_, _, err := s.Recolhimentos(ctx, admin, pagination.New(1, 5, 100))
+				return err
+			}
+		},
+		"CriarNorma": func() func(*application.Service) error {
+			return func(s *application.Service) error {
+				_, err := s.CriarNorma(ctx, admin, numeroNum(), domain.Redacao{Ementa: "e", Texto: "t"})
+				return err
+			}
+		},
+		"SalvarRascunho": func() func(*application.Service) error {
+			n := norma(false)
+			return func(s *application.Service) error {
+				_, err := s.SalvarRascunho(ctx, admin, n.ID, domain.Redacao{Ementa: "e", Texto: "t2", Motivo: "m"})
+				return err
+			}
+		},
+		"PublicarNorma": func() func(*application.Service) error {
+			n := norma(false)
+			return func(s *application.Service) error {
+				_, err := s.PublicarNorma(ctx, admin, n.ID, application.Publicacao{Em: e.agora})
+				return err
+			}
+		},
+		"DescartarRascunho": func() func(*application.Service) error {
+			n := norma(false)
+			return func(s *application.Service) error { _, err := s.DescartarRascunho(ctx, admin, n.ID); return err }
+		},
+		"DescartarAlteracao": func() func(*application.Service) error {
+			n := norma(true)
+			if _, err := real.SalvarRascunho(ctx, admin, n.ID, domain.Redacao{Ementa: "e", Texto: "t2", Motivo: "m"}); err != nil {
+				t.Fatal(err)
+			}
+			return func(s *application.Service) error { _, err := s.DescartarRascunho(ctx, admin, n.ID); return err }
+		},
+		"RevogarNorma": func() func(*application.Service) error {
+			n := norma(true)
+			if _, err := real.SalvarRascunho(ctx, admin, n.ID, domain.Redacao{Ementa: "e", Texto: "t2", Motivo: "m"}); err != nil {
+				t.Fatal(err)
+			}
+			return func(s *application.Service) error {
+				_, err := s.RevogarNorma(ctx, admin, n.ID, e.agora, "IN")
+				return err
+			}
+		},
+		"Normas": func() func(*application.Service) error {
+			return func(s *application.Service) error {
+				_, _, err := s.Normas(ctx, admin, "", pagination.New(1, 5, 100))
+				return err
+			}
+		},
+		"NormaPublica": func() func(*application.Service) error {
+			n := norma(true)
+			return func(s *application.Service) error { _, err := s.NormaPublica(ctx, n.ID); return err }
+		},
+		"CadastrarPrivado": func() func(*application.Service) error {
+			return func(s *application.Service) error {
+				_, err := s.CadastrarPrivado(ctx, admin, fundoFamilia())
+				return err
+			}
+		},
+		"AlterarPrivado": func() func(*application.Service) error {
+			p := privado(0)
+			return func(s *application.Service) error {
+				_, err := s.AlterarPrivado(ctx, admin, p.ID, fundoFamilia())
+				return err
+			}
+		},
+		"RegistrarParecer": func() func(*application.Service) error {
+			p := privado(0)
+			return func(s *application.Service) error {
+				_, err := s.RegistrarParecer(ctx, admin, p.ID, application.Parecer{Comissao: "c", Texto: "t", Favoravel: true, Em: e.agora})
+				return err
+			}
+		},
+		"MudarGuarda": func() func(*application.Service) error {
+			p := privado(2)
+			return func(s *application.Service) error {
+				_, err := s.MudarGuarda(ctx, admin, p.ID, "DOADO", "t", e.agora)
+				return err
+			}
+		},
+		"NotificarAlienacao": func() func(*application.Service) error {
+			p := privado(2)
+			return func(s *application.Service) error {
+				_, err := s.NotificarAlienacao(ctx, admin, p.ID, domain.Alienacao{NotificadoEm: e.agora})
+				return err
+			}
+		},
+		"DecidirAlienacao": func() func(*application.Service) error {
+			p := privado(3)
+			return func(s *application.Service) error {
+				_, err := s.DecidirAlienacao(ctx, admin, p.ID, p.Alienacoes[0].ID, "INTERESSE", "f")
+				return err
+			}
+		},
+		"Privados": func() func(*application.Service) error {
+			return func(s *application.Service) error {
+				_, _, err := s.Privados(ctx, admin, "", pagination.New(1, 5, 100))
 				return err
 			}
 		},

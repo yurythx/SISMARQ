@@ -56,6 +56,14 @@ describe("apiClient", () => {
     await expect(apiClient.get("v1/integrations")).rejects.toBeInstanceOf(ApiError);
   });
 
+  it("204 é sucesso sem corpo (não lê JSON)", async () => {
+    const json = vi.fn();
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, status: 204, json }));
+    const { data } = await apiClient.delete("v1/acervo/normas/n1/rascunho");
+    expect(data).toBeUndefined();
+    expect(json).not.toHaveBeenCalled();
+  });
+
   it("throws a generic ApiError when the response body is not JSON", async () => {
     vi.stubGlobal(
       "fetch",
