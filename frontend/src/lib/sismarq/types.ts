@@ -1048,6 +1048,9 @@ export interface AcervoUnidade {
   fim_intermediaria: string | null;
   situacao: string;
   local_caminho: string;
+  /** Entrada no Arquivo Público (Fase 4); a guarda passa a ser dele. */
+  recolhida_em: string | null;
+  recolhimento_id: string | null;
 }
 
 export interface AcervoBloqueio {
@@ -1204,5 +1207,37 @@ export interface AcervoListagem {
   criada_em: string;
   itens: AcervoItemListagem[];
   pedidos: AcervoPedido[];
+  total_itens: number;
+}
+
+// --- Recolhimento (Fase 4; Lei 10.301/2019, arts. 5º, VII, 50, 51 e 53; ADR 035)
+
+/** Preparo exigido pelo art. 53 antes da entrada no Arquivo Público. */
+export interface AcervoPreparo {
+  classificados: boolean;
+  avaliados: boolean;
+  organizados: boolean;
+  higienizados: boolean;
+  acondicionados: boolean;
+}
+
+/** Recolhimento ao Arquivo Público: o instrumento descritivo e, depois da
+ * entrada, o registro de entrada. */
+export interface AcervoRecolhimento {
+  id: string;
+  numero: string;
+  origem_id: string;
+  motivo: "REGULAR" | "EXTINCAO" | "DESESTATIZACAO" | string;
+  fundamento: string;
+  preparo: AcervoPreparo;
+  historico: string;
+  observacao: string;
+  situacao: "ENVIADO" | "RECEBIDO" | "DEVOLVIDO" | "CANCELADO" | string;
+  criado_em: string;
+  recebido_em: string | null;
+  registro_entrada: string;
+  local_id: string | null;
+  devolucao_motivo: string;
+  itens: AcervoUnidade[];
   total_itens: number;
 }

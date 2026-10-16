@@ -14,7 +14,7 @@ e a divergência é registrada na seção 6.
 | **Tabela de Temporalidade (TTDD)** | As TTDDs aprovadas pela CCPAD e publicadas no DIORONDON-e, de ago/2025 a set/2026: 13 tabelas, por secretaria. É o mesmo arquivo de `docs/ttdd.pdf`, já carregado no Atlas com 1.686 séries. |
 | **Artigo científico (SISMARQ e RDC-Arq)** | A solução técnica. O SEI cuida da fase corrente e o SISMARQ das fases intermediária e permanente. O artigo descreve três módulos (pipeline, taxonomia e descarte), as exigências do Decreto 10.278/2020 e a busca no Typesense. |
 
-Registrado em 2026-10-15; **Fases 1, 2 e 3 entregues** no mesmo dia (ADRs 032, 033 e 034 — falta a validação da contagem dos prazos e dos Anexos pela Divisão de Arquivo, a ponte com o Trâmite e os ritos especiais da eliminação). Os artigos citados são da Lei 10.301/2019, salvo
+Registrado em 2026-10-15; **Fases 1, 2 e 3 e o recolhimento da Fase 4 entregues** no mesmo dia (ADRs 032 a 035 — falta a validação da contagem dos prazos e dos Anexos pela Divisão de Arquivo, a ponte com o Trâmite e os ritos especiais da eliminação). Os artigos citados são da Lei 10.301/2019, salvo
 indicação em contrário.
 
 ---
@@ -266,6 +266,11 @@ manter a guarda.
 - **Normas do Arquivo:** instruções normativas (art. 54) publicadas e
   consultáveis no sistema.
 
+**Situação (ADR 035):** recolhimento regular e especiais (extinção e
+desestatização), preparo do art. 53, instrumento descritivo, registro de
+entrada e cópia avisada à origem prontos. Faltam os arquivos privados
+(arts. 55 a 58) e as instruções normativas (art. 54).
+
 **Pronto quando** um recolhimento da secretaria piloto entrar pelo sistema
 e o órgão de origem receber o registro de entrada.
 
@@ -432,7 +437,7 @@ Fase 0 ──► Fase 1 ──► Fase 2 ──► Fase 3 ──► Fase 4 ─�
 | Bloqueio por ação judicial | Arts. 32, II e 44 | 1 | **Pronto** (ADR 032) |
 | TTDD nos sistemas informatizados | Art. 45 | 7 | Parcial (API pública) |
 | Documentos digitais e híbridos | Art. 48 | 5 | Falta |
-| Recolhimento com registro de entrada | Arts. 5º, VII e 53 | 4 | Falta |
+| Recolhimento com registro de entrada | Arts. 5º, VII e 53 | 4 | **Pronto** (preparo, instrumento descritivo, registro e cópia à origem — ADR 035) |
 | Arquivos privados de interesse público | Arts. 55 a 58 | 4 | Falta |
 | Capacitação | Arts. 5º, VIII e 11, VIII | 8 | Falta |
 | Digitalização com PDF/A, metadados e hash | Decreto 10.278; artigo 4.1 | 5 | Falta |

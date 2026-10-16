@@ -143,6 +143,9 @@ func CalcularPrazos(u Unidade, s Serie, bloqueada bool, hoje time.Time) Prazos {
 func cumprido(fim *time.Time, hoje time.Time) bool { return fim != nil && !hoje.Before(*fim) }
 
 func situacao(u Unidade, p Prazos, dest Destinacao, bloqueada bool, hoje time.Time) string {
+	if u.RecolhidaEm != nil {
+		return SituacaoRecolhida
+	}
 	switch u.Fase {
 	case FasePermanente:
 		return SituacaoPermanente

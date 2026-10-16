@@ -1,6 +1,6 @@
 "use client";
 
-import { FileUp, HandHelping, MapPin, Plus, Trash2, Truck } from "lucide-react";
+import { Archive, FileUp, HandHelping, MapPin, Plus, Trash2, Truck } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -28,6 +28,7 @@ const ORDEM_PAINEL = [
   "NO_CORRENTE",
   "NO_INTERMEDIARIO",
   "PERMANENTE",
+  "RECOLHIDA",
   "ELIMINADA",
 ];
 
@@ -55,6 +56,9 @@ export default function AcervoPage() {
           <>
             <Link href="/acervo/guias" className={buttonClass("secondary", "md")}>
               <Truck size={16} aria-hidden="true" /> Guias
+            </Link>
+            <Link href="/acervo/recolhimentos" className={buttonClass("secondary", "md")}>
+              <Archive size={16} aria-hidden="true" /> Recolhimentos
             </Link>
             <Link href="/acervo/eliminacao" className={buttonClass("secondary", "md")}>
               <Trash2 size={16} aria-hidden="true" /> Eliminação

@@ -39,7 +39,7 @@ type Module struct {
 // New constrói o módulo. ttdd é a porta para a Tabela de Temporalidade
 // (adaptador do Atlas, ligado em internal/app).
 func New(deps modkit.Deps, ttdd domain.TTDD) *Module {
-	svc := application.NewService(deps.Pool, infrastructure.NewRepository(), ttdd, deps.Outbox, deps.Logger)
+	svc := application.NewService(deps.Pool, infrastructure.NewRepository(), ttdd, deps.Outbox, deps.Logger).WithNotificacoes(deps.Notificacoes)
 	return &Module{svc: svc, handlers: transport.NewHandlers(svc, deps.Logger, deps.Config.MaxPageSize)}
 }
 
@@ -48,7 +48,7 @@ func (m *Module) Manifest() kernel.Manifest {
 	return kernel.Manifest{
 		Key:            Key,
 		Name:           "Acervo — Gestão Arquivística",
-		Description:    "Unidades de arquivamento nas três idades (Lei 10.301/2019): classificação pela TTDD, prazos de guarda, localização física e bloqueio judicial.",
+		Description:    "Unidades de arquivamento nas três idades (Lei 10.301/2019): classificação pela TTDD, prazos de guarda, localização física, bloqueio judicial, eliminação e recolhimento ao Arquivo Público.",
 		DefaultEnabled: true,
 		DependsOn:      []string{"atlas"},
 		Icon:           "archive",
@@ -57,7 +57,8 @@ func (m *Module) Manifest() kernel.Manifest {
 			{Key: string(auth.PermAcervoRead), Description: "Consultar as unidades de arquivamento (no escopo concedido)"},
 			{Key: string(auth.PermAcervoManage), Description: "Cadastrar, alterar, localizar e transferir unidades de arquivamento (agente setorial, art. 9º)"},
 			{Key: string(auth.PermAcervoBloqueio), Description: "Registrar e liberar bloqueio judicial (arts. 32, II, e 44)"},
-			{Key: string(auth.PermAcervoCentral), Description: "Manter os locais físicos do Arquivo Público (órgão central)"},
+			{Key: string(auth.PermAcervoAvaliacao), Description: "Conduzir a eliminação como membro da CSPAD: relação, ata, edital, amostragem e termo (arts. 31 a 40)"},
+			{Key: string(auth.PermAcervoCentral), Description: "Arquivo Público (órgão central): locais, comissões, autorização de eliminação e entrada dos recolhimentos (arts. 5º, 19 e 53)"},
 		},
 	}
 }

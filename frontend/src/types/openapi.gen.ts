@@ -544,6 +544,110 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/acervo/recolhimentos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Recolhimentos ao Arquivo Público
+         * @description Recolhimentos da origem no escopo; o Arquivo Público (acervo:central) vê todos. Mais recentes primeiro.
+         */
+        get: operations["getAcervoRecolhimentos"];
+        put?: never;
+        /**
+         * Enviar recolhimento
+         * @description A origem relaciona as unidades de guarda permanente e declara o preparo do art. 53 (classificadas, avaliadas, organizadas, higienizadas e acondicionadas). Regular: no intermediário com o prazo cumprido, ou permanente guardada no órgão (art. 42). Extinção e desestatização (arts. 50 e 51): em qualquer fase, com o ato ou edital. As unidades só mudam de guarda na entrada.
+         */
+        post: operations["postAcervoRecolhimentos"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/acervo/recolhimentos/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Recolhimento
+         * @description O recolhimento com as unidades: é o instrumento descritivo do art. 53 e, depois da entrada, o registro de entrada (art. 5º, VII).
+         */
+        get: operations["getAcervoRecolhimentosId"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/acervo/recolhimentos/{id}/cancelar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Cancelar recolhimento
+         * @description A origem desiste do recolhimento ainda não recebido.
+         */
+        post: operations["postAcervoRecolhimentosIdCancelar"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/acervo/recolhimentos/{id}/devolver": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Devolver recolhimento à origem
+         * @description Só o Arquivo Público, com o que falta (ex.: preparo do art. 53 incompleto). A origem é avisada e envia de novo.
+         */
+        post: operations["postAcervoRecolhimentosIdDevolver"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/acervo/recolhimentos/{id}/receber": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Registrar entrada no Arquivo Público
+         * @description Só o Arquivo Público. Confere cada unidade de novo, gera o número do registro de entrada, passa as unidades à guarda permanente do Arquivo (proveniência mantida) e envia a cópia do registro a quem gere o acervo da origem (art. 5º, VII).
+         */
+        post: operations["postAcervoRecolhimentosIdReceber"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/acervo/unidades": {
         parameters: {
             query?: never;
@@ -4224,6 +4328,10 @@ export interface components {
             posicao: string;
             prazos: components["schemas"]["AcervoPrazos"];
             quantidade: number;
+            /** Format: date-time */
+            recolhida_em: string | null;
+            /** Format: uuid */
+            recolhimento_id: string | null;
             serie: components["schemas"]["AcervoSerieResumo"];
             situacao: string;
             /** @enum {string} */
@@ -4269,6 +4377,10 @@ export interface components {
             solicitante_id: string;
             /** Format: uuid */
             unidade_arquivamento_id: string;
+        };
+        AcervoEntradaRequest: {
+            /** Format: uuid */
+            local_id?: string | null;
         };
         AcervoGuia: {
             /** Format: date-time */
@@ -4332,6 +4444,10 @@ export interface components {
             observacoes: string;
             posicao: string;
             quantidade: number;
+            /** Format: date-time */
+            recolhida_em: string | null;
+            /** Format: uuid */
+            recolhimento_id: string | null;
             retirada: boolean;
             situacao: string;
             /** @enum {string} */
@@ -4493,6 +4609,57 @@ export interface components {
             regra_intermediaria: string;
             situacao: string;
         };
+        AcervoPreparo: {
+            acondicionados: boolean;
+            avaliados: boolean;
+            classificados: boolean;
+            higienizados: boolean;
+            organizados: boolean;
+        };
+        AcervoPreparoInput: {
+            acondicionados?: boolean;
+            avaliados?: boolean;
+            classificados?: boolean;
+            higienizados?: boolean;
+            organizados?: boolean;
+        };
+        AcervoRecolhimento: {
+            /** Format: date-time */
+            criado_em: string;
+            /** Format: uuid */
+            criado_por: string | null;
+            devolucao_motivo: string;
+            fundamento: string;
+            historico: string;
+            /** Format: uuid */
+            id: string;
+            itens: components["schemas"]["AcervoUnidadeLista"][];
+            /** Format: uuid */
+            local_id: string | null;
+            motivo: string;
+            numero: string;
+            observacao: string;
+            /** Format: uuid */
+            origem_id: string;
+            preparo: components["schemas"]["AcervoPreparo"];
+            /** Format: date-time */
+            recebido_em: string | null;
+            /** Format: uuid */
+            recebido_por: string | null;
+            registro_entrada: string;
+            situacao: string;
+            total_itens: number;
+        };
+        AcervoRecolhimentoRequest: {
+            fundamento?: string;
+            historico?: string;
+            motivo: string;
+            observacao?: string;
+            /** Format: uuid */
+            origem_id: string;
+            preparo?: components["schemas"]["AcervoPreparoInput"];
+            unidades: string[];
+        };
         AcervoSerieResumo: {
             codigo: string;
             descritor: string;
@@ -4543,6 +4710,10 @@ export interface components {
             observacoes: string;
             posicao: string;
             quantidade: number;
+            /** Format: date-time */
+            recolhida_em: string | null;
+            /** Format: uuid */
+            recolhimento_id: string | null;
             situacao: string;
             /** @enum {string} */
             tipo: "CAIXA" | "DOCUMENTO" | "DOSSIE" | "LIVRO" | "MAPA" | "OUTRO" | "PASTA" | "PROCESSO";
@@ -7642,6 +7813,216 @@ export interface operations {
                         data?: {
                             [key: string]: number;
                         };
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    getAcervoRecolhimentos: {
+        parameters: {
+            query?: {
+                page?: components["parameters"]["Page"];
+                page_size?: components["parameters"]["PageSize"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Página de itens em `data`, paginação em `meta`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoRecolhimento"][];
+                        meta?: components["schemas"]["PaginationMeta"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    postAcervoRecolhimentos: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
+                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
+                 */
+                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AcervoRecolhimentoRequest"];
+            };
+        };
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoRecolhimento"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    getAcervoRecolhimentosId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoRecolhimento"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    postAcervoRecolhimentosIdCancelar: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
+                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
+                 */
+                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoRecolhimento"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    postAcervoRecolhimentosIdDevolver: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
+                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
+                 */
+                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AcervoMotivoRequest"];
+            };
+        };
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoRecolhimento"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    postAcervoRecolhimentosIdReceber: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
+                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
+                 */
+                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AcervoEntradaRequest"];
+            };
+        };
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoRecolhimento"];
                     };
                 };
             };

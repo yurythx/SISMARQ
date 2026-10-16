@@ -384,6 +384,14 @@ components:
                     $ref: '#/components/schemas/AcervoPrazos'
                 quantidade:
                     type: integer
+                recolhida_em:
+                    format: date-time
+                    nullable: true
+                    type: string
+                recolhimento_id:
+                    format: uuid
+                    nullable: true
+                    type: string
                 serie:
                     $ref: '#/components/schemas/AcervoSerieResumo'
                 situacao:
@@ -433,6 +441,8 @@ components:
                 - posicao
                 - prazos
                 - quantidade
+                - recolhida_em
+                - recolhimento_id
                 - serie
                 - situacao
                 - tipo
@@ -529,6 +539,14 @@ components:
                 - solicitante
                 - solicitante_id
                 - unidade_arquivamento_id
+            type: object
+            x-sismarq-generated: true
+        AcervoEntradaRequest:
+            properties:
+                local_id:
+                    format: uuid
+                    nullable: true
+                    type: string
             type: object
             x-sismarq-generated: true
         AcervoGuia:
@@ -677,6 +695,14 @@ components:
                     type: string
                 quantidade:
                     type: integer
+                recolhida_em:
+                    format: date-time
+                    nullable: true
+                    type: string
+                recolhimento_id:
+                    format: uuid
+                    nullable: true
+                    type: string
                 retirada:
                     type: boolean
                 situacao:
@@ -722,6 +748,8 @@ components:
                 - observacoes
                 - posicao
                 - quantidade
+                - recolhida_em
+                - recolhimento_id
                 - retirada
                 - situacao
                 - tipo
@@ -1145,6 +1173,144 @@ components:
                 - situacao
             type: object
             x-sismarq-generated: true
+        AcervoPreparo:
+            properties:
+                acondicionados:
+                    type: boolean
+                avaliados:
+                    type: boolean
+                classificados:
+                    type: boolean
+                higienizados:
+                    type: boolean
+                organizados:
+                    type: boolean
+            required:
+                - acondicionados
+                - avaliados
+                - classificados
+                - higienizados
+                - organizados
+            type: object
+            x-sismarq-generated: true
+        AcervoPreparoInput:
+            properties:
+                acondicionados:
+                    type: boolean
+                avaliados:
+                    type: boolean
+                classificados:
+                    type: boolean
+                higienizados:
+                    type: boolean
+                organizados:
+                    type: boolean
+            type: object
+            x-sismarq-generated: true
+        AcervoRecolhimento:
+            properties:
+                criado_em:
+                    format: date-time
+                    type: string
+                criado_por:
+                    format: uuid
+                    nullable: true
+                    type: string
+                devolucao_motivo:
+                    type: string
+                fundamento:
+                    type: string
+                historico:
+                    type: string
+                id:
+                    format: uuid
+                    type: string
+                itens:
+                    items:
+                        $ref: '#/components/schemas/AcervoUnidadeLista'
+                    type: array
+                local_id:
+                    format: uuid
+                    nullable: true
+                    type: string
+                motivo:
+                    type: string
+                numero:
+                    type: string
+                observacao:
+                    type: string
+                origem_id:
+                    format: uuid
+                    type: string
+                preparo:
+                    $ref: '#/components/schemas/AcervoPreparo'
+                recebido_em:
+                    format: date-time
+                    nullable: true
+                    type: string
+                recebido_por:
+                    format: uuid
+                    nullable: true
+                    type: string
+                registro_entrada:
+                    type: string
+                situacao:
+                    type: string
+                total_itens:
+                    type: integer
+            required:
+                - criado_em
+                - criado_por
+                - devolucao_motivo
+                - fundamento
+                - historico
+                - id
+                - itens
+                - local_id
+                - motivo
+                - numero
+                - observacao
+                - origem_id
+                - preparo
+                - recebido_em
+                - recebido_por
+                - registro_entrada
+                - situacao
+                - total_itens
+            type: object
+            x-sismarq-generated: true
+        AcervoRecolhimentoRequest:
+            properties:
+                fundamento:
+                    maxLength: 500
+                    type: string
+                historico:
+                    maxLength: 8000
+                    type: string
+                motivo:
+                    maxLength: 20
+                    type: string
+                observacao:
+                    maxLength: 1000
+                    type: string
+                origem_id:
+                    format: uuid
+                    type: string
+                preparo:
+                    $ref: '#/components/schemas/AcervoPreparoInput'
+                unidades:
+                    items:
+                        format: uuid
+                        type: string
+                    maxItems: 2000
+                    minItems: 1
+                    type: array
+            required:
+                - motivo
+                - origem_id
+                - unidades
+            type: object
+            x-sismarq-generated: true
         AcervoSerieResumo:
             properties:
                 codigo:
@@ -1259,6 +1425,14 @@ components:
                     type: string
                 quantidade:
                     type: integer
+                recolhida_em:
+                    format: date-time
+                    nullable: true
+                    type: string
+                recolhimento_id:
+                    format: uuid
+                    nullable: true
+                    type: string
                 situacao:
                     type: string
                 tipo:
@@ -1301,6 +1475,8 @@ components:
                 - observacoes
                 - posicao
                 - quantidade
+                - recolhida_em
+                - recolhimento_id
                 - situacao
                 - tipo
                 - unidade_id
@@ -7624,6 +7800,254 @@ paths:
             security:
                 - bearerAuth: []
             summary: Painel de situações
+            tags:
+                - acervo
+    /api/v1/acervo/recolhimentos:
+        get:
+            description: Recolhimentos da origem no escopo; o Arquivo Público (acervo:central) vê todos. Mais recentes primeiro.
+            operationId: getAcervoRecolhimentos
+            parameters:
+                - $ref: '#/components/parameters/Page'
+                - $ref: '#/components/parameters/PageSize'
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            items:
+                                                $ref: '#/components/schemas/AcervoRecolhimento'
+                                            type: array
+                                        meta:
+                                            $ref: '#/components/schemas/PaginationMeta'
+                                      type: object
+                    description: Página de itens em `data`, paginação em `meta`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Recolhimentos ao Arquivo Público
+            tags:
+                - acervo
+        post:
+            description: 'A origem relaciona as unidades de guarda permanente e declara o preparo do art. 53 (classificadas, avaliadas, organizadas, higienizadas e acondicionadas). Regular: no intermediário com o prazo cumprido, ou permanente guardada no órgão (art. 42). Extinção e desestatização (arts. 50 e 51): em qualquer fase, com o ato ou edital. As unidades só mudam de guarda na entrada.'
+            operationId: postAcervoRecolhimentos
+            parameters:
+                - $ref: '#/components/parameters/IdempotencyKey'
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AcervoRecolhimentoRequest'
+                required: true
+                x-sismarq-generated: true
+            responses:
+                "201":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoRecolhimento'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Enviar recolhimento
+            tags:
+                - acervo
+    /api/v1/acervo/recolhimentos/{id}:
+        get:
+            description: 'O recolhimento com as unidades: é o instrumento descritivo do art. 53 e, depois da entrada, o registro de entrada (art. 5º, VII).'
+            operationId: getAcervoRecolhimentosId
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoRecolhimento'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Recolhimento
+            tags:
+                - acervo
+    /api/v1/acervo/recolhimentos/{id}/cancelar:
+        post:
+            description: A origem desiste do recolhimento ainda não recebido.
+            operationId: postAcervoRecolhimentosIdCancelar
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                    type: string
+                - $ref: '#/components/parameters/IdempotencyKey'
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoRecolhimento'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Cancelar recolhimento
+            tags:
+                - acervo
+    /api/v1/acervo/recolhimentos/{id}/devolver:
+        post:
+            description: 'Só o Arquivo Público, com o que falta (ex.: preparo do art. 53 incompleto). A origem é avisada e envia de novo.'
+            operationId: postAcervoRecolhimentosIdDevolver
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                    type: string
+                - $ref: '#/components/parameters/IdempotencyKey'
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AcervoMotivoRequest'
+                required: true
+                x-sismarq-generated: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoRecolhimento'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Devolver recolhimento à origem
+            tags:
+                - acervo
+    /api/v1/acervo/recolhimentos/{id}/receber:
+        post:
+            description: Só o Arquivo Público. Confere cada unidade de novo, gera o número do registro de entrada, passa as unidades à guarda permanente do Arquivo (proveniência mantida) e envia a cópia do registro a quem gere o acervo da origem (art. 5º, VII).
+            operationId: postAcervoRecolhimentosIdReceber
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                    type: string
+                - $ref: '#/components/parameters/IdempotencyKey'
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AcervoEntradaRequest'
+                required: true
+                x-sismarq-generated: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoRecolhimento'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Registrar entrada no Arquivo Público
             tags:
                 - acervo
     /api/v1/acervo/unidades:
@@ -16775,7 +17199,7 @@ servers:
     - description: Mesma origem (produção, atrás de um reverse proxy)
       url: /
 tags:
-    - description: 'Acervo — Gestão Arquivística. Plug-in — Unidades de arquivamento nas três idades (Lei 10.301/2019): classificação pela TTDD, prazos de guarda, localização física e bloqueio judicial. Depende de: atlas.'
+    - description: 'Acervo — Gestão Arquivística. Plug-in — Unidades de arquivamento nas três idades (Lei 10.301/2019): classificação pela TTDD, prazos de guarda, localização física, bloqueio judicial, eliminação e recolhimento ao Arquivo Público. Depende de: atlas.'
       name: acervo
     - name: administracao
     - description: Atlas — Procedimentos e Temporalidade. Plug-in — Procedimentos canônicos de processo (padrão SEI), Tabela de Temporalidade (TTDD) oficial e assistente sobre fluxos e TTDD.

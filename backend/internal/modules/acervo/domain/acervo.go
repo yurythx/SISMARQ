@@ -120,6 +120,10 @@ type Unidade struct {
 	CreatedBy         *uuid.UUID  `json:"created_by"`
 	CreatedAt         time.Time   `json:"created_at"`
 	UpdatedAt         time.Time   `json:"updated_at"`
+	// RecolhidaEm: entrada no Arquivo Público (Fase 4). Daí em diante a
+	// guarda é do Arquivo; a unidade produtora segue como proveniência.
+	RecolhidaEm    *time.Time `json:"recolhida_em"`
+	RecolhimentoID *uuid.UUID `json:"recolhimento_id"`
 }
 
 var tipos = map[Tipo]bool{TipoCaixa: true, TipoPasta: true, TipoLivro: true, TipoProcesso: true, TipoDossie: true,

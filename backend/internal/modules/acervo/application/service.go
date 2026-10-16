@@ -21,6 +21,7 @@ import (
 	"github.com/yurythx/sismarq/internal/platform/audit"
 	"github.com/yurythx/sismarq/internal/platform/auth"
 	"github.com/yurythx/sismarq/internal/platform/database"
+	"github.com/yurythx/sismarq/internal/platform/notificacoes"
 	"github.com/yurythx/sismarq/internal/platform/outbox"
 )
 
@@ -48,6 +49,7 @@ type Service struct {
 	outbox *outbox.Writer
 	logger *slog.Logger
 	agora  func() time.Time
+	avisos *notificacoes.Service
 }
 
 // NewService cria o serviço.
@@ -92,6 +94,11 @@ func MapError(err error) error {
 		return apperrors.NotFound("relação de eliminação não encontrada")
 	case errors.Is(err, domain.ErrPedidoNaoExiste):
 		return apperrors.NotFound("pedido não encontrado")
+	case errors.Is(err, domain.ErrRecolhimentoNaoExiste):
+		return apperrors.NotFound("recolhimento não encontrado")
+	case errors.Is(err, domain.ErrRecolhimentoSituacao), errors.Is(err, domain.ErrEmOutroRecolhimento), errors.Is(err, domain.ErrRecolhida),
+		errors.Is(err, domain.ErrNaoPermanente), errors.Is(err, domain.ErrRecolherDoCorrente):
+		return apperrors.Conflict(strings.TrimPrefix(err.Error(), "acervo: "))
 	case errors.Is(err, domain.ErrSemComissao), errors.Is(err, domain.ErrListagemSituacao), errors.Is(err, domain.ErrListagemVazia),
 		errors.Is(err, domain.ErrSemParecer), errors.Is(err, domain.ErrQuorum), errors.Is(err, domain.ErrEmOutraListagem),
 		errors.Is(err, domain.ErrEditalNoPrazo), errors.Is(err, domain.ErrPedidoPendente), errors.Is(err, domain.ErrSemAmostra),
@@ -259,7 +266,11 @@ func (s *Service) carregar(ctx context.Context, tx pgx.Tx, identity auth.Identit
 	if !le(identity, u.UnidadeID) {
 		return u, domain.ErrNaoEncontrada
 	}
-	if !auth.Can(identity, perm, auth.InUnidade(u.UnidadeID)) {
+	pode := auth.Can(identity, perm, auth.InUnidade(u.UnidadeID))
+	if perm == auth.PermAcervoManage {
+		pode = gerePara(identity, u)
+	}
+	if !pode {
 		return u, domain.ErrForaDoEscopo
 	}
 	return u, nil
@@ -282,6 +293,9 @@ func (s *Service) Alterar(ctx context.Context, identity auth.Identity, id uuid.U
 		}
 		if antes.Fase == domain.FasePermanente && novo.CodigoClassificacao != antes.CodigoClassificacao {
 			return domain.ErrPermanente
+		}
+		if novo.UnidadeID != antes.UnidadeID && antes.RecolhidaEm != nil {
+			return &domain.ErrValidacao{Campo: "unidade_id", Motivo: "a proveniência da unidade recolhida não muda (art. 5º, VII)"}
 		}
 		if novo.UnidadeID != antes.UnidadeID && !gere(identity, novo.UnidadeID) {
 			return domain.ErrForaDoEscopo
@@ -491,7 +505,7 @@ func (s *Service) Get(ctx context.Context, identity auth.Identity, id uuid.UUID)
 	if d.Emprestimos, err = s.repo.ListEmprestimos(ctx, s.pool, u.ID); err != nil {
 		return Detalhe{}, MapError(err)
 	}
-	d.Pode = Permissoes{Gerir: gere(identity, u.UnidadeID), Bloquear: auth.Can(identity, auth.PermAcervoBloqueio, auth.InUnidade(u.UnidadeID))}
+	d.Pode = Permissoes{Gerir: gerePara(identity, u), Bloquear: auth.Can(identity, auth.PermAcervoBloqueio, auth.InUnidade(u.UnidadeID))}
 	return d, nil
 }
 

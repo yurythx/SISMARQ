@@ -400,6 +400,77 @@ func (fr *faultRepo) DecidirPedido(ctx context.Context, db database.DBTX, p doma
 	return fr.inner.DecidirPedido(ctx, db, p)
 }
 
+func (fr *faultRepo) InsertRecolhimento(ctx context.Context, db database.DBTX, r domain.Recolhimento, unidades []uuid.UUID) (string, error) {
+	if err := fr.hook("InsertRecolhimento"); err != nil {
+		var z0 string
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.InsertRecolhimento(ctx, db, r, unidades)
+}
+
+func (fr *faultRepo) GetRecolhimento(ctx context.Context, db database.DBTX, id uuid.UUID, paraAtualizar bool) (domain.Recolhimento, error) {
+	if err := fr.hook("GetRecolhimento"); err != nil {
+		var z0 domain.Recolhimento
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.GetRecolhimento(ctx, db, id, paraAtualizar)
+}
+
+func (fr *faultRepo) ListRecolhimentos(ctx context.Context, db database.DBTX, f domain.Filtro, p pagination.Params) ([]domain.Recolhimento, int64, error) {
+	if err := fr.hook("ListRecolhimentos"); err != nil {
+		var z0 []domain.Recolhimento
+		var z1 int64
+		return z0, z1, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.ListRecolhimentos(ctx, db, f, p)
+}
+
+func (fr *faultRepo) ReceberRecolhimento(ctx context.Context, db database.DBTX, r domain.Recolhimento) (string, error) {
+	if err := fr.hook("ReceberRecolhimento"); err != nil {
+		var z0 string
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.ReceberRecolhimento(ctx, db, r)
+}
+
+func (fr *faultRepo) SetRecolhimentoSituacao(ctx context.Context, db database.DBTX, r domain.Recolhimento) error {
+	if err := fr.hook("SetRecolhimentoSituacao"); err != nil {
+		return err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.SetRecolhimentoSituacao(ctx, db, r)
+}
+
+func (fr *faultRepo) EmRecolhimentoAberto(ctx context.Context, db database.DBTX, unidade uuid.UUID) (bool, error) {
+	if err := fr.hook("EmRecolhimentoAberto"); err != nil {
+		var z0 bool
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.EmRecolhimentoAberto(ctx, db, unidade)
+}
+
+func (fr *faultRepo) MarcarRecolhida(ctx context.Context, db database.DBTX, u domain.Unidade, c domain.Calculo) error {
+	if err := fr.hook("MarcarRecolhida"); err != nil {
+		return err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.MarcarRecolhida(ctx, db, u, c)
+}
+
+func (fr *faultRepo) GestoresDaUnidade(ctx context.Context, db database.DBTX, unidade uuid.UUID) ([]uuid.UUID, error) {
+	if err := fr.hook("GestoresDaUnidade"); err != nil {
+		var z0 []uuid.UUID
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.GestoresDaUnidade(ctx, db, unidade)
+}
+
 func (fr *faultRepo) ResolverUnidade(ctx context.Context, db database.DBTX, ref string) (uuid.UUID, error) {
 	if err := fr.hook("ResolverUnidade"); err != nil {
 		var z0 uuid.UUID

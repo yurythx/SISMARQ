@@ -26,7 +26,7 @@ func NewRepository() *Repository { return &Repository{} }
 const unidadeCols = `u.id, u.numero, u.tipo, u.codigo_classificacao, u.assunto, u.unidade_id, u.data_inicial, u.data_final,
 	u.quantidade, u.especificacao, u.observacoes, u.fase, u.destinacao, u.data_evento, u.contas_aprovadas_em,
 	u.nivel_acesso, u.hipotese_legal, u.local_id, u.posicao, u.created_by, u.created_at, u.updated_at,
-	u.fim_corrente, u.fim_intermediaria, u.situacao`
+	u.fim_corrente, u.fim_intermediaria, u.situacao, u.recolhida_em, u.recolhimento_id`
 
 func scanUnidade(row pgx.Row, extra ...any) (domain.Unidade, domain.Calculo, error) {
 	var u domain.Unidade
@@ -34,7 +34,7 @@ func scanUnidade(row pgx.Row, extra ...any) (domain.Unidade, domain.Calculo, err
 	dest := []any{&u.ID, &u.Numero, &u.Tipo, &u.CodigoClassificacao, &u.Assunto, &u.UnidadeID, &u.DataInicial, &u.DataFinal,
 		&u.Quantidade, &u.Especificacao, &u.Observacoes, &u.Fase, &u.Destinacao, &u.DataEvento, &u.ContasAprovadasEm,
 		&u.NivelAcesso, &u.HipoteseLegal, &u.LocalID, &u.Posicao, &u.CreatedBy, &u.CreatedAt, &u.UpdatedAt,
-		&c.FimCorrente, &c.FimIntermediaria, &c.Situacao}
+		&c.FimCorrente, &c.FimIntermediaria, &c.Situacao, &u.RecolhidaEm, &u.RecolhimentoID}
 	err := row.Scan(append(dest, extra...)...)
 	return u, c, err
 }

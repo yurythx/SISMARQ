@@ -83,6 +83,23 @@ func TestEveryRepositoryFailureIsPropagated(t *testing.T) {
 			return op(s)
 		}
 	}
+	// recolhimento: extinção (qualquer fase) de uma unidade de guarda
+	// permanente da origem, com um gestor lotado para a cópia do registro.
+	e.gestorLotado(t, e.unidade)
+	recolhimento := func() domain.Recolhimento {
+		u := e.nova(codPerm)
+		u.LocalID = &predio.ID
+		d, err := real.Criar(ctx, admin, u)
+		if err != nil {
+			t.Fatal(err)
+		}
+		r, err := real.CriarRecolhimento(ctx, admin, application.NovoRecolhimento{OrigemID: e.unidade, Motivo: domain.MotivoExtincao,
+			Fundamento: "Lei", Preparo: preparo, Unidades: []uuid.UUID{d.ID}})
+		if err != nil {
+			t.Fatal(err)
+		}
+		return r
+	}
 	bloqueada := func() (application.Detalhe, uuid.UUID) {
 		d := comLocal()
 		d, err := real.Bloquear(ctx, admin, d.ID, "1", "")
@@ -191,6 +208,43 @@ func TestEveryRepositoryFailureIsPropagated(t *testing.T) {
 		"Guias": func() func(*application.Service) error {
 			return func(s *application.Service) error {
 				_, _, err := s.Guias(ctx, admin, pagination.New(1, 5, 100))
+				return err
+			}
+		},
+		"CriarRecolhimento": func() func(*application.Service) error {
+			u := e.nova(codPerm)
+			u.LocalID = &predio.ID
+			d, err := real.Criar(ctx, admin, u)
+			if err != nil {
+				t.Fatal(err)
+			}
+			return func(s *application.Service) error {
+				_, err := s.CriarRecolhimento(ctx, admin, application.NovoRecolhimento{OrigemID: e.unidade, Motivo: domain.MotivoExtincao,
+					Fundamento: "Lei", Preparo: preparo, Unidades: []uuid.UUID{d.ID}})
+				return err
+			}
+		},
+		"ReceberRecolhimento": func() func(*application.Service) error {
+			r := recolhimento()
+			return func(s *application.Service) error {
+				_, err := s.ReceberRecolhimento(ctx, admin, r.ID, application.Entrada{LocalID: &predio.ID})
+				return err
+			}
+		},
+		"DevolverRecolhimento": func() func(*application.Service) error {
+			r := recolhimento()
+			return func(s *application.Service) error {
+				_, err := s.DevolverRecolhimento(ctx, admin, r.ID, "falta")
+				return err
+			}
+		},
+		"CancelarRecolhimento": func() func(*application.Service) error {
+			r := recolhimento()
+			return func(s *application.Service) error { _, err := s.CancelarRecolhimento(ctx, admin, r.ID); return err }
+		},
+		"Recolhimentos": func() func(*application.Service) error {
+			return func(s *application.Service) error {
+				_, _, err := s.Recolhimentos(ctx, admin, pagination.New(1, 5, 100))
 				return err
 			}
 		},

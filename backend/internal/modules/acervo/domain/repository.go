@@ -83,6 +83,20 @@ type Repository interface {
 	InsertPedido(ctx context.Context, db database.DBTX, listagem uuid.UUID, p Pedido) error
 	DecidirPedido(ctx context.Context, db database.DBTX, p Pedido) error
 
+	// Fase 4 (ADR 035).
+	InsertRecolhimento(ctx context.Context, db database.DBTX, r Recolhimento, unidades []uuid.UUID) (string, error)
+	GetRecolhimento(ctx context.Context, db database.DBTX, id uuid.UUID, paraAtualizar bool) (Recolhimento, error)
+	ListRecolhimentos(ctx context.Context, db database.DBTX, f Filtro, p pagination.Params) ([]Recolhimento, int64, error)
+	// ReceberRecolhimento grava a entrada e devolve o número do registro.
+	ReceberRecolhimento(ctx context.Context, db database.DBTX, r Recolhimento) (string, error)
+	SetRecolhimentoSituacao(ctx context.Context, db database.DBTX, r Recolhimento) error
+	EmRecolhimentoAberto(ctx context.Context, db database.DBTX, unidade uuid.UUID) (bool, error)
+	// MarcarRecolhida põe a unidade sob a guarda do Arquivo Público.
+	MarcarRecolhida(ctx context.Context, db database.DBTX, u Unidade, c Calculo) error
+	// GestoresDaUnidade: quem gere o acervo da unidade por lotação (para a
+	// cópia do registro de entrada, art. 5º, VII).
+	GestoresDaUnidade(ctx context.Context, db database.DBTX, unidade uuid.UUID) ([]uuid.UUID, error)
+
 	// ResolverUnidade acha a unidade produtora ativa pela sigla (ou id).
 	ResolverUnidade(ctx context.Context, db database.DBTX, ref string) (uuid.UUID, error)
 

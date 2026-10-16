@@ -42,6 +42,7 @@ export type Contract = [
   Accepts<T.AcervoGuia, S["AcervoGuia"]>,
   Accepts<T.AcervoComissao, S["AcervoComissao"]>,
   Accepts<T.AcervoListagem, S["AcervoListagem"]>,
+  Accepts<T.AcervoRecolhimento, S["AcervoRecolhimento"]>,
   Accepts<T.PageMeta, S["PaginationMeta"]>,
   Accepts<T.Me, S["IamMeResponse"]>,
   Accepts<T.PermissionInfo, S["KernelPermissionInfo"]>,

@@ -154,6 +154,15 @@ export default function UnidadePage() {
               {u.nivel_acesso !== "PUBLICO" && <Badge tone="warning">Acesso {NIVEIS[u.nivel_acesso].toLowerCase()}</Badge>}
             </div>
             {info.ajuda && <p className="-mt-2 text-sm text-muted">{info.ajuda}</p>}
+            {u.recolhida_em && u.recolhimento_id && (
+              <p className="-mt-2 text-sm">
+                Sob a guarda do Arquivo Público desde {fmtDia(u.recolhida_em)} —{" "}
+                <Link href={`/acervo/recolhimentos/${u.recolhimento_id}`} className="underline">
+                  ver o recolhimento e o registro de entrada
+                </Link>
+                .
+              </p>
+            )}
 
             <div className="grid gap-4 lg:grid-cols-2">
               <Card>
