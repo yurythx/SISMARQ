@@ -61,9 +61,9 @@ func (r *Repository) membros(ctx context.Context, db database.DBTX, c *domain.Co
 	return nil
 }
 
-func (r *Repository) umaComissao(ctx context.Context, db database.DBTX, q string, arg any) (domain.Comissao, error) {
+func (r *Repository) umaComissao(ctx context.Context, db database.DBTX, q string, args ...any) (domain.Comissao, error) {
 	var c domain.Comissao
-	err := db.QueryRow(ctx, q, arg).Scan(&c.ID, &c.Tipo, &c.EntidadeID, &c.Nome, &c.Portaria, &c.Ativa)
+	err := db.QueryRow(ctx, q, args...).Scan(&c.ID, &c.Tipo, &c.EntidadeID, &c.Nome, &c.Portaria, &c.Ativa)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return c, domain.ErrComissaoNaoExiste
 	}
@@ -82,6 +82,15 @@ func (r *Repository) GetComissao(ctx context.Context, db database.DBTX, id uuid.
 func (r *Repository) ComissaoDaUnidade(ctx context.Context, db database.DBTX, unidade uuid.UUID) (domain.Comissao, error) {
 	c, err := r.umaComissao(ctx, db, `SELECT `+comissaoCols+` FROM acervo_comissoes c JOIN unidades un ON un.entidade_id = c.entidade_id
 		WHERE un.id = $1 AND c.ativa AND c.tipo = 'SETORIAL'`, unidade)
+	if errors.Is(err, domain.ErrComissaoNaoExiste) {
+		return c, domain.ErrSemComissao
+	}
+	return c, err
+}
+
+// ComissaoCentral acha a CCPAD ativa.
+func (r *Repository) ComissaoCentral(ctx context.Context, db database.DBTX) (domain.Comissao, error) {
+	c, err := r.umaComissao(ctx, db, `SELECT `+comissaoCols+` FROM acervo_comissoes c WHERE c.ativa AND c.tipo = 'CENTRAL'`)
 	if errors.Is(err, domain.ErrComissaoNaoExiste) {
 		return c, domain.ErrSemComissao
 	}
@@ -115,29 +124,39 @@ func (r *Repository) ListComissoes(ctx context.Context, db database.DBTX) ([]dom
 	return out, nil
 }
 
-const listagemCols = `l.id, l.numero, l.comissao_id, l.unidade_id, l.situacao, l.responsavel_selecao, l.parecer_juridico,
+const listagemCols = `l.id, l.numero, l.comissao_id, l.unidade_id, l.situacao, l.rito, l.responsavel_selecao, l.parecer_juridico,
 	l.contas_exercicios, l.contas_aprovadas_em, l.ata_numero, l.ata_em, l.ata_local, l.ata_manifestacoes, l.ata_presentes,
-	l.autorizada_por, l.autorizada_em, l.devolucao_motivo, l.edital_numero, l.edital_publicado_em, l.edital_diario,
-	l.amostra_criterios, l.amostra_percentual::float8, l.amostra_em, l.termo_eliminado_em, l.termo_acompanhamento,
-	l.termo_destinacao_papel, l.termo_registrado_por, l.criada_por, l.criada_em,
+	l.autorizada_por, l.autorizada_em, l.devolucao_motivo, l.ccpad_autorizada_por, l.ccpad_autorizada_em,
+	l.semad_autorizada_por, l.semad_autorizada_em, l.ata_signum, l.termo_signum, l.edital_numero, l.edital_publicado_em,
+	l.edital_diario, l.amostra_criterios, l.amostra_percentual::float8, l.amostra_em, l.termo_eliminado_em,
+	l.termo_acompanhamento, l.termo_destinacao_papel, l.termo_registrado_por, l.termo_copia_em, l.termo_copia_arquivo,
+	l.termo_copia_semad, l.criada_por, l.criada_em,
 	(SELECT COUNT(*) FROM acervo_listagem_itens i WHERE i.listagem_id = l.id)`
 
 func scanListagem(row pgx.Row) (domain.Listagem, error) {
 	var l domain.Listagem
-	err := row.Scan(&l.ID, &l.Numero, &l.ComissaoID, &l.UnidadeID, &l.Situacao, &l.ResponsavelSelecao, &l.ParecerJuridico,
+	err := row.Scan(&l.ID, &l.Numero, &l.ComissaoID, &l.UnidadeID, &l.Situacao, &l.Rito, &l.ResponsavelSelecao, &l.ParecerJuridico,
 		&l.ContasExercicios, &l.ContasAprovadasEm, &l.AtaNumero, &l.AtaEm, &l.AtaLocal, &l.AtaManifestacoes, &l.AtaPresentes,
-		&l.AutorizadaPor, &l.AutorizadaEm, &l.DevolucaoMotivo, &l.EditalNumero, &l.EditalPublicadoEm, &l.EditalDiario,
-		&l.AmostraCriterios, &l.AmostraPercentual, &l.AmostraEm, &l.TermoEliminadoEm, &l.TermoAcompanhamento,
-		&l.TermoDestinacaoPapel, &l.TermoRegistradoPor, &l.CriadaPor, &l.CriadaEm, &l.TotalItens)
+		&l.AutorizadaPor, &l.AutorizadaEm, &l.DevolucaoMotivo, &l.CcpadAutorizadaPor, &l.CcpadAutorizadaEm,
+		&l.SemadAutorizadaPor, &l.SemadAutorizadaEm, &l.AtaSignum, &l.TermoSignum, &l.EditalNumero, &l.EditalPublicadoEm,
+		&l.EditalDiario, &l.AmostraCriterios, &l.AmostraPercentual, &l.AmostraEm, &l.TermoEliminadoEm,
+		&l.TermoAcompanhamento, &l.TermoDestinacaoPapel, &l.TermoRegistradoPor, &l.TermoCopiaEm, &l.TermoCopiaArquivo,
+		&l.TermoCopiaSEMAD, &l.CriadaPor, &l.CriadaEm, &l.TotalItens)
+	if l.AtaSignum == "" {
+		l.AtaSignum = domain.SignumAusente
+	}
+	if l.TermoSignum == "" {
+		l.TermoSignum = domain.SignumAusente
+	}
 	return l, err
 }
 
 // InsertListagem grava a relação; devolve o número (LE-AAAA-NNNNN).
 func (r *Repository) InsertListagem(ctx context.Context, db database.DBTX, l domain.Listagem) (string, error) {
 	var numero string
-	if err := db.QueryRow(ctx, `INSERT INTO acervo_listagens (id, comissao_id, unidade_id, responsavel_selecao, parecer_juridico,
-		contas_exercicios, contas_aprovadas_em, criada_por, criada_em) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING numero`,
-		l.ID, l.ComissaoID, l.UnidadeID, l.ResponsavelSelecao, l.ParecerJuridico, l.ContasExercicios, l.ContasAprovadasEm,
+	if err := db.QueryRow(ctx, `INSERT INTO acervo_listagens (id, comissao_id, unidade_id, rito, responsavel_selecao, parecer_juridico,
+		contas_exercicios, contas_aprovadas_em, criada_por, criada_em) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING numero`,
+		l.ID, l.ComissaoID, l.UnidadeID, l.Rito, l.ResponsavelSelecao, l.ParecerJuridico, l.ContasExercicios, l.ContasAprovadasEm,
 		l.CriadaPor, l.CriadaEm).Scan(&numero); err != nil {
 		return "", fmt.Errorf("acervo.InsertListagem: %w", err)
 	}
@@ -147,16 +166,19 @@ func (r *Repository) InsertListagem(ctx context.Context, db database.DBTX, l dom
 // UpdateListagem grava o cabeçalho e a etapa (as CHECKs do banco conferem a
 // ordem do rito).
 func (r *Repository) UpdateListagem(ctx context.Context, db database.DBTX, l domain.Listagem) error {
-	if _, err := db.Exec(ctx, `UPDATE acervo_listagens SET situacao = $2, responsavel_selecao = $3, parecer_juridico = $4,
-		contas_exercicios = $5, contas_aprovadas_em = $6, ata_numero = $7, ata_em = $8, ata_local = $9, ata_manifestacoes = $10,
-		ata_presentes = $11, autorizada_por = $12, autorizada_em = $13, devolucao_motivo = $14, edital_numero = $15,
-		edital_publicado_em = $16, edital_diario = $17, amostra_criterios = $18, amostra_percentual = $19, amostra_em = $20,
-		termo_eliminado_em = $21, termo_acompanhamento = $22, termo_destinacao_papel = $23, termo_registrado_por = $24
+	if _, err := db.Exec(ctx, `UPDATE acervo_listagens SET situacao = $2, rito = $3, responsavel_selecao = $4, parecer_juridico = $5,
+		contas_exercicios = $6, contas_aprovadas_em = $7, ata_numero = $8, ata_em = $9, ata_local = $10, ata_manifestacoes = $11,
+		ata_presentes = $12, autorizada_por = $13, autorizada_em = $14, devolucao_motivo = $15, ccpad_autorizada_por = $16,
+		ccpad_autorizada_em = $17, semad_autorizada_por = $18, semad_autorizada_em = $19, ata_signum = $20, termo_signum = $21,
+		edital_numero = $22, edital_publicado_em = $23, edital_diario = $24, amostra_criterios = $25, amostra_percentual = $26,
+		amostra_em = $27, termo_eliminado_em = $28, termo_acompanhamento = $29, termo_destinacao_papel = $30,
+		termo_registrado_por = $31, termo_copia_em = $32, termo_copia_arquivo = $33, termo_copia_semad = $34
 		WHERE id = $1`,
-		l.ID, l.Situacao, l.ResponsavelSelecao, l.ParecerJuridico, l.ContasExercicios, l.ContasAprovadasEm, l.AtaNumero, l.AtaEm,
-		l.AtaLocal, l.AtaManifestacoes, l.AtaPresentes, l.AutorizadaPor, l.AutorizadaEm, l.DevolucaoMotivo, l.EditalNumero,
+		l.ID, l.Situacao, l.Rito, l.ResponsavelSelecao, l.ParecerJuridico, l.ContasExercicios, l.ContasAprovadasEm, l.AtaNumero, l.AtaEm,
+		l.AtaLocal, l.AtaManifestacoes, l.AtaPresentes, l.AutorizadaPor, l.AutorizadaEm, l.DevolucaoMotivo, l.CcpadAutorizadaPor,
+		l.CcpadAutorizadaEm, l.SemadAutorizadaPor, l.SemadAutorizadaEm, l.AtaSignum, l.TermoSignum, l.EditalNumero,
 		l.EditalPublicadoEm, l.EditalDiario, l.AmostraCriterios, l.AmostraPercentual, l.AmostraEm, l.TermoEliminadoEm,
-		l.TermoAcompanhamento, l.TermoDestinacaoPapel, l.TermoRegistradoPor); err != nil {
+		l.TermoAcompanhamento, l.TermoDestinacaoPapel, l.TermoRegistradoPor, l.TermoCopiaEm, l.TermoCopiaArquivo, l.TermoCopiaSEMAD); err != nil {
 		return fmt.Errorf("acervo.UpdateListagem: %w", err)
 	}
 	return nil

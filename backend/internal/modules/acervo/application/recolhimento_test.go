@@ -132,7 +132,7 @@ func TestRecolhimentoRegular(t *testing.T) {
 	if _, err := s.ReceberRecolhimento(ctx, arquivo, r.ID, application.Entrada{LocalID: &nada}); codigoDe(err) != apperrors.CodeNotFound {
 		t.Fatalf("local inexistente: %v", err)
 	}
-	local, err := s.SalvarLocal(ctx, admin, nil, domain.Local{Tipo: domain.LocalDeposito, Nome: "Depósito do Arquivo Público", Ativo: true})
+	local, err := s.SalvarLocal(ctx, admin, nil, domain.Local{Tipo: domain.LocalDeposito, Nome: "Depósito do Arquivo Público " + uuid.NewString()[:8], Ativo: true})
 	if err != nil {
 		t.Fatal(err)
 	}

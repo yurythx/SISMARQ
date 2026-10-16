@@ -35,6 +35,9 @@ type Calculo struct {
 type Repository interface {
 	InsertUnidade(ctx context.Context, db database.DBTX, u Unidade, c Calculo) (string, error)
 	GetUnidade(ctx context.Context, db database.DBTX, id uuid.UUID, paraAtualizar bool) (Unidade, Calculo, error)
+	// GetUnidadePorTramite acha a unidade gerada pelo processo encerrado
+	// (ingresso idempotente, ADR 039).
+	GetUnidadePorTramite(ctx context.Context, db database.DBTX, processo uuid.UUID) (Unidade, Calculo, error)
 	UpdateUnidade(ctx context.Context, db database.DBTX, u Unidade, c Calculo) error
 	SetCalculo(ctx context.Context, db database.DBTX, id uuid.UUID, c Calculo) error
 	SetFase(ctx context.Context, db database.DBTX, id uuid.UUID, fase Fase, c Calculo) error
@@ -71,6 +74,8 @@ type Repository interface {
 	GetComissao(ctx context.Context, db database.DBTX, id uuid.UUID) (Comissao, error)
 	ListComissoes(ctx context.Context, db database.DBTX) ([]Comissao, error)
 	ComissaoDaUnidade(ctx context.Context, db database.DBTX, unidade uuid.UUID) (Comissao, error)
+	// ComissaoCentral: a CCPAD ativa (art. 31, § 7º; rito do art. 36).
+	ComissaoCentral(ctx context.Context, db database.DBTX) (Comissao, error)
 
 	InsertListagem(ctx context.Context, db database.DBTX, l Listagem) (string, error)
 	UpdateListagem(ctx context.Context, db database.DBTX, l Listagem) error
@@ -131,6 +136,30 @@ type Repository interface {
 	ListVerificacoes(ctx context.Context, db database.DBTX, id uuid.UUID, limite int) ([]Verificacao, error)
 	// EquipeCentral: quem tem acervo:central global (alertas de integridade).
 	EquipeCentral(ctx context.Context, db database.DBTX) ([]uuid.UUID, error)
+	// EquipeSEMAD: quem tem acervo:semad global (cópia do termo, art. 38).
+	EquipeSEMAD(ctx context.Context, db database.DBTX) ([]uuid.UUID, error)
+
+	// Fase 6 (ADR 038): consulta pública, índice da busca e exposições.
+	// PublicarDigital libera (em != nil) ou retira o representante da
+	// consulta pública.
+	PublicarDigital(ctx context.Context, db database.DBTX, id uuid.UUID, em *time.Time, por *uuid.UUID) error
+	PendentesIndice(ctx context.Context, db database.DBTX, limite int) ([]PendenteIndice, error)
+	ConcluirPendentes(ctx context.Context, db database.DBTX, ps []PendenteIndice) error
+	// RegistrosIndice carrega as unidades dadas (com o texto do OCR quando
+	// comTexto); PaginaIndice percorre o acervo por id.
+	RegistrosIndice(ctx context.Context, db database.DBTX, ids []uuid.UUID, comTexto bool) ([]RegistroIndice, error)
+	PaginaIndice(ctx context.Context, db database.DBTX, depoisDe uuid.UUID, limite int) ([]RegistroIndice, error)
+	// BuscarBanco é a busca quando o índice está fora (sem facetas).
+	BuscarBanco(ctx context.Context, db database.DBTX, c Consulta, f FiltroBusca) ([]ItemBusca, int64, error)
+	DigitaisRecentes(ctx context.Context, db database.DBTX, limite int) ([]DigitalRecente, error)
+	ContarPublico(ctx context.Context, db database.DBTX) (int64, int64, error)
+	RegistrarConsulta(ctx context.Context, db database.DBTX, dia time.Time, tipo string) error
+	InsertExposicao(ctx context.Context, db database.DBTX, x Exposicao) error
+	UpdateExposicao(ctx context.Context, db database.DBTX, x Exposicao) error
+	// GetExposicao busca pelo id ou, com id nulo, pelo slug (com os itens).
+	GetExposicao(ctx context.Context, db database.DBTX, id uuid.UUID, slug string) (Exposicao, error)
+	ListExposicoes(ctx context.Context, db database.DBTX, soPublicadas bool, p pagination.Params) ([]Exposicao, int64, error)
+	PublicarExposicao(ctx context.Context, db database.DBTX, id uuid.UUID, em *time.Time) error
 
 	// ResolverUnidade acha a unidade produtora ativa pela sigla (ou id).
 	ResolverUnidade(ctx context.Context, db database.DBTX, ref string) (uuid.UUID, error)

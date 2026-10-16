@@ -1,6 +1,6 @@
 "use client";
 
-import { Archive, BookOpen, FileUp, HandHelping, Landmark, MapPin, Plus, ScanLine, Trash2, Truck } from "lucide-react";
+import { Archive, BookOpen, FileUp, GalleryHorizontal, HandHelping, Landmark, MapPin, Plus, ScanLine, Search, Trash2, Truck } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -54,6 +54,9 @@ export default function AcervoPage() {
         description="Unidades de arquivamento nas três idades — corrente, intermediária e permanente (Lei 10.301/2019, art. 18) — com os prazos da Tabela de Temporalidade."
         actions={
           <>
+            <Link href="/acervo/busca" className={buttonClass("secondary", "md")}>
+              <Search size={16} aria-hidden="true" /> Busca
+            </Link>
             <Link href="/acervo/guias" className={buttonClass("secondary", "md")}>
               <Truck size={16} aria-hidden="true" /> Guias
             </Link>
@@ -73,10 +76,16 @@ export default function AcervoPage() {
               <BookOpen size={16} aria-hidden="true" /> Normas
             </Link>
             {canGlobal("acervo:central") && (
-              <Link href="/acervo/privados" className={buttonClass("secondary", "md")}>
-                <Landmark size={16} aria-hidden="true" /> Arquivos privados
-              </Link>
+              <>
+                <Link href="/acervo/privados" className={buttonClass("secondary", "md")}>
+                  <Landmark size={16} aria-hidden="true" /> Arquivos privados
+                </Link>
+                <Link href="/acervo/exposicoes" className={buttonClass("secondary", "md")}>
+                  <GalleryHorizontal size={16} aria-hidden="true" /> Exposições
+                </Link>
+              </>
             )}
+
             <Link href="/acervo/locais" className={buttonClass("secondary", "md")}>
               <MapPin size={16} aria-hidden="true" /> Locais
             </Link>

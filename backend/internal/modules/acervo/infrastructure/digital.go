@@ -18,14 +18,14 @@ import (
 const digitalCols = `d.id, d.numero, d.unidade_id, d.descricao, d.tipo_documento, d.equipamento, d.dpi_declarado, d.responsavel_id,
 	d.responsavel_nome, d.responsavel_cpf, d.codigo_classificacao, d.digitalizado_em, d.situacao, d.motivo, d.tentativas,
 	d.original_key, d.original_sha256, d.original_bytes, d.pdfa_key, d.pdfa_sha256, d.pdfa_bytes, d.paginas, d.dpi_medido,
-	d.conformidade, d.retencao_ate, d.processado_em, d.verificado_em, d.integro, d.criado_em`
+	d.conformidade, d.retencao_ate, d.processado_em, d.verificado_em, d.integro, d.criado_em, d.publicado_em`
 
 func scanDigital(row pgx.Row) (domain.Digital, error) {
 	var d domain.Digital
 	err := row.Scan(&d.ID, &d.Numero, &d.UnidadeID, &d.Descricao, &d.TipoDoc, &d.Equipamento, &d.DPIDeclarado, &d.ResponsavelID,
 		&d.ResponsavelNome, &d.ResponsavelCPF, &d.CodigoClass, &d.DigitalizadoEm, &d.Situacao, &d.Motivo, &d.Tentativas,
 		&d.OriginalKey, &d.OriginalSHA256, &d.OriginalBytes, &d.PDFAKey, &d.PDFASHA256, &d.PDFABytes, &d.Paginas, &d.DPIMedido,
-		&d.Conformidade, &d.RetencaoAte, &d.ProcessadoEm, &d.VerificadoEm, &d.Integro, &d.CriadoEm)
+		&d.Conformidade, &d.RetencaoAte, &d.ProcessadoEm, &d.VerificadoEm, &d.Integro, &d.CriadoEm, &d.PublicadoEm)
 	return d, err
 }
 
@@ -72,6 +72,10 @@ func (r *Repository) ListDigitais(ctx context.Context, db database.DBTX, f domai
 	if f.SoFalhas {
 		conds += " AND (d.integro = false OR d.situacao IN ('FALHOU', 'REPROVADO'))"
 	}
+	if f.Publicados {
+		conds += " AND d.publicado_em IS NOT NULL"
+	}
+
 	if f.Restrito {
 		add("u.unidade_id = ANY($%d)", f.Unidades)
 	}
@@ -190,24 +194,33 @@ func (r *Repository) ListVerificacoes(ctx context.Context, db database.DBTX, id 
 
 // EquipeCentral: usuários ativos com acervo:central em concessão global.
 func (r *Repository) EquipeCentral(ctx context.Context, db database.DBTX) ([]uuid.UUID, error) {
+	return r.equipeGlobal(ctx, db, "acervo:central", "EquipeCentral")
+}
+
+// EquipeSEMAD: usuários ativos com acervo:semad em concessão global.
+func (r *Repository) EquipeSEMAD(ctx context.Context, db database.DBTX) ([]uuid.UUID, error) {
+	return r.equipeGlobal(ctx, db, "acervo:semad", "EquipeSEMAD")
+}
+
+func (r *Repository) equipeGlobal(ctx context.Context, db database.DBTX, perm, nome string) ([]uuid.UUID, error) {
 	rows, err := db.Query(ctx, `SELECT DISTINCT s.user_id FROM user_scopes s
 		JOIN perfis p ON p.id = s.perfil_id AND p.ativo JOIN users us ON us.id = s.user_id AND us.active
-		WHERE p.permissoes && ARRAY['acervo:central', 'acervo:*']::text[]
-		  AND s.entidade_id IS NULL AND s.unidade_id IS NULL AND s.departamento_id IS NULL ORDER BY s.user_id`)
+		WHERE p.permissoes && ARRAY[$1, 'acervo:*']::text[]
+		  AND s.entidade_id IS NULL AND s.unidade_id IS NULL AND s.departamento_id IS NULL ORDER BY s.user_id`, perm)
 	if err != nil {
-		return nil, fmt.Errorf("acervo.EquipeCentral: %w", err)
+		return nil, fmt.Errorf("acervo.%s: %w", nome, err)
 	}
 	defer rows.Close()
 	out := []uuid.UUID{}
 	for rows.Next() {
 		var id uuid.UUID
 		if err := rows.Scan(&id); err != nil {
-			return nil, fmt.Errorf("acervo.EquipeCentral scan: %w", err)
+			return nil, fmt.Errorf("acervo.%s scan: %w", nome, err)
 		}
 		out = append(out, id)
 	}
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("acervo.EquipeCentral rows: %w", err)
+		return nil, fmt.Errorf("acervo.%s rows: %w", nome, err)
 	}
 	return out, nil
 }

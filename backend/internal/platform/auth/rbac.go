@@ -63,6 +63,9 @@ const (
 	PermAcervoCentral  Permission = "acervo:central"
 	// PermAcervoAvaliacao: o trabalho da CSPAD no rito da eliminação (ADR 034).
 	PermAcervoAvaliacao Permission = "acervo:avaliacao"
+	// PermAcervoSEMAD: aprovação da SEMAD nos ritos dos arts. 35 e 36 e
+	// destinatário da cópia do Termo (art. 38). Só concessão global.
+	PermAcervoSEMAD Permission = "acervo:semad"
 )
 
 // HasPermission reporta se identity possui permission, considerando os

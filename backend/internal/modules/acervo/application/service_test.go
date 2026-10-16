@@ -62,6 +62,7 @@ func (f *ttdd) set(codigo string, s domain.Serie) {
 
 const (
 	codElim  = "9.9.01.00.01"
+	codIndef = "9.9.01.00.08"
 	codPerm  = "9.9.01.00.02"
 	codVigor = "9.9.01.00.03"
 )
@@ -71,6 +72,7 @@ func novaTTDD() *ttdd {
 	t.set(codElim, domain.Serie{Descritor: "Notas de empenho", CorrenteAnos: anos(1), IntermAnos: anos(4), Destinacao: domain.DestinacaoEliminacao, Vigente: true})
 	t.set(codPerm, domain.Serie{Descritor: "Leis e decretos", CorrenteAnos: anos(2), IntermAnos: anos(3), Destinacao: domain.DestinacaoGuardaPermanente, Vigente: true})
 	t.set(codVigor, domain.Serie{Descritor: "Contratos", CorrenteCondicao: "Enquanto estiver vigorando", IntermAnos: anos(5), Destinacao: domain.DestinacaoEliminacao, Vigente: true})
+	t.set(codIndef, domain.Serie{Descritor: "Série sem destinação na TTDD", Vigente: true})
 	return t
 }
 
@@ -463,7 +465,8 @@ func TestMapError(t *testing.T) {
 	}
 	for _, trava := range []error{domain.ErrBloqueioLiberado, domain.ErrPermanente, domain.ErrBloqueioJudicial, domain.ErrNaoPrevistaNaTTDD,
 		domain.ErrPrazoNaoCumprido, domain.ErrAguardaEvento, domain.ErrDestinacaoIndefinida, domain.ErrFaseInvalida, domain.ErrEliminado,
-		domain.ErrEmprestimoAberto, domain.ErrEmprestimoDevolvido, domain.ErrEmprestada, domain.ErrGuiaSituacao, domain.ErrEmOutraGuia} {
+		domain.ErrEmprestimoAberto, domain.ErrEmprestimoDevolvido, domain.ErrEmprestada, domain.ErrGuiaSituacao, domain.ErrEmOutraGuia,
+		domain.ErrRitoOrdinario, domain.ErrSemCCPAD, domain.ErrSemSEMAD, domain.ErrSEIAdiado} {
 		casos[trava] = apperrors.CodeConflict
 	}
 	for err, code := range casos {

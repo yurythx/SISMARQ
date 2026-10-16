@@ -74,6 +74,8 @@ func TestHandlersFase3(t *testing.T) {
 		{http.MethodPost, "/acervo/listagens/x/autorizar", ``, http.StatusBadRequest},
 		{http.MethodPost, "/acervo/listagens/" + uuid.NewString() + "/autorizar", ``, http.StatusNotFound},
 		{http.MethodPost, base + "/autorizar", ``, http.StatusOK},
+		{http.MethodPost, "/acervo/listagens/x/autorizar-ccpad", ``, http.StatusBadRequest},
+		{http.MethodPost, "/acervo/listagens/x/autorizar-semad", ``, http.StatusBadRequest},
 		{http.MethodPost, "/acervo/listagens/x/edital", `{}`, http.StatusBadRequest},
 		{http.MethodPost, base + "/edital", `{`, http.StatusBadRequest},
 		{http.MethodPost, base + "/edital", `{"edital_numero":"1","edital_publicado_em":"x"}`, http.StatusUnprocessableEntity},

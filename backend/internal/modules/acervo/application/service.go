@@ -27,7 +27,8 @@ import (
 
 // Eventos do Acervo (outbox).
 const (
-	EventCadastrada    = "acervo.unidade.cadastrada"
+	EventCadastrada      = "acervo.unidade.cadastrada"
+	EventIngressoTramite = "acervo.unidade.ingresso_tramite"
 	EventAlterada      = "acervo.unidade.alterada"
 	EventTransferida   = "acervo.unidade.transferida"
 	EventLocalizada    = "acervo.unidade.localizada"
@@ -51,6 +52,7 @@ type Service struct {
 	agora  func() time.Time
 	avisos *notificacoes.Service
 	dig    ConfigDigital
+	busca  ConfigBusca
 }
 
 // NewService cria o serviço.
@@ -101,7 +103,13 @@ func MapError(err error) error {
 		return apperrors.NotFound("representante digital não encontrado")
 	case errors.Is(err, domain.ErrDigitalSituacao):
 		return apperrors.Conflict(strings.TrimPrefix(err.Error(), "acervo: "))
+	case errors.Is(err, domain.ErrExposicaoNaoExiste):
+		return apperrors.NotFound("exposição não encontrada")
+	case errors.Is(err, domain.ErrNaoOstensivo), errors.Is(err, domain.ErrPublicacao), errors.Is(err, domain.ErrExposicaoVazia),
+		errors.Is(err, domain.ErrExposicaoSituacao), errors.Is(err, domain.ErrSlugEmUso):
+		return apperrors.Conflict(strings.TrimPrefix(err.Error(), "acervo: "))
 	case errors.Is(err, domain.ErrNormaNaoExiste):
+
 		return apperrors.NotFound("instrução normativa não encontrada")
 	case errors.Is(err, domain.ErrPrivadoNaoExiste):
 		return apperrors.NotFound("arquivo privado não encontrado")
@@ -117,7 +125,9 @@ func MapError(err error) error {
 	case errors.Is(err, domain.ErrSemComissao), errors.Is(err, domain.ErrListagemSituacao), errors.Is(err, domain.ErrListagemVazia),
 		errors.Is(err, domain.ErrSemParecer), errors.Is(err, domain.ErrQuorum), errors.Is(err, domain.ErrEmOutraListagem),
 		errors.Is(err, domain.ErrEditalNoPrazo), errors.Is(err, domain.ErrPedidoPendente), errors.Is(err, domain.ErrSemAmostra),
-		errors.Is(err, domain.ErrAmostraFeita), errors.Is(err, domain.ErrPedidoForaDoPrazo), errors.Is(err, domain.ErrPedidoDecidido):
+		errors.Is(err, domain.ErrAmostraFeita), errors.Is(err, domain.ErrPedidoForaDoPrazo), errors.Is(err, domain.ErrPedidoDecidido),
+		errors.Is(err, domain.ErrRitoOrdinario), errors.Is(err, domain.ErrSemCCPAD), errors.Is(err, domain.ErrSemSEMAD),
+		errors.Is(err, domain.ErrSEIAdiado):
 		return apperrors.Conflict(strings.TrimPrefix(err.Error(), "acervo: "))
 	case errors.Is(err, domain.ErrUnidadeProdutora):
 		return apperrors.Validation("unidade_id: " + strings.TrimPrefix(err.Error(), "acervo: "))
@@ -233,7 +243,10 @@ func (s *Service) criarTx(ctx context.Context, tx pgx.Tx, identity auth.Identity
 	if err := u.Validar(); err != nil {
 		return u, err
 	}
-	if !gere(identity, u.UnidadeID) {
+	// O ingresso do Trâmite (ADR 039) não passa pelo IAM da tela: o
+	// processo já existia na unidade produtora. O cadastro e a importação
+	// continuam exigindo gestão no escopo.
+	if u.TramiteProcessoID == nil && !gere(identity, u.UnidadeID) {
 		return u, domain.ErrForaDoEscopo
 	}
 	u.ID, u.Fase, u.CreatedBy = uuid.New(), domain.FaseCorrente, ator(identity)
@@ -255,7 +268,11 @@ func (s *Service) criarTx(ctx context.Context, tx pgx.Tx, identity auth.Identity
 		return u, err
 	}
 	fase := u.Fase
-	return u, s.registrar(ctx, tx, identity, EventCadastrada, u, domain.Movimentacao{Tipo: mov, FasePara: &fase, Descricao: desc}, nil, u)
+	evento := EventCadastrada
+	if u.TramiteProcessoID != nil {
+		evento = EventIngressoTramite
+	}
+	return u, s.registrar(ctx, tx, identity, evento, u, domain.Movimentacao{Tipo: mov, FasePara: &fase, Descricao: desc}, nil, u)
 }
 
 func (s *Service) conferirLocal(ctx context.Context, db database.DBTX, id *uuid.UUID) error {

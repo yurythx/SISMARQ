@@ -30,7 +30,20 @@ var (
 	ErrPedidoForaDoPrazo = errors.New("acervo: pedido fora do prazo de 30 dias do edital")
 	ErrPedidoNaoExiste   = errors.New("acervo: pedido não encontrado")
 	ErrPedidoDecidido    = errors.New("acervo: o pedido já foi decidido")
+	ErrRitoOrdinario     = errors.New("acervo: a unidade cabe no rito ordinário (arts. 31 a 34); não use o art. 35")
+	ErrSemCCPAD          = errors.New("acervo: falta a autorização da Comissão Central de Avaliação de Documentos (art. 35)")
+	ErrSemSEMAD          = errors.New("acervo: falta a aprovação da Secretaria Municipal de Administração (arts. 35 e 36)")
 )
+
+// Ritos da Relação de Eliminação.
+const (
+	RitoOrdinario = "ORDINARIO" // arts. 31 a 34 e 37 a 40
+	RitoArt35     = "ART_35"    // documento que não consta da TTDD
+	RitoArt36     = "ART_36"    // órgão sem TTDD de atividades-fim oficializada
+)
+
+// SignumAusente: a ata e o termo ainda não passam pelo Signum (ADR 041).
+const SignumAusente = "AUSENTE"
 
 // Tipos de comissão (art. 31).
 const (
@@ -133,12 +146,13 @@ func (c *Comissao) Validar() error {
 
 // Situações da Relação de Eliminação.
 const (
-	ListagemRascunho   = "RASCUNHO"
-	ListagemAprovada   = "APROVADA"   // ata da CSPAD (Anexo IV)
-	ListagemAutorizada = "AUTORIZADA" // "Autorizo" do Arquivo Público (Anexo I)
-	ListagemEmEdital   = "EM_EDITAL"  // edital publicado, prazo de 30 dias (Anexo III)
-	ListagemEliminada  = "ELIMINADA"  // termo registrado (Anexo II)
-	ListagemCancelada  = "CANCELADA"
+	ListagemRascunho        = "RASCUNHO"
+	ListagemAprovada        = "APROVADA"         // ata da CSPAD ou da CCPAD (Anexo IV)
+	ListagemAguardandoSEMAD = "AGUARDANDO_SEMAD" // arts. 35 e 36: falta a SEMAD
+	ListagemAutorizada      = "AUTORIZADA"       // "Autorizo" do Arquivo Público (Anexo I)
+	ListagemEmEdital        = "EM_EDITAL"        // edital publicado, prazo de 30 dias (Anexo III)
+	ListagemEliminada       = "ELIMINADA"        // termo registrado (Anexo II)
+	ListagemCancelada       = "CANCELADA"
 )
 
 // PrazoEdital: a eliminação só a partir do 30º dia da publicação (art. 37,
@@ -191,9 +205,19 @@ type Listagem struct {
 	AtaManifestacoes string      `json:"ata_manifestacoes"`
 	AtaPresentes     []uuid.UUID `json:"ata_presentes"`
 
+	Rito string `json:"rito"`
+
 	AutorizadaPor   *uuid.UUID `json:"autorizada_por"`
 	AutorizadaEm    *time.Time `json:"autorizada_em"`
 	DevolucaoMotivo string     `json:"devolucao_motivo"`
+
+	CcpadAutorizadaPor *uuid.UUID `json:"ccpad_autorizada_por"`
+	CcpadAutorizadaEm  *time.Time `json:"ccpad_autorizada_em"`
+	SemadAutorizadaPor *uuid.UUID `json:"semad_autorizada_por"`
+	SemadAutorizadaEm  *time.Time `json:"semad_autorizada_em"`
+
+	AtaSignum   string `json:"ata_signum"`
+	TermoSignum string `json:"termo_signum"`
 
 	EditalNumero      string     `json:"edital_numero"`
 	EditalPublicadoEm *time.Time `json:"edital_publicado_em"`
@@ -207,6 +231,9 @@ type Listagem struct {
 	TermoAcompanhamento  string     `json:"termo_acompanhamento"`
 	TermoDestinacaoPapel string     `json:"termo_destinacao_papel"`
 	TermoRegistradoPor   *uuid.UUID `json:"termo_registrado_por"`
+	TermoCopiaEm         *time.Time `json:"termo_copia_em"`
+	TermoCopiaArquivo    int        `json:"termo_copia_arquivo"`
+	TermoCopiaSEMAD      int        `json:"termo_copia_semad"`
 
 	CriadaPor *uuid.UUID `json:"criada_por"`
 	CriadaEm  time.Time  `json:"criada_em"`
@@ -220,6 +247,24 @@ type Listagem struct {
 // Ativa informa se a relação ainda está em andamento.
 func (l Listagem) Ativa() bool {
 	return l.Situacao != ListagemEliminada && l.Situacao != ListagemCancelada
+}
+
+// RitoEspecial: arts. 35 ou 36 — depois do Arquivo Público falta a SEMAD.
+func (l Listagem) RitoEspecial() bool {
+	return l.Rito == RitoArt35 || l.Rito == RitoArt36
+}
+
+// NormalizarRito aceita o rito da Relação (vazio = ordinário).
+func NormalizarRito(r string) (string, error) {
+	r = strings.ToUpper(strings.TrimSpace(r))
+	if r == "" {
+		r = RitoOrdinario
+	}
+	switch r {
+	case RitoOrdinario, RitoArt35, RitoArt36:
+		return r, nil
+	}
+	return "", invalido("rito", "informe ORDINARIO, ART_35 ou ART_36")
 }
 
 // AEliminar são os itens que vão de fato à eliminação (sem amostra e sem os
@@ -301,6 +346,37 @@ func PodePublicar(l Listagem, numero string, publicadoEm, hoje time.Time) error 
 		return invalido("edital_publicado_em", "informe a data de publicação (não pode ser futura)")
 	}
 	return nil
+}
+
+// PodeAutorizarCCPAD: no art. 35, um membro da CCPAD autoriza depois da
+// ata da CSPAD e antes do "Autorizo" do Gerente da Divisão.
+func PodeAutorizarCCPAD(l Listagem, c Comissao, ator uuid.UUID) error {
+	if l.Rito != RitoArt35 {
+		return ErrListagemSituacao
+	}
+	if err := exigir(l, ListagemAprovada); err != nil {
+		return err
+	}
+	if l.CcpadAutorizadaEm != nil {
+		return ErrListagemSituacao
+	}
+	if c.Tipo != ComissaoCentral || !c.Ativa {
+		return ErrSemComissao
+	}
+	for _, m := range c.Membros {
+		if m.UserID == ator {
+			return nil
+		}
+	}
+	return ErrForaDoEscopo
+}
+
+// PodeAutorizarSEMAD: arts. 35 e 36, depois do Arquivo Público.
+func PodeAutorizarSEMAD(l Listagem) error {
+	if !l.RitoEspecial() {
+		return ErrListagemSituacao
+	}
+	return exigir(l, ListagemAguardandoSEMAD)
 }
 
 // PodeReceberPedido: só durante o edital e dentro dos 30 dias.

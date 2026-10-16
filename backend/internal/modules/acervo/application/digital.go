@@ -537,7 +537,7 @@ func (s *Service) acessoDigital(ctx context.Context, identity auth.Identity, id 
 	if !le(identity, u.UnidadeID) && !auth.CanGlobal(identity, auth.PermAcervoCentral) {
 		return d, u, domain.ErrDigitalNaoExiste
 	}
-	return d, u, nil
+	return d.ComEstadoPAdES(), u, nil
 }
 
 // Digital devolve o representante com as verificações.
@@ -554,14 +554,19 @@ func (s *Service) Digital(ctx context.Context, identity auth.Identity, id uuid.U
 }
 
 // Digitais pagina os representantes no escopo; o Arquivo Público vê todos
-// (soFalhas: o painel de integridade e do pipeline).
-func (s *Service) Digitais(ctx context.Context, identity auth.Identity, unidade *uuid.UUID, soFalhas bool, p pagination.Params) ([]domain.Digital, int64, error) {
+// (SoFalhas: o painel de integridade e do pipeline; Publicados: os
+// liberados à consulta pública, para as exposições).
+func (s *Service) Digitais(ctx context.Context, identity auth.Identity, filtro domain.FiltroDigital, p pagination.Params) ([]domain.Digital, int64, error) {
 	f := s.filtro(identity, domain.Filtro{})
-	filtro := domain.FiltroDigital{UnidadeID: unidade, SoFalhas: soFalhas, Restrito: f.Restrito, Unidades: f.Unidades}
+	filtro.Restrito, filtro.Unidades = f.Restrito, f.Unidades
 	if auth.CanGlobal(identity, auth.PermAcervoCentral) {
+
 		filtro.Restrito = false
 	}
 	items, total, err := s.repo.ListDigitais(ctx, s.pool, filtro, p)
+	for i := range items {
+		items[i] = items[i].ComEstadoPAdES()
+	}
 	return items, total, MapError(err)
 }
 

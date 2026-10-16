@@ -108,7 +108,12 @@ func (s *Service) load(ctx context.Context, db database.DBTX, identity auth.Iden
 
 func (s *Service) event(ctx context.Context, tx pgx.Tx, eventType string, p domain.Processo, extra map[string]any) error {
 	payload := map[string]any{"id": p.ID.String(), "numero": p.Numero, "status": p.Status,
-		"unidade_atual_id": p.UnidadeAtualID.String(), "sigilo": p.Sigilo}
+		"unidade_atual_id": p.UnidadeAtualID.String(), "unidade_origem_id": p.UnidadeOrigemID.String(),
+		"sigilo": p.Sigilo, "codigo_ttdd": p.CodigoTTDD,
+		"created_at": p.CreatedAt.UTC().Format(time.RFC3339)}
+	if p.ConcluidoAt != nil {
+		payload["concluido_at"] = p.ConcluidoAt.UTC().Format(time.RFC3339)
+	}
 	// Assunto só sai em evento de processo público (sigilo protege o conteúdo).
 	if p.Sigilo == domain.SigiloPublico {
 		payload["assunto"] = p.Assunto

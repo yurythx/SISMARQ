@@ -33,7 +33,8 @@ func TestRepositoryPropagatesDatabaseErrors(t *testing.T) {
 			_, err := r.InsertUnidade(ctx, db, domain.Unidade{}, domain.Calculo{})
 			return err
 		},
-		"GetUnidade":    func(db database.DBTX) error { _, _, err := r.GetUnidade(ctx, db, id, false); return err },
+		"GetUnidade":           func(db database.DBTX) error { _, _, err := r.GetUnidade(ctx, db, id, false); return err },
+		"GetUnidadePorTramite": func(db database.DBTX) error { _, _, err := r.GetUnidadePorTramite(ctx, db, id); return err },
 		"UpdateUnidade": func(db database.DBTX) error { return r.UpdateUnidade(ctx, db, domain.Unidade{}, domain.Calculo{}) },
 		"SetCalculo":    func(db database.DBTX) error { return r.SetCalculo(ctx, db, id, domain.Calculo{}) },
 		"SetFase": func(db database.DBTX) error {

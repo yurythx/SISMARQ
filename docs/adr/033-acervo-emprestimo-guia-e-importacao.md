@@ -60,8 +60,8 @@ dizem como:
 ## Consequências
 
 - A situação `TRANSFERIR` alimenta a tela de nova guia.
-- A ponte com o Trâmite (processo encerrado vira unidade do acervo) fica
-  para depois. Depende de como a Prefeitura usará o SEI e o Trâmite (roadmap,
-  seção 6, item 7).
+- A ponte com o Trâmite está no [ADR 039](039-acervo-ingresso-do-tramite.md):
+  o processo encerrado e classificado vira unidade de arquivamento. O SEI
+  (decisão 0.7) entra depois pelo mesmo padrão de evento.
 - Cobrança automática de empréstimo atrasado, por notificação, também fica
   para depois. Hoje o atraso aparece no painel e na lista.

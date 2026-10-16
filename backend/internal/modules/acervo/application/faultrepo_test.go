@@ -1,7 +1,7 @@
 package application_test
 
-// Código gerado por scripts/genfault.py a partir da interface Repository do
-// domínio. Não edite à mão: regenere se a interface mudar.
+// CÃÂ³digo gerado por scripts/genfault.py a partir da interface Repository do
+// domÃÂ­nio. NÃÂ£o edite ÃÂ  mÃÂ£o: regenere se a interface mudar.
 
 import (
 	"context"
@@ -18,12 +18,12 @@ import (
 
 type innerRepo = domain.Repository
 
-var errBoom = errors.New("falha simulada no repositório")
+var errBoom = errors.New("falha simulada no repositÃÂ³rio")
 
-// faultRepo envolve o repositório real: na chamada failAt devolve erro; depois
-// da chamada poisonAt "envenena" a transação (a instrução SQL seguinte — do
-// repositório, do outbox ou da auditoria — falha). noTx marca veneno em
-// leitura fora de transação, onde não há instrução seguinte na mesma conexão.
+// faultRepo envolve o repositÃÂ³rio real: na chamada failAt devolve erro; depois
+// da chamada poisonAt "envenena" a transaÃÂ§ÃÂ£o (a instruÃÂ§ÃÂ£o SQL seguinte Ã¢ÂÂ do
+// repositÃÂ³rio, do outbox ou da auditoria Ã¢ÂÂ falha). noTx marca veneno em
+// leitura fora de transaÃÂ§ÃÂ£o, onde nÃÂ£o hÃÂ¡ instruÃÂ§ÃÂ£o seguinte na mesma conexÃÂ£o.
 type faultRepo struct {
 	inner                   innerRepo
 	calls, failAt, poisonAt int
@@ -68,6 +68,16 @@ func (fr *faultRepo) GetUnidade(ctx context.Context, db database.DBTX, id uuid.U
 	}
 	defer fr.post(ctx, db)
 	return fr.inner.GetUnidade(ctx, db, id, paraAtualizar)
+}
+
+func (fr *faultRepo) GetUnidadePorTramite(ctx context.Context, db database.DBTX, processo uuid.UUID) (domain.Unidade, domain.Calculo, error) {
+	if err := fr.hook("GetUnidadePorTramite"); err != nil {
+		var z0 domain.Unidade
+		var z1 domain.Calculo
+		return z0, z1, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.GetUnidadePorTramite(ctx, db, processo)
 }
 
 func (fr *faultRepo) UpdateUnidade(ctx context.Context, db database.DBTX, u domain.Unidade, c domain.Calculo) error {
@@ -313,6 +323,15 @@ func (fr *faultRepo) ComissaoDaUnidade(ctx context.Context, db database.DBTX, un
 	}
 	defer fr.post(ctx, db)
 	return fr.inner.ComissaoDaUnidade(ctx, db, unidade)
+}
+
+func (fr *faultRepo) ComissaoCentral(ctx context.Context, db database.DBTX) (domain.Comissao, error) {
+	if err := fr.hook("ComissaoCentral"); err != nil {
+		var z0 domain.Comissao
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.ComissaoCentral(ctx, db)
 }
 
 func (fr *faultRepo) InsertListagem(ctx context.Context, db database.DBTX, l domain.Listagem) (string, error) {
@@ -677,6 +696,138 @@ func (fr *faultRepo) EquipeCentral(ctx context.Context, db database.DBTX) ([]uui
 	}
 	defer fr.post(ctx, db)
 	return fr.inner.EquipeCentral(ctx, db)
+}
+
+func (fr *faultRepo) EquipeSEMAD(ctx context.Context, db database.DBTX) ([]uuid.UUID, error) {
+	if err := fr.hook("EquipeSEMAD"); err != nil {
+		var z0 []uuid.UUID
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.EquipeSEMAD(ctx, db)
+}
+
+func (fr *faultRepo) PublicarDigital(ctx context.Context, db database.DBTX, id uuid.UUID, em *time.Time, por *uuid.UUID) error {
+	if err := fr.hook("PublicarDigital"); err != nil {
+		return err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.PublicarDigital(ctx, db, id, em, por)
+}
+
+func (fr *faultRepo) PendentesIndice(ctx context.Context, db database.DBTX, limite int) ([]domain.PendenteIndice, error) {
+	if err := fr.hook("PendentesIndice"); err != nil {
+		var z0 []domain.PendenteIndice
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.PendentesIndice(ctx, db, limite)
+}
+
+func (fr *faultRepo) ConcluirPendentes(ctx context.Context, db database.DBTX, ps []domain.PendenteIndice) error {
+	if err := fr.hook("ConcluirPendentes"); err != nil {
+		return err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.ConcluirPendentes(ctx, db, ps)
+}
+
+func (fr *faultRepo) RegistrosIndice(ctx context.Context, db database.DBTX, ids []uuid.UUID, comTexto bool) ([]domain.RegistroIndice, error) {
+	if err := fr.hook("RegistrosIndice"); err != nil {
+		var z0 []domain.RegistroIndice
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.RegistrosIndice(ctx, db, ids, comTexto)
+}
+
+func (fr *faultRepo) PaginaIndice(ctx context.Context, db database.DBTX, depoisDe uuid.UUID, limite int) ([]domain.RegistroIndice, error) {
+	if err := fr.hook("PaginaIndice"); err != nil {
+		var z0 []domain.RegistroIndice
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.PaginaIndice(ctx, db, depoisDe, limite)
+}
+
+func (fr *faultRepo) BuscarBanco(ctx context.Context, db database.DBTX, c domain.Consulta, f domain.FiltroBusca) ([]domain.ItemBusca, int64, error) {
+	if err := fr.hook("BuscarBanco"); err != nil {
+		var z0 []domain.ItemBusca
+		var z1 int64
+		return z0, z1, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.BuscarBanco(ctx, db, c, f)
+}
+
+func (fr *faultRepo) DigitaisRecentes(ctx context.Context, db database.DBTX, limite int) ([]domain.DigitalRecente, error) {
+	if err := fr.hook("DigitaisRecentes"); err != nil {
+		var z0 []domain.DigitalRecente
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.DigitaisRecentes(ctx, db, limite)
+}
+
+func (fr *faultRepo) ContarPublico(ctx context.Context, db database.DBTX) (int64, int64, error) {
+	if err := fr.hook("ContarPublico"); err != nil {
+		var z0 int64
+		var z1 int64
+		return z0, z1, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.ContarPublico(ctx, db)
+}
+
+func (fr *faultRepo) RegistrarConsulta(ctx context.Context, db database.DBTX, dia time.Time, tipo string) error {
+	if err := fr.hook("RegistrarConsulta"); err != nil {
+		return err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.RegistrarConsulta(ctx, db, dia, tipo)
+}
+
+func (fr *faultRepo) InsertExposicao(ctx context.Context, db database.DBTX, x domain.Exposicao) error {
+	if err := fr.hook("InsertExposicao"); err != nil {
+		return err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.InsertExposicao(ctx, db, x)
+}
+
+func (fr *faultRepo) UpdateExposicao(ctx context.Context, db database.DBTX, x domain.Exposicao) error {
+	if err := fr.hook("UpdateExposicao"); err != nil {
+		return err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.UpdateExposicao(ctx, db, x)
+}
+
+func (fr *faultRepo) GetExposicao(ctx context.Context, db database.DBTX, id uuid.UUID, slug string) (domain.Exposicao, error) {
+	if err := fr.hook("GetExposicao"); err != nil {
+		var z0 domain.Exposicao
+		return z0, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.GetExposicao(ctx, db, id, slug)
+}
+
+func (fr *faultRepo) ListExposicoes(ctx context.Context, db database.DBTX, soPublicadas bool, p pagination.Params) ([]domain.Exposicao, int64, error) {
+	if err := fr.hook("ListExposicoes"); err != nil {
+		var z0 []domain.Exposicao
+		var z1 int64
+		return z0, z1, err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.ListExposicoes(ctx, db, soPublicadas, p)
+}
+
+func (fr *faultRepo) PublicarExposicao(ctx context.Context, db database.DBTX, id uuid.UUID, em *time.Time) error {
+	if err := fr.hook("PublicarExposicao"); err != nil {
+		return err
+	}
+	defer fr.post(ctx, db)
+	return fr.inner.PublicarExposicao(ctx, db, id, em)
 }
 
 func (fr *faultRepo) ResolverUnidade(ctx context.Context, db database.DBTX, ref string) (uuid.UUID, error) {

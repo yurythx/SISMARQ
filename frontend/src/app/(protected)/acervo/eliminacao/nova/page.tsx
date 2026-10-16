@@ -12,6 +12,7 @@ import { PageHeader } from "@/components/sismarq/PageHeader";
 import { useAction } from "@/components/sismarq/useAction";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
 import { apiClient } from "@/lib/api/client";
 import { useApiPage, withQuery } from "@/lib/api/swr";
@@ -23,9 +24,11 @@ export default function NovaRelacaoPage() {
   const router = useRouter();
   const { run, pending } = useAction();
   const [unidade, setUnidade] = useState("");
+  const [rito, setRito] = useState("ORDINARIO");
   const [marcadas, setMarcadas] = useState<Set<string>>(new Set());
+  const situacao = rito === "ART_35" ? "AGUARDA_DESTINACAO" : "AVALIAR_ELIMINACAO";
   const aptas = useApiPage<AcervoUnidade>(
-    unidade ? withQuery("v1/acervo/unidades", { unidade_id: unidade, situacao: "AVALIAR_ELIMINACAO", page_size: 200 }) : null,
+    unidade ? withQuery("v1/acervo/unidades", { unidade_id: unidade, situacao, page_size: 200 }) : null,
   );
   const itens = aptas.data?.items ?? [];
 
@@ -43,6 +46,7 @@ export default function NovaRelacaoPage() {
       () =>
         apiClient.post<AcervoListagem>("v1/acervo/listagens", {
           unidade_id: unidade,
+          rito,
           unidades: [...marcadas],
           parecer_juridico: String(f.get("parecer_juridico") ?? "").trim(),
           contas_exercicios: String(f.get("contas_exercicios") ?? "").trim(),
@@ -76,6 +80,21 @@ export default function NovaRelacaoPage() {
         aria-label="Nova relação de eliminação"
       >
         <UnidadeDonaSelect id="unidade_id" permission="acervo:avaliacao" label="Unidade/setor" />
+        <Select
+          id="rito"
+          name="rito"
+          label="Rito"
+          value={rito}
+          onChange={(e) => {
+            setRito(e.target.value);
+            setMarcadas(new Set());
+          }}
+          options={[
+            { value: "ORDINARIO", label: "Ordinário (arts. 31 a 34) — unidades com destinação eliminação na TTDD" },
+            { value: "ART_35", label: "Art. 35 — documento que não consta da TTDD (CCPAD + Arquivo + SEMAD)" },
+            { value: "ART_36", label: "Art. 36 — órgão sem TTDD de atividades-fim (CCPAD + Arquivo + SEMAD)" },
+          ]}
+        />
         {unidade && (
           <DataState
             loading={aptas.isLoading}

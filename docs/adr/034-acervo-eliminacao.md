@@ -1,6 +1,6 @@
 # 034 — Acervo, Fase 3: comissões e o rito da eliminação (Anexos I a IV)
 
-- **Status:** Aceito e implementado (Fase 3 do [roadmap](../ROADMAP_SISMARQ.md); ficam de fora os ritos especiais e a aprovação da TTDD — ver Consequências)
+- **Status:** Aceito e implementado (Fase 3 do [roadmap](../ROADMAP_SISMARQ.md); ritos 35/36 e cópia do termo no [ADR 041](041-acervo-ritos-35-36-signum-e-copia.md); aprovação da TTDD de atividades-fim continua fora)
 - **Data:** 2026-10-15
 - **Relacionado:** [ADR 032](032-acervo-unidades-de-arquivamento.md) (travas da eliminação), [ADR 033](033-acervo-emprestimo-guia-e-importacao.md) (empréstimo e guia)
 
@@ -87,11 +87,9 @@ série vigente, sem bloqueio judicial) já impediam a eliminação avulsa. A Fas
 ## Consequências
 
 - O painel "Avaliar eliminação" do Acervo alimenta a nova relação.
-- Ficam para depois, com o roadmap: os ritos especiais (documento fora da
-  TTDD, art. 35; órgão sem TTDD, art. 36), a aprovação da TTDD de
-  atividades-fim pelo sistema (art. 32, §§ 4º a 8º), a assinatura da ata e
-  do termo no Signum e o envio da cópia do termo à Divisão de Arquivo e à
-  SEMAD (art. 38, parágrafo único).
+- Fica para depois, com o roadmap: a aprovação da TTDD de atividades-fim
+  pelo sistema (art. 32, §§ 4º a 8º). Os ritos 35/36, a cópia do termo e
+  o estado `AUSENTE` da ata/termo no Signum estão no ADR 041.
 - A amostragem acontece durante o edital, não antes: o edital anuncia o
   conjunto relacionado e a amostra sai dele antes da eliminação.
 - Os documentos gerados precisam ser conferidos pela Divisão de Arquivo

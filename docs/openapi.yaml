@@ -253,6 +253,32 @@ components:
                 - unidade_arquivamento_id
             type: object
             x-sismarq-generated: true
+        AcervoBuscaResponse:
+            properties:
+                facetas:
+                    additionalProperties:
+                        items:
+                            $ref: '#/components/schemas/AcervoFaceta'
+                        type: array
+                    type: object
+                items:
+                    items:
+                        $ref: '#/components/schemas/AcervoItemBusca'
+                    type: array
+                meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+                ms:
+                    type: integer
+                origem:
+                    type: string
+            required:
+                - facetas
+                - items
+                - meta
+                - ms
+                - origem
+            type: object
+            x-sismarq-generated: true
         AcervoComissao:
             properties:
                 ativa:
@@ -429,6 +455,10 @@ components:
                     format: uuid
                     nullable: true
                     type: string
+                tramite_processo_id:
+                    format: uuid
+                    nullable: true
+                    type: string
                 serie:
                     $ref: '#/components/schemas/AcervoSerieResumo'
                 situacao:
@@ -480,6 +510,7 @@ components:
                 - quantidade
                 - recolhida_em
                 - recolhimento_id
+                - tramite_processo_id
                 - serie
                 - situacao
                 - tipo
@@ -521,6 +552,8 @@ components:
                     type: integer
                 original_sha256:
                     type: string
+                pades:
+                    type: string
                 paginas:
                     type: integer
                 pdfa_bytes:
@@ -528,6 +561,10 @@ components:
                 pdfa_sha256:
                     type: string
                 processado_em:
+                    format: date-time
+                    nullable: true
+                    type: string
+                publicado_em:
                     format: date-time
                     nullable: true
                     type: string
@@ -576,10 +613,12 @@ components:
                 - numero
                 - original_bytes
                 - original_sha256
+                - pades
                 - paginas
                 - pdfa_bytes
                 - pdfa_sha256
                 - processado_em
+                - publicado_em
                 - responsavel_cpf
                 - responsavel_id
                 - responsavel_nome
@@ -634,6 +673,8 @@ components:
                     type: integer
                 original_sha256:
                     type: string
+                pades:
+                    type: string
                 paginas:
                     type: integer
                 pdfa_bytes:
@@ -641,6 +682,10 @@ components:
                 pdfa_sha256:
                     type: string
                 processado_em:
+                    format: date-time
+                    nullable: true
+                    type: string
+                publicado_em:
                     format: date-time
                     nullable: true
                     type: string
@@ -683,10 +728,12 @@ components:
                 - numero
                 - original_bytes
                 - original_sha256
+                - pades
                 - paginas
                 - pdfa_bytes
                 - pdfa_sha256
                 - processado_em
+                - publicado_em
                 - responsavel_cpf
                 - responsavel_id
                 - responsavel_nome
@@ -696,6 +743,88 @@ components:
                 - tipo_documento
                 - unidade_arquivamento_id
                 - verificado_em
+            type: object
+            x-sismarq-generated: true
+        AcervoDigitalIndice:
+            properties:
+                conformidade:
+                    type: string
+                descricao:
+                    type: string
+                digitalizado_em:
+                    format: date-time
+                    type: string
+                id:
+                    format: uuid
+                    type: string
+                numero:
+                    type: string
+                paginas:
+                    type: integer
+                pdfa_bytes:
+                    type: integer
+                pdfa_sha256:
+                    type: string
+                publicado_em:
+                    format: date-time
+                    nullable: true
+                    type: string
+            required:
+                - conformidade
+                - descricao
+                - digitalizado_em
+                - id
+                - numero
+                - paginas
+                - pdfa_bytes
+                - pdfa_sha256
+                - publicado_em
+            type: object
+            x-sismarq-generated: true
+        AcervoDigitalRecente:
+            properties:
+                assunto:
+                    type: string
+                conformidade:
+                    type: string
+                descricao:
+                    type: string
+                digitalizado_em:
+                    format: date-time
+                    type: string
+                id:
+                    format: uuid
+                    type: string
+                numero:
+                    type: string
+                paginas:
+                    type: integer
+                pdfa_bytes:
+                    type: integer
+                pdfa_sha256:
+                    type: string
+                publicado_em:
+                    format: date-time
+                    nullable: true
+                    type: string
+                unidade_arquivamento_id:
+                    format: uuid
+                    type: string
+                unidade_numero:
+                    type: string
+            required:
+                - assunto
+                - conformidade
+                - descricao
+                - digitalizado_em
+                - id
+                - numero
+                - paginas
+                - pdfa_bytes
+                - pdfa_sha256
+                - publicado_em
+                - unidade_arquivamento_id
+                - unidade_numero
             type: object
             x-sismarq-generated: true
         AcervoDigitalRequest:
@@ -836,6 +965,130 @@ components:
                 - tipo
             type: object
             x-sismarq-generated: true
+        AcervoExposicao:
+            properties:
+                atualizado_em:
+                    format: date-time
+                    type: string
+                criado_em:
+                    format: date-time
+                    type: string
+                id:
+                    format: uuid
+                    type: string
+                itens:
+                    items:
+                        $ref: '#/components/schemas/AcervoItemExposicao'
+                    type: array
+                publicada_em:
+                    format: date-time
+                    nullable: true
+                    type: string
+                resumo:
+                    type: string
+                slug:
+                    type: string
+                texto:
+                    type: string
+                titulo:
+                    type: string
+            required:
+                - atualizado_em
+                - criado_em
+                - id
+                - publicada_em
+                - resumo
+                - slug
+                - texto
+                - titulo
+            type: object
+            x-sismarq-generated: true
+        AcervoExposicaoRequest:
+            properties:
+                itens:
+                    items:
+                        $ref: '#/components/schemas/AcervoItemExposicaoReq'
+                    maxItems: 100
+                    type: array
+                resumo:
+                    maxLength: 500
+                    type: string
+                texto:
+                    maxLength: 20000
+                    type: string
+                titulo:
+                    maxLength: 200
+                    type: string
+            required:
+                - titulo
+            type: object
+            x-sismarq-generated: true
+        AcervoFaceta:
+            properties:
+                total:
+                    type: integer
+                valor:
+                    type: string
+            required:
+                - total
+                - valor
+            type: object
+            x-sismarq-generated: true
+        AcervoFichaPublica:
+            properties:
+                assunto:
+                    type: string
+                codigo_classificacao:
+                    type: string
+                data_final:
+                    format: date-time
+                    type: string
+                data_inicial:
+                    format: date-time
+                    type: string
+                descritor:
+                    type: string
+                destinacao:
+                    type: string
+                digitais:
+                    items:
+                        $ref: '#/components/schemas/AcervoDigitalIndice'
+                    type: array
+                especificacao:
+                    type: string
+                fase:
+                    type: string
+                id:
+                    format: uuid
+                    type: string
+                numero:
+                    type: string
+                orgao:
+                    type: string
+                quantidade:
+                    type: integer
+                recolhida:
+                    type: boolean
+                tipo:
+                    type: string
+            required:
+                - assunto
+                - codigo_classificacao
+                - data_final
+                - data_inicial
+                - descritor
+                - destinacao
+                - digitais
+                - especificacao
+                - fase
+                - id
+                - numero
+                - orgao
+                - quantidade
+                - recolhida
+                - tipo
+            type: object
+            x-sismarq-generated: true
         AcervoGuia:
             properties:
                 criada_em:
@@ -903,6 +1156,99 @@ components:
             required:
                 - origem_id
                 - unidades
+            type: object
+            x-sismarq-generated: true
+        AcervoItemBusca:
+            properties:
+                ano_final:
+                    type: integer
+                ano_inicial:
+                    type: integer
+                assunto:
+                    type: string
+                codigo_classificacao:
+                    type: string
+                descritor:
+                    type: string
+                destinacao:
+                    type: string
+                digitais:
+                    type: integer
+                fase:
+                    type: string
+                id:
+                    format: uuid
+                    type: string
+                nivel_acesso:
+                    type: string
+                numero:
+                    type: string
+                orgao:
+                    type: string
+                tipo:
+                    type: string
+                trecho:
+                    type: string
+            required:
+                - ano_final
+                - ano_inicial
+                - assunto
+                - codigo_classificacao
+                - descritor
+                - destinacao
+                - digitais
+                - fase
+                - id
+                - numero
+                - orgao
+                - tipo
+                - trecho
+            type: object
+            x-sismarq-generated: true
+        AcervoItemExposicao:
+            properties:
+                descricao:
+                    type: string
+                digital_id:
+                    format: uuid
+                    type: string
+                legenda:
+                    type: string
+                numero:
+                    type: string
+                ordem:
+                    type: integer
+                paginas:
+                    type: integer
+                publicado:
+                    type: boolean
+                unidade_arquivamento_id:
+                    format: uuid
+                    type: string
+                unidade_numero:
+                    type: string
+            required:
+                - descricao
+                - digital_id
+                - legenda
+                - numero
+                - ordem
+                - paginas
+                - publicado
+                - unidade_arquivamento_id
+                - unidade_numero
+            type: object
+            x-sismarq-generated: true
+        AcervoItemExposicaoReq:
+            properties:
+                digital_id:
+                    format: uuid
+                    type: string
+                legenda:
+                    maxLength: 1000
+                    type: string
+            required:
+                - digital_id
             type: object
             x-sismarq-generated: true
         AcervoItemListagem:
@@ -990,6 +1336,10 @@ components:
                     format: uuid
                     nullable: true
                     type: string
+                tramite_processo_id:
+                    format: uuid
+                    nullable: true
+                    type: string
                 retirada:
                     type: boolean
                 situacao:
@@ -1037,6 +1387,7 @@ components:
                 - quantidade
                 - recolhida_em
                 - recolhimento_id
+                - tramite_processo_id
                 - retirada
                 - situacao
                 - tipo
@@ -1087,6 +1438,18 @@ components:
                     format: uuid
                     nullable: true
                     type: string
+                ccpad_autorizada_em:
+                    format: date-time
+                    nullable: true
+                    type: string
+                ccpad_autorizada_por:
+                    format: uuid
+                    nullable: true
+                    type: string
+                ata_signum:
+                    enum:
+                        - AUSENTE
+                    type: string
                 comissao_id:
                     format: uuid
                     type: string
@@ -1122,6 +1485,12 @@ components:
                     type: array
                 numero:
                     type: string
+                rito:
+                    enum:
+                        - ORDINARIO
+                        - ART_35
+                        - ART_36
+                    type: string
                 parecer_juridico:
                     type: string
                 pedidos:
@@ -1146,6 +1515,26 @@ components:
                     format: uuid
                     nullable: true
                     type: string
+                termo_signum:
+                    enum:
+                        - AUSENTE
+                    type: string
+                termo_copia_em:
+                    format: date-time
+                    nullable: true
+                    type: string
+                termo_copia_arquivo:
+                    type: integer
+                termo_copia_semad:
+                    type: integer
+                semad_autorizada_em:
+                    format: date-time
+                    nullable: true
+                    type: string
+                semad_autorizada_por:
+                    format: uuid
+                    nullable: true
+                    type: string
                 total_itens:
                     type: integer
                 unidade_id:
@@ -1162,6 +1551,9 @@ components:
                 - ata_presentes
                 - autorizada_em
                 - autorizada_por
+                - ata_signum
+                - ccpad_autorizada_em
+                - ccpad_autorizada_por
                 - comissao_id
                 - contas_aprovadas_em
                 - contas_exercicios
@@ -1176,12 +1568,19 @@ components:
                 - numero
                 - parecer_juridico
                 - pedidos
+                - rito
+                - semad_autorizada_em
+                - semad_autorizada_por
                 - responsavel_selecao
                 - situacao
                 - termo_acompanhamento
+                - termo_copia_arquivo
+                - termo_copia_em
+                - termo_copia_semad
                 - termo_destinacao_papel
                 - termo_eliminado_em
                 - termo_registrado_por
+                - termo_signum
                 - total_itens
                 - unidade_id
             type: object
@@ -1195,6 +1594,12 @@ components:
                     type: string
                 parecer_juridico:
                     maxLength: 4000
+                    type: string
+                rito:
+                    enum:
+                        - ORDINARIO
+                        - ART_35
+                        - ART_36
                     type: string
                 responsavel_selecao:
                     format: uuid
@@ -1432,6 +1837,33 @@ components:
                 - ementa
                 - numero
                 - texto
+            type: object
+            x-sismarq-generated: true
+        AcervoPainelPublico:
+            properties:
+                digitais:
+                    type: integer
+                exposicoes:
+                    items:
+                        $ref: '#/components/schemas/AcervoExposicao'
+                    type: array
+                recentes:
+                    items:
+                        $ref: '#/components/schemas/AcervoDigitalRecente'
+                    type: array
+                serie_sic:
+                    type: string
+                sic_url:
+                    type: string
+                unidades:
+                    type: integer
+            required:
+                - digitais
+                - exposicoes
+                - recentes
+                - serie_sic
+                - sic_url
+                - unidades
             type: object
             x-sismarq-generated: true
         AcervoPedido:
@@ -2009,6 +2441,10 @@ components:
                     format: uuid
                     nullable: true
                     type: string
+                tramite_processo_id:
+                    format: uuid
+                    nullable: true
+                    type: string
                 situacao:
                     type: string
                 tipo:
@@ -2053,6 +2489,7 @@ components:
                 - quantidade
                 - recolhida_em
                 - recolhimento_id
+                - tramite_processo_id
                 - situacao
                 - tipo
                 - unidade_id
@@ -7135,6 +7572,97 @@ paths:
             summary: Liberar bloqueio judicial
             tags:
                 - acervo
+    /api/v1/acervo/busca:
+        get:
+            description: 'Busca nas unidades de arquivamento e no texto do OCR, no escopo de quem pede (o Arquivo Público vê todo o acervo). O restrito e o sigiloso só aparecem para quem tem a unidade no escopo. Facetas: órgão, classe, espécie, fase, destinação e ano (?orgao=, ?classe=, ?especie=, ?fase=, ?destinacao=, ?ano=); ?digital=true só com representante digital. Também ?nivel_acesso=. Com o índice (Typesense) fora do ar, a busca vai ao banco, sem facetas (origem "banco").'
+            operationId: getAcervoBusca
+            parameters:
+                - $ref: '#/components/parameters/Page'
+                - $ref: '#/components/parameters/PageSize'
+                - description: Órgão produtor (nome)
+                  in: query
+                  name: orgao
+                  required: false
+                  schema:
+                    type: string
+                - description: 'Classe do código de classificação (1º nível, ex.: 2)'
+                  in: query
+                  name: classe
+                  required: false
+                  schema:
+                    type: string
+                - description: Espécie da unidade (CAIXA, PASTA, LIVRO, PROCESSO…)
+                  in: query
+                  name: especie
+                  required: false
+                  schema:
+                    type: string
+                - description: Fase (CORRENTE, INTERMEDIARIA, PERMANENTE)
+                  in: query
+                  name: fase
+                  required: false
+                  schema:
+                    type: string
+                - description: Destinação (ELIMINACAO, GUARDA_PERMANENTE, INDEFINIDA)
+                  in: query
+                  name: destinacao
+                  required: false
+                  schema:
+                    type: string
+                - description: Ano coberto pelas datas-limite
+                  in: query
+                  name: ano
+                  required: false
+                  schema:
+                    type: integer
+                - description: Nível de acesso (PUBLICO, RESTRITO, SIGILOSO) — só na busca interna
+                  in: query
+                  name: nivel_acesso
+                  required: false
+                  schema:
+                    type: string
+                - in: query
+                  name: q
+                  required: false
+                  schema:
+                    maxLength: 400
+                    type: string
+                  x-sismarq-generated: true
+                - in: query
+                  name: digital
+                  required: false
+                  schema:
+                    maxLength: 5
+                    type: string
+                  x-sismarq-generated: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoBuscaResponse'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Busca no acervo
+            tags:
+                - acervo
     /api/v1/acervo/comissoes:
         get:
             description: As CSPAD de cada órgão e a CCPAD, com os membros (art. 31). Avisa quando a composição foge da recomendação (número ímpar de membros).
@@ -7432,6 +7960,82 @@ paths:
             summary: PDF/A em fluxo
             tags:
                 - acervo
+    /api/v1/acervo/digitais/{id}/publicacao:
+        delete:
+            description: Retira o representante da consulta sem login. A unidade que deixa de ser pública retira os seus representantes na hora (gatilho do banco).
+            operationId: deleteAcervoDigitaisIdPublicacao
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoDetalheDigital'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Retirar da consulta pública
+            tags:
+                - acervo
+        post:
+            description: 'Libera o representante digital à consulta sem login. Decide quem gere a unidade (recolhida, o Arquivo Público). Só o ostensivo (art. 2º): pronto, de unidade de nível público e não eliminada — o banco confere de novo.'
+            operationId: postAcervoDigitaisIdPublicacao
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                    type: string
+                - $ref: '#/components/parameters/IdempotencyKey'
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoDetalheDigital'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Liberar à consulta pública
+            tags:
+                - acervo
     /api/v1/acervo/digitais/{id}/reprocessar:
         post:
             description: Só o Arquivo Público. Devolve ao pipeline o que falhou nas tentativas (o reprovado por resolução precisa de nova digitalização).
@@ -7600,6 +8204,234 @@ paths:
             security:
                 - bearerAuth: []
             summary: Registrar devolução
+            tags:
+                - acervo
+    /api/v1/acervo/exposicoes:
+        get:
+            description: Só o Arquivo Público. As exposições (rascunhos e publicadas), mais recentes primeiro (difusão, art. 5º, X e XI).
+            operationId: getAcervoExposicoes
+            parameters:
+                - $ref: '#/components/parameters/Page'
+                - $ref: '#/components/parameters/PageSize'
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            items:
+                                                $ref: '#/components/schemas/AcervoExposicao'
+                                            type: array
+                                        meta:
+                                            $ref: '#/components/schemas/PaginationMeta'
+                                      type: object
+                    description: Página de itens em `data`, paginação em `meta`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Exposições virtuais
+            tags:
+                - acervo
+        post:
+            description: Só o Arquivo Público. Título, resumo, texto (Markdown) e os documentos, na ordem, com legenda. O endereço (slug) sai do título e não muda depois.
+            operationId: postAcervoExposicoes
+            parameters:
+                - $ref: '#/components/parameters/IdempotencyKey'
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AcervoExposicaoRequest'
+                required: true
+                x-sismarq-generated: true
+            responses:
+                "201":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoExposicao'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Criar exposição
+            tags:
+                - acervo
+    /api/v1/acervo/exposicoes/{id}:
+        get:
+            description: Só o Arquivo Público. A exposição com todos os documentos e se cada um está liberado à consulta pública.
+            operationId: getAcervoExposicoesId
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    $ref: '#/components/responses/Success'
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Exposição
+            tags:
+                - acervo
+        put:
+            description: Só o Arquivo Público. Troca o texto e os documentos; o endereço fica.
+            operationId: putAcervoExposicoesId
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                    type: string
+                - $ref: '#/components/parameters/IdempotencyKey'
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AcervoExposicaoRequest'
+                required: true
+                x-sismarq-generated: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoExposicao'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Alterar exposição
+            tags:
+                - acervo
+    /api/v1/acervo/exposicoes/{id}/publicacao:
+        delete:
+            description: Só o Arquivo Público. A exposição sai da página do Arquivo.
+            operationId: deleteAcervoExposicoesIdPublicacao
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoExposicao'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Recolher exposição
+            tags:
+                - acervo
+        post:
+            description: Só o Arquivo Público. Exige ao menos um documento liberado; a visita mostra só os liberados.
+            operationId: postAcervoExposicoesIdPublicacao
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                    type: string
+                - $ref: '#/components/parameters/IdempotencyKey'
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoExposicao'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Publicar exposição
             tags:
                 - acervo
     /api/v1/acervo/guias:
@@ -8170,6 +9002,84 @@ paths:
             security:
                 - bearerAuth: []
             summary: Autorizar eliminação
+            tags:
+                - acervo
+    /api/v1/acervo/listagens/{id}/autorizar-ccpad:
+        post:
+            description: Membro da CCPAD autoriza a Relação no rito do art. 35 (documento fora da TTDD), depois da ata da CSPAD e antes do Arquivo Público.
+            operationId: postAcervoListagensIdAutorizarCcpad
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                    type: string
+                - $ref: '#/components/parameters/IdempotencyKey'
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoListagem'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Autorizar pela CCPAD (art. 35)
+            tags:
+                - acervo
+    /api/v1/acervo/listagens/{id}/autorizar-semad:
+        post:
+            description: A SEMAD (acervo:semad, global) aprova a Relação nos ritos dos arts. 35 e 36. Só então o edital pode ser publicado.
+            operationId: postAcervoListagensIdAutorizarSemad
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                    type: string
+                - $ref: '#/components/parameters/IdempotencyKey'
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoListagem'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "403":
+                    $ref: '#/components/responses/Forbidden'
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Aprovar pela SEMAD (arts. 35 e 36)
             tags:
                 - acervo
     /api/v1/acervo/listagens/{id}/cancelar:
@@ -9297,6 +10207,239 @@ paths:
             summary: Registrar parecer da Comissão Especial
             tags:
                 - acervo
+    /api/v1/acervo/publico/arquivo:
+        get:
+            description: Sem login. Números do acervo ostensivo, exposições em destaque, os últimos documentos liberados e o canal do SIC para o pedido do que não é ostensivo (série 2.0.03.02 da TTDD da SEMAD).
+            operationId: getAcervoPublicoArquivo
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoPainelPublico'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security: []
+            summary: Página do Arquivo Público
+            tags:
+                - acervo
+    /api/v1/acervo/publico/busca:
+        get:
+            description: 'Sem login, com limite por IP. Só o ostensivo: a descrição das unidades de acesso público e o texto do OCR dos representantes liberados — o restrito nunca entra nessa coleção. Facetas: órgão, classe, espécie, fase, destinação e ano (?orgao=, ?classe=, ?especie=, ?fase=, ?destinacao=, ?ano=); ?digital=true só com representante digital.'
+            operationId: getAcervoPublicoBusca
+            parameters:
+                - $ref: '#/components/parameters/Page'
+                - $ref: '#/components/parameters/PageSize'
+                - description: Órgão produtor (nome)
+                  in: query
+                  name: orgao
+                  required: false
+                  schema:
+                    type: string
+                - description: 'Classe do código de classificação (1º nível, ex.: 2)'
+                  in: query
+                  name: classe
+                  required: false
+                  schema:
+                    type: string
+                - description: Espécie da unidade (CAIXA, PASTA, LIVRO, PROCESSO…)
+                  in: query
+                  name: especie
+                  required: false
+                  schema:
+                    type: string
+                - description: Fase (CORRENTE, INTERMEDIARIA, PERMANENTE)
+                  in: query
+                  name: fase
+                  required: false
+                  schema:
+                    type: string
+                - description: Destinação (ELIMINACAO, GUARDA_PERMANENTE, INDEFINIDA)
+                  in: query
+                  name: destinacao
+                  required: false
+                  schema:
+                    type: string
+                - description: Ano coberto pelas datas-limite
+                  in: query
+                  name: ano
+                  required: false
+                  schema:
+                    type: integer
+                - in: query
+                  name: q
+                  required: false
+                  schema:
+                    maxLength: 400
+                    type: string
+                  x-sismarq-generated: true
+                - in: query
+                  name: digital
+                  required: false
+                  schema:
+                    maxLength: 5
+                    type: string
+                  x-sismarq-generated: true
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoBuscaResponse'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security: []
+            summary: Consulta pública ao acervo
+            tags:
+                - acervo
+    /api/v1/acervo/publico/digitais/{id}/arquivo:
+        get:
+            description: Sem login. O PDF/A liberado, com Range (HTTP 206) para o visualizador buscar só as páginas visíveis. ETag é o SHA-256. Cada abertura conta para o indicador de consultas atendidas.
+            operationId: getAcervoPublicoDigitaisIdArquivo
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    content:
+                        application/pdf:
+                            schema:
+                                format: binary
+                                type: string
+                    description: O PDF/A inteiro.
+                    headers:
+                        Accept-Ranges:
+                            description: bytes
+                            schema:
+                                type: string
+                        ETag:
+                            description: O SHA-256 do PDF/A, entre aspas.
+                            schema:
+                                type: string
+                "206":
+                    content:
+                        application/pdf:
+                            schema:
+                                format: binary
+                                type: string
+                    description: O trecho pedido em Range.
+                    headers:
+                        Accept-Ranges:
+                            description: bytes
+                            schema:
+                                type: string
+                        Content-Range:
+                            description: bytes início-fim/tamanho
+                            schema:
+                                type: string
+                        ETag:
+                            description: O SHA-256 do PDF/A, entre aspas.
+                            schema:
+                                type: string
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "416":
+                    description: 'Intervalo fora do arquivo (Content-Range: bytes */tamanho).'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security: []
+            summary: Documento liberado em fluxo
+            tags:
+                - acervo
+    /api/v1/acervo/publico/exposicoes:
+        get:
+            description: Sem login. As exposições virtuais do Arquivo Público.
+            operationId: getAcervoPublicoExposicoes
+            parameters:
+                - $ref: '#/components/parameters/Page'
+                - $ref: '#/components/parameters/PageSize'
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            items:
+                                                $ref: '#/components/schemas/AcervoExposicao'
+                                            type: array
+                                        meta:
+                                            $ref: '#/components/schemas/PaginationMeta'
+                                      type: object
+                    description: Página de itens em `data`, paginação em `meta`.
+                    x-sismarq-generated: true
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security: []
+            summary: Exposições publicadas
+            tags:
+                - acervo
+    /api/v1/acervo/publico/exposicoes/{slug}:
+        get:
+            description: Sem login. A exposição publicada, só com os documentos liberados.
+            operationId: getAcervoPublicoExposicoesSlug
+            parameters:
+                - in: path
+                  name: slug
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoExposicao'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security: []
+            summary: Visita à exposição
+            tags:
+                - acervo
     /api/v1/acervo/publico/normas:
         get:
             description: 'Consulta pública, sem login: as normas vigentes e revogadas do Arquivo Público (art. 54), com a redação em vigor. ?q= busca no número, na ementa e no texto.'
@@ -9369,6 +10512,39 @@ paths:
                     $ref: '#/components/responses/TooManyRequests'
             security: []
             summary: Instrução normativa publicada
+            tags:
+                - acervo
+    /api/v1/acervo/publico/unidades/{id}:
+        get:
+            description: Sem login. A descrição ostensiva (sem localização física nem observações) e os representantes liberados. O que não é ostensivo responde 404.
+            operationId: getAcervoPublicoUnidadesId
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/AcervoFichaPublica'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "404":
+                    $ref: '#/components/responses/ModuleDisabledOrNotFound'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security: []
+            summary: Ficha pública da unidade
             tags:
                 - acervo
     /api/v1/acervo/recolhimentos:
@@ -18860,7 +20036,7 @@ servers:
     - description: Mesma origem (produção, atrás de um reverse proxy)
       url: /
 tags:
-    - description: 'Acervo — Gestão Arquivística. Plug-in — Unidades de arquivamento nas três idades (Lei 10.301/2019): classificação pela TTDD, prazos de guarda, localização física, bloqueio judicial, eliminação, recolhimento ao Arquivo Público, instruções normativas e arquivos privados de interesse público. Depende de: atlas.'
+    - description: 'Acervo — Gestão Arquivística. Plug-in — Unidades de arquivamento nas três idades (Lei 10.301/2019): classificação pela TTDD, prazos de guarda, localização física, bloqueio judicial, eliminação, recolhimento ao Arquivo Público, instruções normativas, arquivos privados de interesse público, digitalização, busca e consulta pública do acervo. Depende de: atlas.'
       name: acervo
     - name: administracao
     - description: Atlas — Procedimentos e Temporalidade. Plug-in — Procedimentos canônicos de processo (padrão SEI), Tabela de Temporalidade (TTDD) oficial e assistente sobre fluxos e TTDD.

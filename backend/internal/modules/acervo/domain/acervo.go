@@ -124,6 +124,9 @@ type Unidade struct {
 	// guarda é do Arquivo; a unidade produtora segue como proveniência.
 	RecolhidaEm    *time.Time `json:"recolhida_em"`
 	RecolhimentoID *uuid.UUID `json:"recolhimento_id"`
+	// TramiteProcessoID: processo encerrado do Trâmite que originou esta
+	// unidade (ADR 039). Nulo no cadastro pela tela ou na importação.
+	TramiteProcessoID *uuid.UUID `json:"tramite_processo_id"`
 }
 
 var tipos = map[Tipo]bool{TipoCaixa: true, TipoPasta: true, TipoLivro: true, TipoProcesso: true, TipoDossie: true,

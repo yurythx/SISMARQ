@@ -3,6 +3,7 @@ package application
 import (
 	"context"
 	"crypto/rand"
+	"errors"
 	"math/big"
 	"strings"
 	"time"
@@ -15,6 +16,7 @@ import (
 	"github.com/yurythx/sismarq/internal/platform/audit"
 	"github.com/yurythx/sismarq/internal/platform/auth"
 	"github.com/yurythx/sismarq/internal/platform/database"
+	"github.com/yurythx/sismarq/internal/platform/notificacoes"
 )
 
 // Eventos da Fase 3 (ADR 034).
@@ -24,6 +26,8 @@ const (
 	EventListagemAlterada   = "acervo.listagem.alterada"
 	EventListagemAprovada   = "acervo.listagem.aprovada"
 	EventListagemAutorizada = "acervo.listagem.autorizada"
+	EventListagemCCPAD      = "acervo.listagem.ccpad"
+	EventListagemSEMAD      = "acervo.listagem.semad"
 	EventListagemDevolvida  = "acervo.listagem.devolvida"
 	EventEditalPublicado    = "acervo.listagem.edital_publicado"
 	EventPedidoRegistrado   = "acervo.listagem.pedido_registrado"
@@ -90,6 +94,7 @@ func avalia(identity auth.Identity, unidade uuid.UUID) bool {
 // NovaListagem é o cabeçalho da Relação de Eliminação (Anexo I).
 type NovaListagem struct {
 	UnidadeID          uuid.UUID
+	Rito               string
 	ResponsavelSelecao *uuid.UUID
 	ParecerJuridico    string
 	ContasExercicios   string
@@ -121,14 +126,19 @@ func (s *Service) conferirItem(ctx context.Context, tx pgx.Tx, l domain.Listagem
 		return u, domain.Serie{}, &domain.ErrValidacao{Campo: "unidades", Motivo: u.Numero + " não é da unidade da relação"}
 	}
 	serie, err := s.ttdd.Serie(ctx, u.CodigoClassificacao)
-	if err != nil {
+	existe := err == nil
+	if err != nil && !(l.Rito == domain.RitoArt35 && errors.Is(err, domain.ErrSerieInvalida)) {
 		return u, serie, err
 	}
 	bloqueada, err := s.repo.TemBloqueioAtivo(ctx, tx, u.ID)
 	if err != nil {
 		return u, serie, err
 	}
-	if err := domain.PodeEliminar(u, serie, bloqueada, s.hoje()); err != nil {
+	if l.Rito == domain.RitoArt35 {
+		if err := domain.PodeEliminarArt35(u, serie, existe, bloqueada, s.hoje()); err != nil {
+			return u, serie, prefixar(u, err)
+		}
+	} else if err := domain.PodeEliminar(u, serie, bloqueada, s.hoje()); err != nil {
 		return u, serie, prefixar(u, err)
 	}
 	fora, err := s.repo.EmprestimoAberto(ctx, tx, u.ID)
@@ -188,14 +198,25 @@ func (s *Service) CriarListagem(ctx context.Context, identity auth.Identity, n N
 	if !avalia(identity, n.UnidadeID) {
 		return domain.Listagem{}, MapError(domain.ErrForaDoEscopo)
 	}
-	l := domain.Listagem{ID: uuid.New(), UnidadeID: n.UnidadeID, Situacao: domain.ListagemRascunho, ResponsavelSelecao: n.ResponsavelSelecao,
-		ParecerJuridico: n.ParecerJuridico, ContasExercicios: n.ContasExercicios, ContasAprovadasEm: n.ContasAprovadasEm,
+	rito, err := domain.NormalizarRito(n.Rito)
+	if err != nil {
+		return domain.Listagem{}, MapError(err)
+	}
+	l := domain.Listagem{ID: uuid.New(), UnidadeID: n.UnidadeID, Situacao: domain.ListagemRascunho, Rito: rito,
+		ResponsavelSelecao: n.ResponsavelSelecao, ParecerJuridico: n.ParecerJuridico, ContasExercicios: n.ContasExercicios,
+		ContasAprovadasEm: n.ContasAprovadasEm, AtaSignum: domain.SignumAusente, TermoSignum: domain.SignumAusente,
 		CriadaPor: ator(identity), CriadaEm: s.agora().UTC()}
 	if err := limparCabecalho(&l); err != nil {
 		return domain.Listagem{}, MapError(err)
 	}
-	err := database.WithTx(ctx, s.pool, func(ctx context.Context, tx pgx.Tx) error {
-		c, err := s.repo.ComissaoDaUnidade(ctx, tx, n.UnidadeID)
+	err = database.WithTx(ctx, s.pool, func(ctx context.Context, tx pgx.Tx) error {
+		var c domain.Comissao
+		var err error
+		if rito == domain.RitoArt36 {
+			c, err = s.repo.ComissaoCentral(ctx, tx)
+		} else {
+			c, err = s.repo.ComissaoDaUnidade(ctx, tx, n.UnidadeID)
+		}
 		if err != nil {
 			return err
 		}
@@ -248,7 +269,8 @@ func (s *Service) carregarListagem(ctx context.Context, tx pgx.Tx, identity auth
 }
 
 func podeLerListagem(identity auth.Identity, l domain.Listagem) bool {
-	return le(identity, l.UnidadeID) || avalia(identity, l.UnidadeID) || auth.CanGlobal(identity, auth.PermAcervoCentral)
+	return le(identity, l.UnidadeID) || avalia(identity, l.UnidadeID) || auth.CanGlobal(identity, auth.PermAcervoCentral) ||
+		auth.CanGlobal(identity, auth.PermAcervoSEMAD)
 }
 
 // Etapa aplica uma mudança à relação na transação e devolve a relação lida
@@ -330,8 +352,12 @@ func (s *Service) Aprovar(ctx context.Context, identity auth.Identity, id uuid.U
 		if err := s.repo.UpdateListagem(ctx, tx, *l); err != nil {
 			return err
 		}
+		quem := "CSPAD"
+		if c.Tipo == domain.ComissaoCentral {
+			quem = "CCPAD"
+		}
 		if err := s.movimentar(ctx, tx, identity, l.AEliminar(), domain.MovListagem,
-			"Relação "+l.Numero+" aprovada pela CSPAD (ata "+l.AtaNumero+")"); err != nil {
+			"Relação "+l.Numero+" aprovada pela "+quem+" (ata "+l.AtaNumero+")"); err != nil {
 			return err
 		}
 		return s.registrarListagem(ctx, tx, EventListagemAprovada, *l, map[string]any{"situacao": domain.ListagemRascunho},
@@ -356,11 +382,19 @@ func (s *Service) Autorizar(ctx context.Context, identity auth.Identity, id uuid
 		if l.Situacao != domain.ListagemAprovada {
 			return domain.ErrListagemSituacao
 		}
+		if l.Rito == domain.RitoArt35 && l.CcpadAutorizadaEm == nil {
+			return domain.ErrSemCCPAD
+		}
 		if err := s.reconferir(ctx, tx, *l); err != nil {
 			return err
 		}
 		agora := s.agora().UTC()
-		l.Situacao, l.AutorizadaPor, l.AutorizadaEm = domain.ListagemAutorizada, ator(identity), &agora
+		l.AutorizadaPor, l.AutorizadaEm = ator(identity), &agora
+		if l.RitoEspecial() {
+			l.Situacao = domain.ListagemAguardandoSEMAD
+		} else {
+			l.Situacao = domain.ListagemAutorizada
+		}
 		if err := s.repo.UpdateListagem(ctx, tx, *l); err != nil {
 			return err
 		}
@@ -373,6 +407,82 @@ func (s *Service) Autorizar(ctx context.Context, identity auth.Identity, id uuid
 	})
 }
 
+// AutorizarCCPAD registra a autorização da CCPAD no rito do art. 35.
+func (s *Service) AutorizarCCPAD(ctx context.Context, identity auth.Identity, id uuid.UUID) (domain.Listagem, error) {
+	err := database.WithTx(ctx, s.pool, func(ctx context.Context, tx pgx.Tx) error {
+		l, err := s.repo.GetListagem(ctx, tx, id, true)
+		if err != nil {
+			return err
+		}
+		if !podeLerListagem(identity, l) {
+			return domain.ErrListagemNaoExiste
+		}
+		c, err := s.repo.ComissaoCentral(ctx, tx)
+		if err != nil {
+			return err
+		}
+		if err := domain.PodeAutorizarCCPAD(l, c, identity.UserID); err != nil {
+			return err
+		}
+		if err := s.reconferir(ctx, tx, l); err != nil {
+			return err
+		}
+		agora := s.agora().UTC()
+		l.CcpadAutorizadaPor, l.CcpadAutorizadaEm = ator(identity), &agora
+		if err := s.repo.UpdateListagem(ctx, tx, l); err != nil {
+			return err
+		}
+		if err := s.movimentar(ctx, tx, identity, l.AEliminar(), domain.MovListagem,
+			"Eliminação autorizada pela CCPAD (relação "+l.Numero+", art. 35)"); err != nil {
+			return err
+		}
+		return s.registrarListagem(ctx, tx, EventListagemCCPAD, l, map[string]any{"situacao": domain.ListagemAprovada},
+			map[string]any{"ccpad_autorizada_em": agora})
+	})
+	if err != nil {
+		return domain.Listagem{}, MapError(err)
+	}
+	return s.Listagem(ctx, identity, id)
+}
+
+// AutorizarSEMAD registra a aprovação da Secretaria Municipal de Administração
+// (arts. 35 e 36). Só com acervo:semad global.
+func (s *Service) AutorizarSEMAD(ctx context.Context, identity auth.Identity, id uuid.UUID) (domain.Listagem, error) {
+	if !auth.CanGlobal(identity, auth.PermAcervoSEMAD) {
+		return domain.Listagem{}, MapError(domain.ErrForaDoEscopo)
+	}
+	err := database.WithTx(ctx, s.pool, func(ctx context.Context, tx pgx.Tx) error {
+		l, err := s.repo.GetListagem(ctx, tx, id, true)
+		if err != nil {
+			return err
+		}
+		if !podeLerListagem(identity, l) {
+			return domain.ErrListagemNaoExiste
+		}
+		if err := domain.PodeAutorizarSEMAD(l); err != nil {
+			return err
+		}
+		if err := s.reconferir(ctx, tx, l); err != nil {
+			return err
+		}
+		agora := s.agora().UTC()
+		l.Situacao, l.SemadAutorizadaPor, l.SemadAutorizadaEm = domain.ListagemAutorizada, ator(identity), &agora
+		if err := s.repo.UpdateListagem(ctx, tx, l); err != nil {
+			return err
+		}
+		if err := s.movimentar(ctx, tx, identity, l.AEliminar(), domain.MovListagem,
+			"Eliminação aprovada pela SEMAD (relação "+l.Numero+")"); err != nil {
+			return err
+		}
+		return s.registrarListagem(ctx, tx, EventListagemSEMAD, l, map[string]any{"situacao": domain.ListagemAguardandoSEMAD},
+			map[string]any{"situacao": l.Situacao})
+	})
+	if err != nil {
+		return domain.Listagem{}, MapError(err)
+	}
+	return s.Listagem(ctx, identity, id)
+}
+
 // DevolverListagem: o Arquivo Público devolve a relação à CSPAD, com o
 // motivo; ela volta ao rascunho e precisa de nova ata.
 func (s *Service) DevolverListagem(ctx context.Context, identity auth.Identity, id uuid.UUID, motivo string) (domain.Listagem, error) {
@@ -381,12 +491,14 @@ func (s *Service) DevolverListagem(ctx context.Context, identity auth.Identity, 
 		return domain.Listagem{}, MapError(&domain.ErrValidacao{Campo: "motivo", Motivo: "informe o motivo da devolução (até 2000 caracteres)"})
 	}
 	return s.etapa(ctx, identity, id, true, func(ctx context.Context, tx pgx.Tx, l *domain.Listagem) error {
-		if l.Situacao != domain.ListagemAprovada {
+		if l.Situacao != domain.ListagemAprovada && l.Situacao != domain.ListagemAguardandoSEMAD {
 			return domain.ErrListagemSituacao
 		}
 		antes := l.Situacao
 		l.Situacao, l.DevolucaoMotivo = domain.ListagemRascunho, motivo
 		l.AtaNumero, l.AtaEm, l.AtaLocal, l.AtaManifestacoes, l.AtaPresentes = "", nil, "", "", []uuid.UUID{}
+		l.AutorizadaPor, l.AutorizadaEm, l.CcpadAutorizadaPor, l.CcpadAutorizadaEm = nil, nil, nil, nil
+		l.SemadAutorizadaPor, l.SemadAutorizadaEm = nil, nil
 		if err := s.repo.UpdateListagem(ctx, tx, *l); err != nil {
 			return err
 		}
@@ -585,12 +697,17 @@ func (s *Service) RegistrarTermo(ctx context.Context, identity auth.Identity, id
 	case len([]rune(t.DestinacaoPapel)) > 500:
 		return domain.Listagem{}, MapError(&domain.ErrValidacao{Campo: "termo_destinacao_papel", Motivo: "até 500 caracteres"})
 	}
-	return s.etapa(ctx, identity, id, false, func(ctx context.Context, tx pgx.Tx, l *domain.Listagem) error {
-		if err := domain.PodeRegistrarTermo(*l, t.EliminadoEm, s.hoje()); err != nil {
+	var enviadas []notificacoes.Enviada
+	err := database.WithTx(ctx, s.pool, func(ctx context.Context, tx pgx.Tx) error {
+		l, err := s.carregarListagem(ctx, tx, identity, id, false)
+		if err != nil {
+			return err
+		}
+		if err := domain.PodeRegistrarTermo(l, t.EliminadoEm, s.hoje()); err != nil {
 			return err
 		}
 		for _, i := range l.AEliminar() {
-			u, _, err := s.conferirItem(ctx, tx, *l, i.ID, false)
+			u, _, err := s.conferirItem(ctx, tx, l, i.ID, false)
 			if err != nil {
 				return err
 			}
@@ -612,12 +729,51 @@ func (s *Service) RegistrarTermo(ctx context.Context, identity auth.Identity, id
 		em := t.EliminadoEm
 		l.Situacao, l.TermoEliminadoEm, l.TermoAcompanhamento, l.TermoDestinacaoPapel, l.TermoRegistradoPor = domain.ListagemEliminada,
 			&em, t.Acompanhamento, t.DestinacaoPapel, ator(identity)
-		if err := s.repo.UpdateListagem(ctx, tx, *l); err != nil {
+		if enviadas, err = s.avisarCopiaTermo(ctx, tx, identity, &l); err != nil {
 			return err
 		}
-		return s.registrarListagem(ctx, tx, EventEliminacao, *l, map[string]any{"situacao": domain.ListagemEmEdital},
-			map[string]any{"situacao": l.Situacao, "eliminado_em": em, "acompanhamento": t.Acompanhamento, "eliminadas": len(l.AEliminar())})
+		if err := s.repo.UpdateListagem(ctx, tx, l); err != nil {
+			return err
+		}
+		return s.registrarListagem(ctx, tx, EventEliminacao, l, map[string]any{"situacao": domain.ListagemEmEdital},
+			map[string]any{"situacao": l.Situacao, "eliminado_em": em, "acompanhamento": t.Acompanhamento,
+				"eliminadas": len(l.AEliminar()), "copia_arquivo": l.TermoCopiaArquivo, "copia_semad": l.TermoCopiaSEMAD})
 	})
+	if err != nil {
+		return domain.Listagem{}, MapError(err)
+	}
+	s.entregar(ctx, enviadas)
+	return s.Listagem(ctx, identity, id)
+}
+
+// avisarCopiaTermo entrega a cópia do Termo à Divisão de Arquivo e à SEMAD
+// (art. 38, parágrafo único) na caixa de quem tem acervo:central e
+// acervo:semad globais. Sem destinatário SEMAD, o ato fica registrado com
+// zero cópias — a permissão ainda não foi concedida (Fase 0).
+func (s *Service) avisarCopiaTermo(ctx context.Context, tx pgx.Tx, identity auth.Identity, l *domain.Listagem) ([]notificacoes.Enviada, error) {
+	arquivo, err := s.repo.EquipeCentral(ctx, tx)
+	if err != nil {
+		return nil, err
+	}
+	semad, err := s.repo.EquipeSEMAD(ctx, tx)
+	if err != nil {
+		return nil, err
+	}
+	agora := s.agora().UTC()
+	l.TermoCopiaEm, l.TermoCopiaArquivo, l.TermoCopiaSEMAD = &agora, len(arquivo), len(semad)
+	titulo := "Cópia do Termo de Eliminação " + l.Numero
+	msg := "Art. 38, parágrafo único: cópia do Termo da relação " + l.Numero + "."
+	link := "/acervo/eliminacao/" + l.ID.String()
+	vistos := map[uuid.UUID]bool{identity.UserID: true}
+	var dest []uuid.UUID
+	for _, u := range append(append([]uuid.UUID{}, arquivo...), semad...) {
+		if !vistos[u] {
+			vistos[u] = true
+			dest = append(dest, u)
+		}
+	}
+	return notificacoes.Registrar(ctx, tx, dest, notificacoes.Nova{Modulo: "acervo", Titulo: titulo, Mensagem: msg,
+		Link: link, Chave: "acervo:termo:" + l.ID.String()})
 }
 
 // CancelarListagem encerra a relação sem eliminar nada (antes da amostragem).
@@ -649,7 +805,8 @@ func (s *Service) Listagens(ctx context.Context, identity auth.Identity, p pagin
 	f := s.filtro(identity, domain.Filtro{})
 	aval := auth.CoverageOf(identity, auth.PermAcervoAvaliacao)
 	f.Unidades = append(f.Unidades, aval.Unidades...)
-	f.Restrito = f.Restrito && !aval.All && !auth.CanGlobal(identity, auth.PermAcervoCentral)
+	f.Restrito = f.Restrito && !aval.All && !auth.CanGlobal(identity, auth.PermAcervoCentral) &&
+		!auth.CanGlobal(identity, auth.PermAcervoSEMAD)
 	items, total, err := s.repo.ListListagens(ctx, s.pool, f, p)
 	return items, total, MapError(err)
 }

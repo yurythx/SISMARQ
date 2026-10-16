@@ -28,6 +28,8 @@ func (h *Handlers) registerFase3(r chi.Router, ler, central func(http.Handler) h
 	r.With(avaliar).Put("/listagens/{id}", h.AlterarListagem)
 	r.With(avaliar).Post("/listagens/{id}/aprovar", h.Aprovar)
 	r.With(central).Post("/listagens/{id}/autorizar", h.listagemSimples(h.svc.Autorizar))
+	r.With(ler).Post("/listagens/{id}/autorizar-ccpad", h.listagemSimples(h.svc.AutorizarCCPAD))
+	r.With(auth.RequirePermission(h.logger, auth.PermAcervoSEMAD)).Post("/listagens/{id}/autorizar-semad", h.listagemSimples(h.svc.AutorizarSEMAD))
 	r.With(central).Post("/listagens/{id}/devolver", h.DevolverListagem)
 	r.With(avaliar).Post("/listagens/{id}/edital", h.PublicarEdital)
 	r.With(avaliar).Post("/listagens/{id}/pedidos", h.RegistrarPedido)
@@ -123,13 +125,14 @@ type ListagemRequest struct {
 	ParecerJuridico    string      `json:"parecer_juridico" validate:"max=4000"`
 	ContasExercicios   string      `json:"contas_exercicios" validate:"max=200"`
 	ContasAprovadasEm  string      `json:"contas_aprovadas_em"`
+	Rito               string      `json:"rito" validate:"max=16"`
 	Unidades           []uuid.UUID `json:"unidades" validate:"max=2000"`
 	Retirar            []uuid.UUID `json:"retirar" validate:"max=2000"`
 }
 
 func (req ListagemRequest) nova() (application.NovaListagem, error) {
 	contas, err := dataOpcional("contas_aprovadas_em", req.ContasAprovadasEm)
-	return application.NovaListagem{UnidadeID: req.UnidadeID, ResponsavelSelecao: req.ResponsavelSelecao, ParecerJuridico: req.ParecerJuridico,
+	return application.NovaListagem{UnidadeID: req.UnidadeID, Rito: req.Rito, ResponsavelSelecao: req.ResponsavelSelecao, ParecerJuridico: req.ParecerJuridico,
 		ContasExercicios: req.ContasExercicios, ContasAprovadasEm: contas, Unidades: req.Unidades}, err
 }
 

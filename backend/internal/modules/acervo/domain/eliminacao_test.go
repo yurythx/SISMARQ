@@ -196,6 +196,41 @@ func TestEditalPedidosAmostraTermo(t *testing.T) {
 		t.Fatalf("termo com data futura: %v", err)
 	}
 
+	if r, err := NormalizarRito(""); err != nil || r != RitoOrdinario {
+		t.Fatalf("rito vazio: %s %v", r, err)
+	}
+	if _, err := NormalizarRito("x"); err == nil {
+		t.Fatal("rito inválido")
+	}
+	esp := listagem(ListagemAprovada, 1)
+	esp.Rito = RitoArt35
+	if !esp.RitoEspecial() || PodeAutorizarSEMAD(esp) == nil {
+		t.Fatal("SEMAD só depois do Arquivo")
+	}
+	cc := Comissao{Tipo: ComissaoCentral, Ativa: true, Membros: []Membro{{UserID: uuid.New()}}}
+	if err := PodeAutorizarCCPAD(esp, cc, cc.Membros[0].UserID); err != nil {
+		t.Fatalf("CCPAD: %v", err)
+	}
+	if PodeAutorizarCCPAD(listagem(ListagemAprovada, 1), cc, cc.Membros[0].UserID) == nil {
+		t.Fatal("CCPAD no rito ordinário")
+	}
+	if PodeAutorizarCCPAD(esp, Comissao{Tipo: ComissaoSetorial, Ativa: true}, uuid.New()) == nil {
+		t.Fatal("CSPAD não substitui a CCPAD")
+	}
+	if PodeAutorizarCCPAD(esp, cc, uuid.New()) == nil {
+		t.Fatal("estranho na CCPAD")
+	}
+	ja := esp
+	emCCPAD := time.Now()
+	ja.CcpadAutorizadaEm = &emCCPAD
+	if PodeAutorizarCCPAD(ja, cc, cc.Membros[0].UserID) == nil {
+		t.Fatal("CCPAD duas vezes")
+	}
+	esp.Situacao = ListagemAguardandoSEMAD
+	if err := PodeAutorizarSEMAD(esp); err != nil {
+		t.Fatalf("SEMAD: %v", err)
+	}
+
 	if PodeCancelar(l) != nil || PodeCancelar(feita) == nil || PodeCancelar(listagem(ListagemEliminada, 1)) == nil {
 		t.Fatal("cancelamento")
 	}

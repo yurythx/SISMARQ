@@ -10,7 +10,7 @@ Uso (na raiz do repositório):
 """
 import re, sys
 src, alias, out, pkg, dompath = sys.argv[1:6]
-text = open(src).read()
+text = open(src, encoding="utf-8").read()
 m = re.search(r'type Repository interface \{(.*?)\n\}', text, re.S)
 body = m.group(1)
 # junta linhas quebradas
@@ -131,5 +131,5 @@ own.append('"' + dompath + '"')
 own.append('"github.com/yurythx/sismarq/internal/platform/database"')
 imp = 'import (\n' + '\n'.join('\t'+x for x in std) + '\n\n' + '\n'.join('\t'+x for x in third) + '\n\n' + '\n'.join('\t'+x for x in sorted(own)) + '\n)\n\ntype innerRepo = ' + alias + '.Repository\n'
 o[IMPORTS_PLACEHOLDER] = imp
-open(out, 'w').write('\n'.join(o))
+open(out, "w", encoding="utf-8", newline="\n").write("\n".join(o))
 print(f'{len(methods)} métodos')

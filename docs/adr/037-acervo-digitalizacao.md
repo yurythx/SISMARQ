@@ -90,9 +90,8 @@ pipeline (itens 4.1 e 4.3; Quadro 2, módulo SISMARQ_PIPELINE):
 
 ## Consequências
 
-- **Assinatura ICP-Brasil (PAdES)** do representante: depende da decisão
-  0.6 (certificado e quem assina). O Signum segue com assinatura
-  eletrônica; o PAdES entra quando a política existir.
+- **Assinatura ICP-Brasil (PAdES)** do representante: [ADR 040](040-pades-icp-brasil-adiado.md)
+  — adiado até a decisão 0.6; o JSON declara `pades=AUSENTE`.
 - **Pasta monitorada (SMB/FTP)**: fica para quando houver o scanner de
   produção definido (decisão 0.6); a entrada hoje é pela tela.
 - Só PDF é aceito na entrada (os scanners de produção geram PDF); TIFF
@@ -103,4 +102,4 @@ pipeline (itens 4.1 e 4.3; Quadro 2, módulo SISMARQ_PIPELINE):
   representante: o object lock segura o PDF/A até a retenção; a remoção
   acompanha o Termo de Eliminação numa fase seguinte.
 - A busca no texto do OCR (com o controle de acesso do documento) é a
-  Fase 6.
+  Fase 6 ([ADR 038](038-acervo-acesso-busca-e-difusao.md)).

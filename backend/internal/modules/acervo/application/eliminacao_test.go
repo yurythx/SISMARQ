@@ -77,7 +77,8 @@ func TestRitoDaEliminacao(t *testing.T) {
 		t.Fatalf("guarda permanente não entra (art. 19): %v", err)
 	}
 	l, err := s.CriarListagem(ctx, cspad, application.NovaListagem{UnidadeID: e.unidade, ContasExercicios: "2018", Unidades: []uuid.UUID{a.ID, b.ID, c.ID}})
-	if err != nil || l.Situacao != domain.ListagemRascunho || len(l.Itens) != 3 || l.ComissaoID != com.ID || l.Numero == "" {
+	if err != nil || l.Situacao != domain.ListagemRascunho || len(l.Itens) != 3 || l.ComissaoID != com.ID || l.Numero == "" ||
+		l.Rito != domain.RitoOrdinario || l.AtaSignum != domain.SignumAusente {
 		t.Fatalf("relação: %+v %v", l, err)
 	}
 	if _, err := s.CriarListagem(ctx, cspad, application.NovaListagem{UnidadeID: e.unidade, Unidades: []uuid.UUID{a.ID}}); codigoDe(err) != apperrors.CodeConflict {
@@ -194,7 +195,8 @@ func TestRitoDaEliminacao(t *testing.T) {
 	}
 	l, err = s.RegistrarTermo(ctx, cspad, l.ID, application.Termo{EliminadoEm: e.agora, Acompanhamento: "Servidor X",
 		DestinacaoPapel: "Doado à cooperativa de catadores (Decreto 5.940/2006)"})
-	if err != nil || l.Situacao != domain.ListagemEliminada || l.TermoEliminadoEm == nil {
+	if err != nil || l.Situacao != domain.ListagemEliminada || l.TermoEliminadoEm == nil || l.TermoCopiaEm == nil ||
+		l.TermoSignum != domain.SignumAusente {
 		t.Fatalf("termo: %+v %v", l, err)
 	}
 	for _, id := range []uuid.UUID{a.ID, b.ID} {
@@ -356,5 +358,116 @@ func TestRelacaoRecusas(t *testing.T) {
 	}
 	if _, err := s.RegistrarTermo(ctx, cspad, l.ID, application.Termo{EliminadoEm: e.agora, Acompanhamento: "X", DestinacaoPapel: longo(500)}); codigoDe(err) != apperrors.CodeValidation {
 		t.Fatalf("destinação longa: %v", err)
+	}
+}
+
+func (e *env) ccpad(t *testing.T, s *application.Service) (domain.Comissao, []uuid.UUID) {
+	t.Helper()
+	if _, err := e.pool.Exec(context.Background(), `UPDATE acervo_comissoes SET ativa = false WHERE tipo = 'CENTRAL' AND ativa`); err != nil {
+		t.Fatal(err)
+	}
+	areas := []string{domain.AreaArquivologia, domain.AreaJuridico, domain.AreaAdmFinancas, domain.AreaArquivoPublico, domain.AreaOutra}
+	var ids []uuid.UUID
+	c := domain.Comissao{Tipo: domain.ComissaoCentral, Nome: "CCPAD de teste", Portaria: "Portaria 2/2026", Ativa: true}
+	for i, a := range areas {
+		id := dbtest.User(t, e.pool)
+		ids = append(ids, id)
+		papel := domain.PapelMembro
+		if i == 0 {
+			papel = domain.PapelPresidente
+		}
+		c.Membros = append(c.Membros, domain.Membro{UserID: id, Papel: papel, Area: a})
+	}
+	salva, err := s.SalvarComissao(context.Background(), admin, nil, c)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return salva, ids
+}
+
+func membroCCPAD(user, unidade uuid.UUID) auth.Identity {
+	id := agente(unidade, "acervo:read", "acervo:avaliacao")
+	id.UserID = user
+	return id
+}
+
+func semad() auth.Identity {
+	return auth.Identity{Subject: "semad", Permissions: []string{"acervo:read", "acervo:semad"},
+		Scopes: []auth.Scope{{Perfil: "semad", Permissions: []string{"acervo:read", "acervo:semad"}}}}
+}
+
+func TestRitosEspeciais(t *testing.T) {
+	e := novoEnv(t)
+	ctx := context.Background()
+	e.agora = dia("2026-09-01")
+	s := e.real()
+	_, membros := e.cspad(t, s)
+	_, ccpadIDs := e.ccpad(t, s)
+	cspad, cc, sem := avaliador(e.unidade), membroCCPAD(ccpadIDs[0], e.unidade), semad()
+	indef, elim := e.criar(codIndef), e.criar(codElim)
+
+	if _, err := s.CriarListagem(ctx, cspad, application.NovaListagem{UnidadeID: e.unidade, Rito: "X"}); codigoDe(err) != apperrors.CodeValidation {
+		t.Fatalf("rito inválido: %v", err)
+	}
+	if _, err := s.CriarListagem(ctx, cspad, application.NovaListagem{UnidadeID: e.unidade, Rito: domain.RitoArt35, ParecerJuridico: "P",
+		Unidades: []uuid.UUID{elim.ID}}); codigoDe(err) != apperrors.CodeConflict {
+		t.Fatalf("art. 35 não aceita o que cabe no rito ordinário: %v", err)
+	}
+	if _, err := s.CriarListagem(ctx, cspad, application.NovaListagem{UnidadeID: e.unidade, Rito: domain.RitoArt35, ParecerJuridico: "P",
+		Unidades: []uuid.UUID{e.criar(codPerm).ID}}); codigoDe(err) != apperrors.CodeConflict {
+		t.Fatalf("guarda permanente não entra no art. 35: %v", err)
+	}
+
+	l, err := s.CriarListagem(ctx, cspad, application.NovaListagem{UnidadeID: e.unidade, Rito: domain.RitoArt35, ParecerJuridico: "P",
+		Unidades: []uuid.UUID{indef.ID}})
+	if err != nil || l.Rito != domain.RitoArt35 {
+		t.Fatalf("art. 35: %+v %v", l, err)
+	}
+	ata := application.Ata{Numero: "1", Em: e.agora, Presentes: membros[:3]}
+	if l, err = s.Aprovar(ctx, cspad, l.ID, ata); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := s.Autorizar(ctx, admin, l.ID); codigoDe(err) != apperrors.CodeConflict {
+		t.Fatalf("art. 35 sem a CCPAD: %v", err)
+	}
+	if _, err := s.AutorizarCCPAD(ctx, cspad, l.ID); codigoDe(err) != apperrors.CodeForbidden {
+		t.Fatalf("só membro da CCPAD: %v", err)
+	}
+	if l, err = s.AutorizarCCPAD(ctx, cc, l.ID); err != nil || l.CcpadAutorizadaEm == nil {
+		t.Fatalf("CCPAD: %+v %v", l, err)
+	}
+	if _, err := s.AutorizarCCPAD(ctx, cc, l.ID); codigoDe(err) != apperrors.CodeConflict {
+		t.Fatalf("CCPAD duas vezes: %v", err)
+	}
+	if l, err = s.Autorizar(ctx, admin, l.ID); err != nil || l.Situacao != domain.ListagemAguardandoSEMAD {
+		t.Fatalf("aguarda SEMAD: %+v %v", l, err)
+	}
+	if _, err := s.AutorizarSEMAD(ctx, cspad, l.ID); codigoDe(err) != apperrors.CodeForbidden {
+		t.Fatalf("só a SEMAD: %v", err)
+	}
+	if _, err := s.PublicarEdital(ctx, cspad, l.ID, application.Edital{Numero: "1", PublicadoEm: e.agora}); codigoDe(err) != apperrors.CodeConflict {
+		t.Fatalf("edital sem a SEMAD: %v", err)
+	}
+	if l, err = s.AutorizarSEMAD(ctx, sem, l.ID); err != nil || l.Situacao != domain.ListagemAutorizada || l.SemadAutorizadaEm == nil {
+		t.Fatalf("SEMAD: %+v %v", l, err)
+	}
+
+	l36, err := s.CriarListagem(ctx, cspad, application.NovaListagem{UnidadeID: e.unidade, Rito: domain.RitoArt36, ParecerJuridico: "P",
+		Unidades: []uuid.UUID{e.criar(codElim).ID}})
+	if err != nil || l36.Rito != domain.RitoArt36 {
+		t.Fatalf("art. 36: %+v %v", l36, err)
+	}
+	if _, err := s.AutorizarCCPAD(ctx, cc, l36.ID); codigoDe(err) != apperrors.CodeConflict {
+		t.Fatalf("CCPAD só no art. 35: %v", err)
+	}
+	ata36 := application.Ata{Numero: "2", Em: e.agora, Presentes: ccpadIDs[:3]}
+	if l36, err = s.Aprovar(ctx, cspad, l36.ID, ata36); err != nil {
+		t.Fatal(err)
+	}
+	if l36, err = s.Autorizar(ctx, admin, l36.ID); err != nil || l36.Situacao != domain.ListagemAguardandoSEMAD {
+		t.Fatalf("art. 36 aguarda SEMAD: %+v %v", l36, err)
+	}
+	if l36, err = s.DevolverListagem(ctx, admin, l36.ID, "Revisar a classificação"); err != nil || l36.Situacao != domain.ListagemRascunho {
+		t.Fatalf("devolver da SEMAD: %+v %v", l36, err)
 	}
 }

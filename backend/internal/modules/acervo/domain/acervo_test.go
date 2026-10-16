@@ -250,4 +250,33 @@ func TestPodeEliminar(t *testing.T) {
 			t.Errorf("%s: %v, esperado %v", nome, err, c.err)
 		}
 	}
+	if err := PodeEliminarArt35(u, Serie{}, false, false, hoje); err != nil {
+		t.Fatalf("fora da TTDD: %v", err)
+	}
+	if err := PodeEliminarArt35(u, elim, true, false, hoje); !errors.Is(err, ErrRitoOrdinario) {
+		t.Fatalf("ordinário no art. 35: %v", err)
+	}
+	perm := elim
+	perm.Destinacao = DestinacaoGuardaPermanente
+	if err := PodeEliminarArt35(u, perm, true, false, hoje); !errors.Is(err, ErrNaoPrevistaNaTTDD) {
+		t.Fatalf("permanente no art. 35: %v", err)
+	}
+	permU := u
+	permU.Fase = FasePermanente
+	if err := PodeEliminarArt35(permU, Serie{}, false, false, hoje); !errors.Is(err, ErrPermanente) {
+		t.Fatalf("fase permanente no art. 35: %v", err)
+	}
+	elimU := u
+	elimU.Fase = FaseEliminado
+	if err := PodeEliminarArt35(elimU, Serie{}, false, false, hoje); !errors.Is(err, ErrEliminado) {
+		t.Fatalf("já eliminada no art. 35: %v", err)
+	}
+	if err := PodeEliminarArt35(u, Serie{}, false, true, hoje); !errors.Is(err, ErrBloqueioJudicial) {
+		t.Fatalf("bloqueio no art. 35: %v", err)
+	}
+	longa := elim
+	longa.IntermAnos = anos(50)
+	if err := PodeEliminarArt35(u, longa, true, false, hoje); !errors.Is(err, ErrPrazoNaoCumprido) {
+		t.Fatalf("prazo no art. 35: %v", err)
+	}
 }

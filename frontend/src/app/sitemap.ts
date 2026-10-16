@@ -15,7 +15,10 @@ const MODULE_PAGES: { path: string; module: string }[] = [
   { path: "/diretorio", module: "directory" },
   { path: "/procedimentos", module: "atlas" },
   { path: "/temporalidade", module: "atlas" },
+  { path: "/arquivo", module: "acervo" },
+  { path: "/arquivo/busca", module: "acervo" },
   { path: "/normas", module: "acervo" },
+
   { path: "/contato", module: "contact" },
 ];
 

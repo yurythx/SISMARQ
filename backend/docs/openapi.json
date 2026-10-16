@@ -356,6 +356,43 @@
         "type": "object",
         "x-sismarq-generated": true
       },
+      "AcervoBuscaResponse": {
+        "properties": {
+          "facetas": {
+            "additionalProperties": {
+              "items": {
+                "$ref": "#/components/schemas/AcervoFaceta"
+              },
+              "type": "array"
+            },
+            "type": "object"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AcervoItemBusca"
+            },
+            "type": "array"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          },
+          "ms": {
+            "type": "integer"
+          },
+          "origem": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "facetas",
+          "items",
+          "meta",
+          "ms",
+          "origem"
+        ],
+        "type": "object",
+        "x-sismarq-generated": true
+      },
       "AcervoComissao": {
         "properties": {
           "ativa": {
@@ -596,6 +633,11 @@
             "nullable": true,
             "type": "string"
           },
+          "tramite_processo_id": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
           "serie": {
             "$ref": "#/components/schemas/AcervoSerieResumo"
           },
@@ -654,6 +696,7 @@
           "quantidade",
           "recolhida_em",
           "recolhimento_id",
+          "tramite_processo_id",
           "serie",
           "situacao",
           "tipo",
@@ -711,6 +754,9 @@
           "original_sha256": {
             "type": "string"
           },
+          "pades": {
+            "type": "string"
+          },
           "paginas": {
             "type": "integer"
           },
@@ -721,6 +767,11 @@
             "type": "string"
           },
           "processado_em": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "publicado_em": {
             "format": "date-time",
             "nullable": true,
             "type": "string"
@@ -783,10 +834,12 @@
           "numero",
           "original_bytes",
           "original_sha256",
+          "pades",
           "paginas",
           "pdfa_bytes",
           "pdfa_sha256",
           "processado_em",
+          "publicado_em",
           "responsavel_cpf",
           "responsavel_id",
           "responsavel_nome",
@@ -860,6 +913,9 @@
           "original_sha256": {
             "type": "string"
           },
+          "pades": {
+            "type": "string"
+          },
           "paginas": {
             "type": "integer"
           },
@@ -870,6 +926,11 @@
             "type": "string"
           },
           "processado_em": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "publicado_em": {
             "format": "date-time",
             "nullable": true,
             "type": "string"
@@ -923,10 +984,12 @@
           "numero",
           "original_bytes",
           "original_sha256",
+          "pades",
           "paginas",
           "pdfa_bytes",
           "pdfa_sha256",
           "processado_em",
+          "publicado_em",
           "responsavel_cpf",
           "responsavel_id",
           "responsavel_nome",
@@ -936,6 +999,115 @@
           "tipo_documento",
           "unidade_arquivamento_id",
           "verificado_em"
+        ],
+        "type": "object",
+        "x-sismarq-generated": true
+      },
+      "AcervoDigitalIndice": {
+        "properties": {
+          "conformidade": {
+            "type": "string"
+          },
+          "descricao": {
+            "type": "string"
+          },
+          "digitalizado_em": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "numero": {
+            "type": "string"
+          },
+          "paginas": {
+            "type": "integer"
+          },
+          "pdfa_bytes": {
+            "type": "integer"
+          },
+          "pdfa_sha256": {
+            "type": "string"
+          },
+          "publicado_em": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "conformidade",
+          "descricao",
+          "digitalizado_em",
+          "id",
+          "numero",
+          "paginas",
+          "pdfa_bytes",
+          "pdfa_sha256",
+          "publicado_em"
+        ],
+        "type": "object",
+        "x-sismarq-generated": true
+      },
+      "AcervoDigitalRecente": {
+        "properties": {
+          "assunto": {
+            "type": "string"
+          },
+          "conformidade": {
+            "type": "string"
+          },
+          "descricao": {
+            "type": "string"
+          },
+          "digitalizado_em": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "numero": {
+            "type": "string"
+          },
+          "paginas": {
+            "type": "integer"
+          },
+          "pdfa_bytes": {
+            "type": "integer"
+          },
+          "pdfa_sha256": {
+            "type": "string"
+          },
+          "publicado_em": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "unidade_arquivamento_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "unidade_numero": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "assunto",
+          "conformidade",
+          "descricao",
+          "digitalizado_em",
+          "id",
+          "numero",
+          "paginas",
+          "pdfa_bytes",
+          "pdfa_sha256",
+          "publicado_em",
+          "unidade_arquivamento_id",
+          "unidade_numero"
         ],
         "type": "object",
         "x-sismarq-generated": true
@@ -1125,6 +1297,175 @@
         "type": "object",
         "x-sismarq-generated": true
       },
+      "AcervoExposicao": {
+        "properties": {
+          "atualizado_em": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "criado_em": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "itens": {
+            "items": {
+              "$ref": "#/components/schemas/AcervoItemExposicao"
+            },
+            "type": "array"
+          },
+          "publicada_em": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "resumo": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "texto": {
+            "type": "string"
+          },
+          "titulo": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "atualizado_em",
+          "criado_em",
+          "id",
+          "publicada_em",
+          "resumo",
+          "slug",
+          "texto",
+          "titulo"
+        ],
+        "type": "object",
+        "x-sismarq-generated": true
+      },
+      "AcervoExposicaoRequest": {
+        "properties": {
+          "itens": {
+            "items": {
+              "$ref": "#/components/schemas/AcervoItemExposicaoReq"
+            },
+            "maxItems": 100,
+            "type": "array"
+          },
+          "resumo": {
+            "maxLength": 500,
+            "type": "string"
+          },
+          "texto": {
+            "maxLength": 20000,
+            "type": "string"
+          },
+          "titulo": {
+            "maxLength": 200,
+            "type": "string"
+          }
+        },
+        "required": [
+          "titulo"
+        ],
+        "type": "object",
+        "x-sismarq-generated": true
+      },
+      "AcervoFaceta": {
+        "properties": {
+          "total": {
+            "type": "integer"
+          },
+          "valor": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "total",
+          "valor"
+        ],
+        "type": "object",
+        "x-sismarq-generated": true
+      },
+      "AcervoFichaPublica": {
+        "properties": {
+          "assunto": {
+            "type": "string"
+          },
+          "codigo_classificacao": {
+            "type": "string"
+          },
+          "data_final": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "data_inicial": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "descritor": {
+            "type": "string"
+          },
+          "destinacao": {
+            "type": "string"
+          },
+          "digitais": {
+            "items": {
+              "$ref": "#/components/schemas/AcervoDigitalIndice"
+            },
+            "type": "array"
+          },
+          "especificacao": {
+            "type": "string"
+          },
+          "fase": {
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "numero": {
+            "type": "string"
+          },
+          "orgao": {
+            "type": "string"
+          },
+          "quantidade": {
+            "type": "integer"
+          },
+          "recolhida": {
+            "type": "boolean"
+          },
+          "tipo": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "assunto",
+          "codigo_classificacao",
+          "data_final",
+          "data_inicial",
+          "descritor",
+          "destinacao",
+          "digitais",
+          "especificacao",
+          "fase",
+          "id",
+          "numero",
+          "orgao",
+          "quantidade",
+          "recolhida",
+          "tipo"
+        ],
+        "type": "object",
+        "x-sismarq-generated": true
+      },
       "AcervoGuia": {
         "properties": {
           "criada_em": {
@@ -1212,6 +1553,133 @@
         "required": [
           "origem_id",
           "unidades"
+        ],
+        "type": "object",
+        "x-sismarq-generated": true
+      },
+      "AcervoItemBusca": {
+        "properties": {
+          "ano_final": {
+            "type": "integer"
+          },
+          "ano_inicial": {
+            "type": "integer"
+          },
+          "assunto": {
+            "type": "string"
+          },
+          "codigo_classificacao": {
+            "type": "string"
+          },
+          "descritor": {
+            "type": "string"
+          },
+          "destinacao": {
+            "type": "string"
+          },
+          "digitais": {
+            "type": "integer"
+          },
+          "fase": {
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "nivel_acesso": {
+            "type": "string"
+          },
+          "numero": {
+            "type": "string"
+          },
+          "orgao": {
+            "type": "string"
+          },
+          "tipo": {
+            "type": "string"
+          },
+          "trecho": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "ano_final",
+          "ano_inicial",
+          "assunto",
+          "codigo_classificacao",
+          "descritor",
+          "destinacao",
+          "digitais",
+          "fase",
+          "id",
+          "numero",
+          "orgao",
+          "tipo",
+          "trecho"
+        ],
+        "type": "object",
+        "x-sismarq-generated": true
+      },
+      "AcervoItemExposicao": {
+        "properties": {
+          "descricao": {
+            "type": "string"
+          },
+          "digital_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "legenda": {
+            "type": "string"
+          },
+          "numero": {
+            "type": "string"
+          },
+          "ordem": {
+            "type": "integer"
+          },
+          "paginas": {
+            "type": "integer"
+          },
+          "publicado": {
+            "type": "boolean"
+          },
+          "unidade_arquivamento_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "unidade_numero": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "descricao",
+          "digital_id",
+          "legenda",
+          "numero",
+          "ordem",
+          "paginas",
+          "publicado",
+          "unidade_arquivamento_id",
+          "unidade_numero"
+        ],
+        "type": "object",
+        "x-sismarq-generated": true
+      },
+      "AcervoItemExposicaoReq": {
+        "properties": {
+          "digital_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "legenda": {
+            "maxLength": 1000,
+            "type": "string"
+          }
+        },
+        "required": [
+          "digital_id"
         ],
         "type": "object",
         "x-sismarq-generated": true
@@ -1329,6 +1797,11 @@
             "nullable": true,
             "type": "string"
           },
+          "tramite_processo_id": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
           "retirada": {
             "type": "boolean"
           },
@@ -1383,6 +1856,7 @@
           "quantidade",
           "recolhida_em",
           "recolhimento_id",
+          "tramite_processo_id",
           "retirada",
           "situacao",
           "tipo",
@@ -1450,6 +1924,22 @@
             "nullable": true,
             "type": "string"
           },
+          "ccpad_autorizada_em": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "ccpad_autorizada_por": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "ata_signum": {
+            "enum": [
+              "AUSENTE"
+            ],
+            "type": "string"
+          },
           "comissao_id": {
             "format": "uuid",
             "type": "string"
@@ -1498,6 +1988,14 @@
           "numero": {
             "type": "string"
           },
+          "rito": {
+            "enum": [
+              "ORDINARIO",
+              "ART_35",
+              "ART_36"
+            ],
+            "type": "string"
+          },
           "parecer_juridico": {
             "type": "string"
           },
@@ -1531,6 +2029,33 @@
             "nullable": true,
             "type": "string"
           },
+          "termo_signum": {
+            "enum": [
+              "AUSENTE"
+            ],
+            "type": "string"
+          },
+          "termo_copia_em": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "termo_copia_arquivo": {
+            "type": "integer"
+          },
+          "termo_copia_semad": {
+            "type": "integer"
+          },
+          "semad_autorizada_em": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "semad_autorizada_por": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
           "total_itens": {
             "type": "integer"
           },
@@ -1550,6 +2075,9 @@
           "ata_presentes",
           "autorizada_em",
           "autorizada_por",
+          "ata_signum",
+          "ccpad_autorizada_em",
+          "ccpad_autorizada_por",
           "comissao_id",
           "contas_aprovadas_em",
           "contas_exercicios",
@@ -1564,12 +2092,19 @@
           "numero",
           "parecer_juridico",
           "pedidos",
+          "rito",
+          "semad_autorizada_em",
+          "semad_autorizada_por",
           "responsavel_selecao",
           "situacao",
           "termo_acompanhamento",
+          "termo_copia_arquivo",
+          "termo_copia_em",
+          "termo_copia_semad",
           "termo_destinacao_papel",
           "termo_eliminado_em",
           "termo_registrado_por",
+          "termo_signum",
           "total_itens",
           "unidade_id"
         ],
@@ -1587,6 +2122,14 @@
           },
           "parecer_juridico": {
             "maxLength": 4000,
+            "type": "string"
+          },
+          "rito": {
+            "enum": [
+              "ORDINARIO",
+              "ART_35",
+              "ART_36"
+            ],
             "type": "string"
           },
           "responsavel_selecao": {
@@ -1905,6 +2448,44 @@
           "ementa",
           "numero",
           "texto"
+        ],
+        "type": "object",
+        "x-sismarq-generated": true
+      },
+      "AcervoPainelPublico": {
+        "properties": {
+          "digitais": {
+            "type": "integer"
+          },
+          "exposicoes": {
+            "items": {
+              "$ref": "#/components/schemas/AcervoExposicao"
+            },
+            "type": "array"
+          },
+          "recentes": {
+            "items": {
+              "$ref": "#/components/schemas/AcervoDigitalRecente"
+            },
+            "type": "array"
+          },
+          "serie_sic": {
+            "type": "string"
+          },
+          "sic_url": {
+            "type": "string"
+          },
+          "unidades": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "digitais",
+          "exposicoes",
+          "recentes",
+          "serie_sic",
+          "sic_url",
+          "unidades"
         ],
         "type": "object",
         "x-sismarq-generated": true
@@ -2683,6 +3264,11 @@
             "nullable": true,
             "type": "string"
           },
+          "tramite_processo_id": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
           "situacao": {
             "type": "string"
           },
@@ -2733,6 +3319,7 @@
           "quantidade",
           "recolhida_em",
           "recolhimento_id",
+          "tramite_processo_id",
           "situacao",
           "tipo",
           "unidade_id",
@@ -6004,7 +6591,7 @@
         "type": "object"
       },
       "FeatureFlag": {
-        "description": "Uma feature flag alterável em tempo de execução (§ Feature Flags \u0026 Configuração Dinâmica).",
+        "description": "Uma feature flag alterável em tempo de execução (§ Feature Flags & Configuração Dinâmica).",
         "properties": {
           "description": {
             "type": "string"
@@ -7767,7 +8354,7 @@
         "x-sismarq-generated": true
       },
       "KeycloakSettingsStatus": {
-        "description": "Estado atual da configuração do Keycloak (§ Configuração Dinâmica do Keycloak). `source` indica de onde vieram os valores exibidos: `database` (já foi salvo pelo menu Configurações \u003e Keycloak — o que está em uso agora), `environment` (nunca foi salvo por esta tela; os valores vêm das variáveis de ambiente do processo) ou `unset` (nem banco nem ambiente têm um issuer configurado). Nunca inclui um client secret em texto plano — só se um está definido (`client_secret_set`).\n",
+        "description": "Estado atual da configuração do Keycloak (§ Configuração Dinâmica do Keycloak). `source` indica de onde vieram os valores exibidos: `database` (já foi salvo pelo menu Configurações > Keycloak — o que está em uso agora), `environment` (nunca foi salvo por esta tela; os valores vêm das variáveis de ambiente do processo) ou `unset` (nem banco nem ambiente têm um issuer configurado). Nunca inclui um client secret em texto plano — só se um está definido (`client_secret_set`).\n",
         "properties": {
           "audience": {
             "description": "Audiência (claim \"aud\") que todo access token precisa ter para ser aceito — normalmente igual ao client_id do backend.",
@@ -9522,7 +10109,7 @@
     }
   },
   "info": {
-    "description": "API REST do SISMARQ — Core System (Kernel) em Go sobre\nArquitetura Microkernel: infraestrutura de autenticação, auditoria,\noutbox transacional e mensageria compartilhada por todo módulo de\nnegócio (plug-in) registrado em `internal/modules/`. Todo endpoint\nautenticado espera um access token OIDC emitido pelo Keycloak (ou pelo\nlogin local, um caminho adicional — ver tag `auth`) como Bearer JWT; o\nbackend o valida localmente contra um JWKS em cache (nunca com uma\nchamada por requisição ao Keycloak — ver §29 do documento de\narquitetura).\n\nToda resposta usa o mesmo envelope:\n`{\"data\": \u003cpayload|null\u003e, \"error\": {\"code\",\"message\"}|null, \"meta\": {...}|omitido}`.\nErros nunca incluem stack trace ou outro detalhe interno.\n\n**RFC 7807 (Problem Details)**: um cliente que envia\n`Accept: application/problem+json` recebe as respostas de ERRO no\nformato RFC 7807 (`type` = `urn:nexus:error:\u003ccode\u003e`, `title`,\n`status`, `detail`, `instance`, mais as extensões `code` e\n`request_id`). Qualquer outro `Accept` mantém o envelope acima.\nRespostas de sucesso não mudam. Ver ADR\n006-rfc7807-problem-details.md.\n\n**Idempotência**: qualquer endpoint de escrita (POST/PUT/PATCH) aceita\nopcionalmente o header `X-Idempotency-Key` (legado: `Idempotency-Key`) (ver\n`#/components/parameters/IdempotencyKey`). Reenviar a mesma requisição\n(mesmo método, caminho e corpo) com a mesma chave nunca executa o\nhandler duas vezes — a segunda chamada em diante recebe de volta a\nresposta já produzida pela primeira (`Idempotent-Replay: true` no\nheader da resposta), em vez de criar um segundo job/efeito colateral.\nReusar a mesma chave com um corpo diferente é rejeitado com 409\n(`IDEMPOTENCY_KEY_REUSED`); uma segunda chamada enquanto a primeira\nainda está em andamento recebe 409 (`IDEMPOTENCY_KEY_IN_PROGRESS`). Ver\nADR [002](adr/002-enterprise-resilience-and-governance.md).\n\n**Módulos (Microkernel)**: cada plug-in é ativado/desativado em runtime\n(`PATCH /api/v1/admin/modules/{key}`). Com o módulo desativado, TODA a sua\nsuperfície responde `404` com `error.code = MODULE_DISABLED`. O estado e o\ngrafo de dependências (`depends_on`, `dependents`, `blocked_by`) estão em\n`GET /api/v1/system/modules`; desativar um módulo com dependentes ativos,\nou ativar sem as dependências, responde `409`.\n\n**Autorização**: permissões `recurso:ação` (curingas `recurso:*` e `*`),\nresolvidas pelo IAM a partir das lotações e do mapeamento de grupos do AD,\nvalidadas em middleware antes do handler (`403`). Catálogo completo em\n`GET /api/v1/iam/permissions`.\n\n**Resiliência**: chamadas que dependem de um provedor externo podem\nretornar `503` (`DEPENDENCY_UNAVAILABLE` ou `CIRCUIT_OPEN`).\n",
+    "description": "API REST do SISMARQ — Core System (Kernel) em Go sobre\nArquitetura Microkernel: infraestrutura de autenticação, auditoria,\noutbox transacional e mensageria compartilhada por todo módulo de\nnegócio (plug-in) registrado em `internal/modules/`. Todo endpoint\nautenticado espera um access token OIDC emitido pelo Keycloak (ou pelo\nlogin local, um caminho adicional — ver tag `auth`) como Bearer JWT; o\nbackend o valida localmente contra um JWKS em cache (nunca com uma\nchamada por requisição ao Keycloak — ver §29 do documento de\narquitetura).\n\nToda resposta usa o mesmo envelope:\n`{\"data\": <payload|null>, \"error\": {\"code\",\"message\"}|null, \"meta\": {...}|omitido}`.\nErros nunca incluem stack trace ou outro detalhe interno.\n\n**RFC 7807 (Problem Details)**: um cliente que envia\n`Accept: application/problem+json` recebe as respostas de ERRO no\nformato RFC 7807 (`type` = `urn:nexus:error:<code>`, `title`,\n`status`, `detail`, `instance`, mais as extensões `code` e\n`request_id`). Qualquer outro `Accept` mantém o envelope acima.\nRespostas de sucesso não mudam. Ver ADR\n006-rfc7807-problem-details.md.\n\n**Idempotência**: qualquer endpoint de escrita (POST/PUT/PATCH) aceita\nopcionalmente o header `X-Idempotency-Key` (legado: `Idempotency-Key`) (ver\n`#/components/parameters/IdempotencyKey`). Reenviar a mesma requisição\n(mesmo método, caminho e corpo) com a mesma chave nunca executa o\nhandler duas vezes — a segunda chamada em diante recebe de volta a\nresposta já produzida pela primeira (`Idempotent-Replay: true` no\nheader da resposta), em vez de criar um segundo job/efeito colateral.\nReusar a mesma chave com um corpo diferente é rejeitado com 409\n(`IDEMPOTENCY_KEY_REUSED`); uma segunda chamada enquanto a primeira\nainda está em andamento recebe 409 (`IDEMPOTENCY_KEY_IN_PROGRESS`). Ver\nADR [002](adr/002-enterprise-resilience-and-governance.md).\n\n**Módulos (Microkernel)**: cada plug-in é ativado/desativado em runtime\n(`PATCH /api/v1/admin/modules/{key}`). Com o módulo desativado, TODA a sua\nsuperfície responde `404` com `error.code = MODULE_DISABLED`. O estado e o\ngrafo de dependências (`depends_on`, `dependents`, `blocked_by`) estão em\n`GET /api/v1/system/modules`; desativar um módulo com dependentes ativos,\nou ativar sem as dependências, responde `409`.\n\n**Autorização**: permissões `recurso:ação` (curingas `recurso:*` e `*`),\nresolvidas pelo IAM a partir das lotações e do mapeamento de grupos do AD,\nvalidadas em middleware antes do handler (`403`). Catálogo completo em\n`GET /api/v1/iam/permissions`.\n\n**Resiliência**: chamadas que dependem de um provedor externo podem\nretornar `503` (`DEPENDENCY_UNAVAILABLE` ou `CIRCUIT_OPEN`).\n",
     "license": {
       "name": "MIT",
       "url": "https://opensource.org/licenses/MIT"
@@ -9606,6 +10193,152 @@
           }
         ],
         "summary": "Liberar bloqueio judicial",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/busca": {
+      "get": {
+        "description": "Busca nas unidades de arquivamento e no texto do OCR, no escopo de quem pede (o Arquivo Público vê todo o acervo). O restrito e o sigiloso só aparecem para quem tem a unidade no escopo. Facetas: órgão, classe, espécie, fase, destinação e ano (?orgao=, ?classe=, ?especie=, ?fase=, ?destinacao=, ?ano=); ?digital=true só com representante digital. Também ?nivel_acesso=. Com o índice (Typesense) fora do ar, a busca vai ao banco, sem facetas (origem \"banco\").",
+        "operationId": "getAcervoBusca",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Page"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          },
+          {
+            "description": "Órgão produtor (nome)",
+            "in": "query",
+            "name": "orgao",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Classe do código de classificação (1º nível, ex.: 2)",
+            "in": "query",
+            "name": "classe",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Espécie da unidade (CAIXA, PASTA, LIVRO, PROCESSO…)",
+            "in": "query",
+            "name": "especie",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Fase (CORRENTE, INTERMEDIARIA, PERMANENTE)",
+            "in": "query",
+            "name": "fase",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Destinação (ELIMINACAO, GUARDA_PERMANENTE, INDEFINIDA)",
+            "in": "query",
+            "name": "destinacao",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Ano coberto pelas datas-limite",
+            "in": "query",
+            "name": "ano",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Nível de acesso (PUBLICO, RESTRITO, SIGILOSO) — só na busca interna",
+            "in": "query",
+            "name": "nivel_acesso",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "maxLength": 400,
+              "type": "string"
+            },
+            "x-sismarq-generated": true
+          },
+          {
+            "in": "query",
+            "name": "digital",
+            "required": false,
+            "schema": {
+              "maxLength": 5,
+              "type": "string"
+            },
+            "x-sismarq-generated": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoBuscaResponse"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Busca no acervo",
         "tags": [
           "acervo"
         ]
@@ -10110,6 +10843,137 @@
         ]
       }
     },
+    "/api/v1/acervo/digitais/{id}/publicacao": {
+      "delete": {
+        "description": "Retira o representante da consulta sem login. A unidade que deixa de ser pública retira os seus representantes na hora (gatilho do banco).",
+        "operationId": "deleteAcervoDigitaisIdPublicacao",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoDetalheDigital"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Retirar da consulta pública",
+        "tags": [
+          "acervo"
+        ]
+      },
+      "post": {
+        "description": "Libera o representante digital à consulta sem login. Decide quem gere a unidade (recolhida, o Arquivo Público). Só o ostensivo (art. 2º): pronto, de unidade de nível público e não eliminada — o banco confere de novo.",
+        "operationId": "postAcervoDigitaisIdPublicacao",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoDetalheDigital"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Liberar à consulta pública",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
     "/api/v1/acervo/digitais/{id}/reprocessar": {
       "post": {
         "description": "Só o Arquivo Público. Devolve ao pipeline o que falhou nas tentativas (o reprovado por resolução precisa de nova digitalização).",
@@ -10399,6 +11263,397 @@
           }
         ],
         "summary": "Registrar devolução",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/exposicoes": {
+      "get": {
+        "description": "Só o Arquivo Público. As exposições (rascunhos e publicadas), mais recentes primeiro (difusão, art. 5º, X e XI).",
+        "operationId": "getAcervoExposicoes",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Page"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "items": {
+                            "$ref": "#/components/schemas/AcervoExposicao"
+                          },
+                          "type": "array"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/PaginationMeta"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Página de itens em `data`, paginação em `meta`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Exposições virtuais",
+        "tags": [
+          "acervo"
+        ]
+      },
+      "post": {
+        "description": "Só o Arquivo Público. Título, resumo, texto (Markdown) e os documentos, na ordem, com legenda. O endereço (slug) sai do título e não muda depois.",
+        "operationId": "postAcervoExposicoes",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcervoExposicaoRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-sismarq-generated": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoExposicao"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Criar exposição",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/exposicoes/{id}": {
+      "get": {
+        "description": "Só o Arquivo Público. A exposição com todos os documentos e se cada um está liberado à consulta pública.",
+        "operationId": "getAcervoExposicoesId",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Exposição",
+        "tags": [
+          "acervo"
+        ]
+      },
+      "put": {
+        "description": "Só o Arquivo Público. Troca o texto e os documentos; o endereço fica.",
+        "operationId": "putAcervoExposicoesId",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcervoExposicaoRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-sismarq-generated": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoExposicao"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Alterar exposição",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/exposicoes/{id}/publicacao": {
+      "delete": {
+        "description": "Só o Arquivo Público. A exposição sai da página do Arquivo.",
+        "operationId": "deleteAcervoExposicoesIdPublicacao",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoExposicao"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Recolher exposição",
+        "tags": [
+          "acervo"
+        ]
+      },
+      "post": {
+        "description": "Só o Arquivo Público. Exige ao menos um documento liberado; a visita mostra só os liberados.",
+        "operationId": "postAcervoExposicoesIdPublicacao",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoExposicao"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Publicar exposição",
         "tags": [
           "acervo"
         ]
@@ -11384,6 +12639,142 @@
         ]
       }
     },
+    "/api/v1/acervo/listagens/{id}/autorizar-ccpad": {
+      "post": {
+        "description": "Membro da CCPAD autoriza a Relação no rito do art. 35 (documento fora da TTDD), depois da ata da CSPAD e antes do Arquivo Público.",
+        "operationId": "postAcervoListagensIdAutorizarCcpad",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoListagem"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Autorizar pela CCPAD (art. 35)",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/listagens/{id}/autorizar-semad": {
+      "post": {
+        "description": "A SEMAD (acervo:semad, global) aprova a Relação nos ritos dos arts. 35 e 36. Só então o edital pode ser publicado.",
+        "operationId": "postAcervoListagensIdAutorizarSemad",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoListagem"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Aprovar pela SEMAD (arts. 35 e 36)",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
     "/api/v1/acervo/listagens/{id}/cancelar": {
       "post": {
         "description": "Cancela a relação antes da amostragem; as unidades ficam livres.",
@@ -11857,7 +13248,7 @@
     },
     "/api/v1/acervo/locais": {
       "get": {
-        "description": "Hierarquia física do acervo (prédio \u003e depósito \u003e … \u003e prateleira), com o caminho de cada local.",
+        "description": "Hierarquia física do acervo (prédio > depósito > … > prateleira), com o caminho de cada local.",
         "operationId": "getAcervoLocais",
         "responses": {
           "200": {
@@ -13311,6 +14702,383 @@
         ]
       }
     },
+    "/api/v1/acervo/publico/arquivo": {
+      "get": {
+        "description": "Sem login. Números do acervo ostensivo, exposições em destaque, os últimos documentos liberados e o canal do SIC para o pedido do que não é ostensivo (série 2.0.03.02 da TTDD da SEMAD).",
+        "operationId": "getAcervoPublicoArquivo",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoPainelPublico"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [],
+        "summary": "Página do Arquivo Público",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/publico/busca": {
+      "get": {
+        "description": "Sem login, com limite por IP. Só o ostensivo: a descrição das unidades de acesso público e o texto do OCR dos representantes liberados — o restrito nunca entra nessa coleção. Facetas: órgão, classe, espécie, fase, destinação e ano (?orgao=, ?classe=, ?especie=, ?fase=, ?destinacao=, ?ano=); ?digital=true só com representante digital.",
+        "operationId": "getAcervoPublicoBusca",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Page"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          },
+          {
+            "description": "Órgão produtor (nome)",
+            "in": "query",
+            "name": "orgao",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Classe do código de classificação (1º nível, ex.: 2)",
+            "in": "query",
+            "name": "classe",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Espécie da unidade (CAIXA, PASTA, LIVRO, PROCESSO…)",
+            "in": "query",
+            "name": "especie",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Fase (CORRENTE, INTERMEDIARIA, PERMANENTE)",
+            "in": "query",
+            "name": "fase",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Destinação (ELIMINACAO, GUARDA_PERMANENTE, INDEFINIDA)",
+            "in": "query",
+            "name": "destinacao",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Ano coberto pelas datas-limite",
+            "in": "query",
+            "name": "ano",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "maxLength": 400,
+              "type": "string"
+            },
+            "x-sismarq-generated": true
+          },
+          {
+            "in": "query",
+            "name": "digital",
+            "required": false,
+            "schema": {
+              "maxLength": 5,
+              "type": "string"
+            },
+            "x-sismarq-generated": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoBuscaResponse"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [],
+        "summary": "Consulta pública ao acervo",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/publico/digitais/{id}/arquivo": {
+      "get": {
+        "description": "Sem login. O PDF/A liberado, com Range (HTTP 206) para o visualizador buscar só as páginas visíveis. ETag é o SHA-256. Cada abertura conta para o indicador de consultas atendidas.",
+        "operationId": "getAcervoPublicoDigitaisIdArquivo",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "O PDF/A inteiro.",
+            "headers": {
+              "Accept-Ranges": {
+                "description": "bytes",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "ETag": {
+                "description": "O SHA-256 do PDF/A, entre aspas.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "206": {
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "O trecho pedido em Range.",
+            "headers": {
+              "Accept-Ranges": {
+                "description": "bytes",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Content-Range": {
+                "description": "bytes início-fim/tamanho",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "ETag": {
+                "description": "O SHA-256 do PDF/A, entre aspas.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "416": {
+            "description": "Intervalo fora do arquivo (Content-Range: bytes */tamanho)."
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [],
+        "summary": "Documento liberado em fluxo",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/publico/exposicoes": {
+      "get": {
+        "description": "Sem login. As exposições virtuais do Arquivo Público.",
+        "operationId": "getAcervoPublicoExposicoes",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Page"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "items": {
+                            "$ref": "#/components/schemas/AcervoExposicao"
+                          },
+                          "type": "array"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/PaginationMeta"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Página de itens em `data`, paginação em `meta`.",
+            "x-sismarq-generated": true
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [],
+        "summary": "Exposições publicadas",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/publico/exposicoes/{slug}": {
+      "get": {
+        "description": "Sem login. A exposição publicada, só com os documentos liberados.",
+        "operationId": "getAcervoPublicoExposicoesSlug",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoExposicao"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [],
+        "summary": "Visita à exposição",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
     "/api/v1/acervo/publico/normas": {
       "get": {
         "description": "Consulta pública, sem login: as normas vigentes e revogadas do Arquivo Público (art. 54), com a redação em vigor. ?q= busca no número, na ementa e no texto.",
@@ -13430,6 +15198,61 @@
         },
         "security": [],
         "summary": "Instrução normativa publicada",
+        "tags": [
+          "acervo"
+        ]
+      }
+    },
+    "/api/v1/acervo/publico/unidades/{id}": {
+      "get": {
+        "description": "Sem login. A descrição ostensiva (sem localização física nem observações) e os representantes liberados. O que não é ostensivo responde 404.",
+        "operationId": "getAcervoPublicoUnidadesId",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AcervoFichaPublica"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [],
+        "summary": "Ficha pública da unidade",
         "tags": [
           "acervo"
         ]
@@ -15417,126 +17240,6 @@
         ]
       }
     },
-    "/api/v1/atlas/admin/ttdd/carga/aplicar": {
-      "post": {
-        "description": "Exige uma permissão específica (recurso:ação) declarada no manifesto do módulo — ver GET /api/v1/iam/permissions.",
-        "operationId": "postAtlasAdminTtddCargaAplicar",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/IdempotencyKey"
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Envelope"
-                    },
-                    {
-                      "properties": {
-                        "data": {
-                          "$ref": "#/components/schemas/AtlasImpactoCarga"
-                        }
-                      },
-                      "type": "object"
-                    }
-                  ]
-                }
-              }
-            },
-            "description": "Sucesso — payload em `data`.",
-            "x-sismarq-generated": true
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
-          },
-          "422": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "429": {
-            "$ref": "#/components/responses/TooManyRequests"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "summary": "Atlas — Procedimentos e Temporalidade — Criar /atlas/admin/ttdd/carga/aplicar",
-        "tags": [
-          "atlas"
-        ]
-      }
-    },
-    "/api/v1/atlas/admin/ttdd/carga/simular": {
-      "post": {
-        "description": "Exige uma permissão específica (recurso:ação) declarada no manifesto do módulo — ver GET /api/v1/iam/permissions.",
-        "operationId": "postAtlasAdminTtddCargaSimular",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/IdempotencyKey"
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Envelope"
-                    },
-                    {
-                      "properties": {
-                        "data": {
-                          "$ref": "#/components/schemas/AtlasImpactoCarga"
-                        }
-                      },
-                      "type": "object"
-                    }
-                  ]
-                }
-              }
-            },
-            "description": "Sucesso — payload em `data`.",
-            "x-sismarq-generated": true
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
-          },
-          "422": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "429": {
-            "$ref": "#/components/responses/TooManyRequests"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "summary": "Atlas — Procedimentos e Temporalidade — Criar /atlas/admin/ttdd/carga/simular",
-        "tags": [
-          "atlas"
-        ]
-      }
-    },
     "/api/v1/atlas/admin/ttdd/{codigo}/modelos": {
       "post": {
         "description": "Exige uma permissão específica (recurso:ação) declarada no manifesto do módulo — ver GET /api/v1/iam/permissions.",
@@ -15690,6 +17393,126 @@
           }
         ],
         "summary": "Atlas — Procedimentos e Temporalidade — Excluir /atlas/admin/ttdd/{codigo}/modelos/{modelo}",
+        "tags": [
+          "atlas"
+        ]
+      }
+    },
+    "/api/v1/atlas/admin/ttdd/carga/aplicar": {
+      "post": {
+        "description": "Exige uma permissão específica (recurso:ação) declarada no manifesto do módulo — ver GET /api/v1/iam/permissions.",
+        "operationId": "postAtlasAdminTtddCargaAplicar",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AtlasImpactoCarga"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Atlas — Procedimentos e Temporalidade — Criar /atlas/admin/ttdd/carga/aplicar",
+        "tags": [
+          "atlas"
+        ]
+      }
+    },
+    "/api/v1/atlas/admin/ttdd/carga/simular": {
+      "post": {
+        "description": "Exige uma permissão específica (recurso:ação) declarada no manifesto do módulo — ver GET /api/v1/iam/permissions.",
+        "operationId": "postAtlasAdminTtddCargaSimular",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AtlasImpactoCarga"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Atlas — Procedimentos e Temporalidade — Criar /atlas/admin/ttdd/carga/simular",
         "tags": [
           "atlas"
         ]
@@ -15888,219 +17711,6 @@
           }
         ],
         "summary": "Atlas — Procedimentos e Temporalidade — Criar /atlas/admin/workflows",
-        "tags": [
-          "atlas"
-        ]
-      }
-    },
-    "/api/v1/atlas/admin/workflows/exportar": {
-      "get": {
-        "description": "Exige uma permissão específica (recurso:ação) declarada no manifesto do módulo — ver GET /api/v1/iam/permissions.",
-        "operationId": "getAtlasAdminWorkflowsExportar",
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/Success"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
-          },
-          "422": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "429": {
-            "$ref": "#/components/responses/TooManyRequests"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "summary": "Atlas — Procedimentos e Temporalidade — Listar/consultar /atlas/admin/workflows/exportar",
-        "tags": [
-          "atlas"
-        ]
-      }
-    },
-    "/api/v1/atlas/admin/workflows/importacao/aplicar": {
-      "post": {
-        "description": "Exige uma permissão específica (recurso:ação) declarada no manifesto do módulo — ver GET /api/v1/iam/permissions.",
-        "operationId": "postAtlasAdminWorkflowsImportacaoAplicar",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/IdempotencyKey"
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Envelope"
-                    },
-                    {
-                      "properties": {
-                        "data": {
-                          "$ref": "#/components/schemas/AtlasImportacaoProcedimentos"
-                        }
-                      },
-                      "type": "object"
-                    }
-                  ]
-                }
-              }
-            },
-            "description": "Sucesso — payload em `data`.",
-            "x-sismarq-generated": true
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
-          },
-          "422": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "429": {
-            "$ref": "#/components/responses/TooManyRequests"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "summary": "Atlas — Procedimentos e Temporalidade — Criar /atlas/admin/workflows/importacao/aplicar",
-        "tags": [
-          "atlas"
-        ]
-      }
-    },
-    "/api/v1/atlas/admin/workflows/importacao/simular": {
-      "post": {
-        "description": "Exige uma permissão específica (recurso:ação) declarada no manifesto do módulo — ver GET /api/v1/iam/permissions.",
-        "operationId": "postAtlasAdminWorkflowsImportacaoSimular",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/IdempotencyKey"
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Envelope"
-                    },
-                    {
-                      "properties": {
-                        "data": {
-                          "$ref": "#/components/schemas/AtlasImportacaoProcedimentos"
-                        }
-                      },
-                      "type": "object"
-                    }
-                  ]
-                }
-              }
-            },
-            "description": "Sucesso — payload em `data`.",
-            "x-sismarq-generated": true
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
-          },
-          "422": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "429": {
-            "$ref": "#/components/responses/TooManyRequests"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "summary": "Atlas — Procedimentos e Temporalidade — Criar /atlas/admin/workflows/importacao/simular",
-        "tags": [
-          "atlas"
-        ]
-      }
-    },
-    "/api/v1/atlas/admin/workflows/secretarias": {
-      "get": {
-        "description": "Exige uma permissão específica (recurso:ação) declarada no manifesto do módulo — ver GET /api/v1/iam/permissions.",
-        "operationId": "getAtlasAdminWorkflowsSecretarias",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Envelope"
-                    },
-                    {
-                      "properties": {
-                        "data": {
-                          "items": {
-                            "$ref": "#/components/schemas/AtlasProcedimentosOrgao"
-                          },
-                          "type": "array"
-                        }
-                      },
-                      "type": "object"
-                    }
-                  ]
-                }
-              }
-            },
-            "description": "Sucesso — payload em `data`.",
-            "x-sismarq-generated": true
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
-          },
-          "422": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "429": {
-            "$ref": "#/components/responses/TooManyRequests"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "summary": "Atlas — Procedimentos e Temporalidade — Listar/consultar /atlas/admin/workflows/secretarias",
         "tags": [
           "atlas"
         ]
@@ -16765,6 +18375,219 @@
         ]
       }
     },
+    "/api/v1/atlas/admin/workflows/exportar": {
+      "get": {
+        "description": "Exige uma permissão específica (recurso:ação) declarada no manifesto do módulo — ver GET /api/v1/iam/permissions.",
+        "operationId": "getAtlasAdminWorkflowsExportar",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Atlas — Procedimentos e Temporalidade — Listar/consultar /atlas/admin/workflows/exportar",
+        "tags": [
+          "atlas"
+        ]
+      }
+    },
+    "/api/v1/atlas/admin/workflows/importacao/aplicar": {
+      "post": {
+        "description": "Exige uma permissão específica (recurso:ação) declarada no manifesto do módulo — ver GET /api/v1/iam/permissions.",
+        "operationId": "postAtlasAdminWorkflowsImportacaoAplicar",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AtlasImportacaoProcedimentos"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Atlas — Procedimentos e Temporalidade — Criar /atlas/admin/workflows/importacao/aplicar",
+        "tags": [
+          "atlas"
+        ]
+      }
+    },
+    "/api/v1/atlas/admin/workflows/importacao/simular": {
+      "post": {
+        "description": "Exige uma permissão específica (recurso:ação) declarada no manifesto do módulo — ver GET /api/v1/iam/permissions.",
+        "operationId": "postAtlasAdminWorkflowsImportacaoSimular",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AtlasImportacaoProcedimentos"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Atlas — Procedimentos e Temporalidade — Criar /atlas/admin/workflows/importacao/simular",
+        "tags": [
+          "atlas"
+        ]
+      }
+    },
+    "/api/v1/atlas/admin/workflows/secretarias": {
+      "get": {
+        "description": "Exige uma permissão específica (recurso:ação) declarada no manifesto do módulo — ver GET /api/v1/iam/permissions.",
+        "operationId": "getAtlasAdminWorkflowsSecretarias",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "items": {
+                            "$ref": "#/components/schemas/AtlasProcedimentosOrgao"
+                          },
+                          "type": "array"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Atlas — Procedimentos e Temporalidade — Listar/consultar /atlas/admin/workflows/secretarias",
+        "tags": [
+          "atlas"
+        ]
+      }
+    },
     "/api/v1/atlas/chat": {
       "post": {
         "description": "Exige uma permissão específica (recurso:ação) declarada no manifesto do módulo — ver GET /api/v1/iam/permissions.",
@@ -17114,99 +18937,6 @@
         ]
       }
     },
-    "/api/v1/atlas/ttdd/estrutura": {
-      "get": {
-        "operationId": "getAtlasTtddEstrutura",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Envelope"
-                    },
-                    {
-                      "properties": {
-                        "data": {
-                          "items": {
-                            "$ref": "#/components/schemas/AtlasEstruturaTTDD"
-                          },
-                          "type": "array"
-                        }
-                      },
-                      "type": "object"
-                    }
-                  ]
-                }
-              }
-            },
-            "description": "Sucesso — payload em `data`.",
-            "x-sismarq-generated": true
-          },
-          "404": {
-            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
-          },
-          "422": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "429": {
-            "$ref": "#/components/responses/TooManyRequests"
-          }
-        },
-        "security": [],
-        "summary": "Atlas — Procedimentos e Temporalidade — Listar/consultar /atlas/ttdd/estrutura",
-        "tags": [
-          "atlas"
-        ]
-      }
-    },
-    "/api/v1/atlas/ttdd/exportar": {
-      "get": {
-        "operationId": "getAtlasTtddExportar",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "codigo",
-            "required": false,
-            "schema": {
-              "maxLength": 32,
-              "type": "string"
-            },
-            "x-sismarq-generated": true
-          },
-          {
-            "in": "query",
-            "name": "q",
-            "required": false,
-            "schema": {
-              "maxLength": 200,
-              "type": "string"
-            },
-            "x-sismarq-generated": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/Success"
-          },
-          "404": {
-            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
-          },
-          "422": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "429": {
-            "$ref": "#/components/responses/TooManyRequests"
-          }
-        },
-        "security": [],
-        "summary": "Atlas — Procedimentos e Temporalidade — Listar/consultar /atlas/ttdd/exportar",
-        "tags": [
-          "atlas"
-        ]
-      }
-    },
     "/api/v1/atlas/ttdd/{codigo}": {
       "get": {
         "operationId": "getAtlasTtddCodigo",
@@ -17375,6 +19105,99 @@
         ]
       }
     },
+    "/api/v1/atlas/ttdd/estrutura": {
+      "get": {
+        "operationId": "getAtlasTtddEstrutura",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "items": {
+                            "$ref": "#/components/schemas/AtlasEstruturaTTDD"
+                          },
+                          "type": "array"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [],
+        "summary": "Atlas — Procedimentos e Temporalidade — Listar/consultar /atlas/ttdd/estrutura",
+        "tags": [
+          "atlas"
+        ]
+      }
+    },
+    "/api/v1/atlas/ttdd/exportar": {
+      "get": {
+        "operationId": "getAtlasTtddExportar",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "codigo",
+            "required": false,
+            "schema": {
+              "maxLength": 32,
+              "type": "string"
+            },
+            "x-sismarq-generated": true
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "maxLength": 200,
+              "type": "string"
+            },
+            "x-sismarq-generated": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [],
+        "summary": "Atlas — Procedimentos e Temporalidade — Listar/consultar /atlas/ttdd/exportar",
+        "tags": [
+          "atlas"
+        ]
+      }
+    },
     "/api/v1/atlas/workflows": {
       "get": {
         "operationId": "getAtlasWorkflows",
@@ -17488,53 +19311,6 @@
         },
         "security": [],
         "summary": "Atlas — Procedimentos e Temporalidade — Listar/consultar /atlas/workflows",
-        "tags": [
-          "atlas"
-        ]
-      }
-    },
-    "/api/v1/atlas/workflows/secretarias": {
-      "get": {
-        "operationId": "getAtlasWorkflowsSecretarias",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Envelope"
-                    },
-                    {
-                      "properties": {
-                        "data": {
-                          "items": {
-                            "$ref": "#/components/schemas/AtlasProcedimentosOrgao"
-                          },
-                          "type": "array"
-                        }
-                      },
-                      "type": "object"
-                    }
-                  ]
-                }
-              }
-            },
-            "description": "Sucesso — payload em `data`.",
-            "x-sismarq-generated": true
-          },
-          "404": {
-            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
-          },
-          "422": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "429": {
-            "$ref": "#/components/responses/TooManyRequests"
-          }
-        },
-        "security": [],
-        "summary": "Atlas — Procedimentos e Temporalidade — Listar/consultar /atlas/workflows/secretarias",
         "tags": [
           "atlas"
         ]
@@ -17776,9 +19552,56 @@
         ]
       }
     },
+    "/api/v1/atlas/workflows/secretarias": {
+      "get": {
+        "operationId": "getAtlasWorkflowsSecretarias",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Envelope"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "items": {
+                            "$ref": "#/components/schemas/AtlasProcedimentosOrgao"
+                          },
+                          "type": "array"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            },
+            "description": "Sucesso — payload em `data`.",
+            "x-sismarq-generated": true
+          },
+          "404": {
+            "$ref": "#/components/responses/ModuleDisabledOrNotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [],
+        "summary": "Atlas — Procedimentos e Temporalidade — Listar/consultar /atlas/workflows/secretarias",
+        "tags": [
+          "atlas"
+        ]
+      }
+    },
     "/api/v1/audit/export": {
       "get": {
-        "description": "Gera `relatorio_auditoria_lai_\u003ctimestamp\u003e.\u003cext\u003e` com id, usuário, ação, tipo/id de recurso, correlation_id, IP, metadata e data/hora (UTC) — mais recente primeiro. Restrito a `audit:read`.\nJanela `from`/`to` (default: últimos 30 dias, teto de 366); filtro opcional por `action`; paginação keyset por `cursor` (o `X-Next-Cursor` da resposta anterior). Formato por `format=` ou pelo header `Accept`; o default é CSV. Cada exportação bem-sucedida é ela mesma registrada na trilha (`audit.exported`). Metadados do dataset vão em cabeçalhos `X-Dataset-*` / `X-Generated-At`.\n",
+        "description": "Gera `relatorio_auditoria_lai_<timestamp>.<ext>` com id, usuário, ação, tipo/id de recurso, correlation_id, IP, metadata e data/hora (UTC) — mais recente primeiro. Restrito a `audit:read`.\nJanela `from`/`to` (default: últimos 30 dias, teto de 366); filtro opcional por `action`; paginação keyset por `cursor` (o `X-Next-Cursor` da resposta anterior). Formato por `format=` ou pelo header `Accept`; o default é CSV. Cada exportação bem-sucedida é ela mesma registrada na trilha (`audit.exported`). Metadados do dataset vão em cabeçalhos `X-Dataset-*` / `X-Generated-At`.\n",
         "operationId": "exportAuditLog",
         "parameters": [
           {
@@ -23384,7 +25207,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "IAM \u0026 Usuários — Listar/consultar /iam/ad-mappings",
+        "summary": "IAM & Usuários — Listar/consultar /iam/ad-mappings",
         "tags": [
           "iam"
         ]
@@ -23456,7 +25279,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "IAM \u0026 Usuários — Criar /iam/ad-mappings",
+        "summary": "IAM & Usuários — Criar /iam/ad-mappings",
         "tags": [
           "iam"
         ]
@@ -23502,7 +25325,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "IAM \u0026 Usuários — Excluir /iam/ad-mappings/{id}",
+        "summary": "IAM & Usuários — Excluir /iam/ad-mappings/{id}",
         "tags": [
           "iam"
         ]
@@ -23568,7 +25391,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "IAM \u0026 Usuários — Listar/consultar /iam/departamentos",
+        "summary": "IAM & Usuários — Listar/consultar /iam/departamentos",
         "tags": [
           "iam"
         ]
@@ -23656,7 +25479,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "IAM \u0026 Usuários — Criar /iam/departamentos",
+        "summary": "IAM & Usuários — Criar /iam/departamentos",
         "tags": [
           "iam"
         ]
@@ -23702,7 +25525,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "IAM \u0026 Usuários — Excluir /iam/departamentos/{id}",
+        "summary": "IAM & Usuários — Excluir /iam/departamentos/{id}",
         "tags": [
           "iam"
         ]
@@ -23798,7 +25621,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "IAM \u0026 Usuários — Salvar /iam/departamentos/{id}",
+        "summary": "IAM & Usuários — Salvar /iam/departamentos/{id}",
         "tags": [
           "iam"
         ]
@@ -23852,7 +25675,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "IAM \u0026 Usuários — Listar/consultar /iam/entidades",
+        "summary": "IAM & Usuários — Listar/consultar /iam/entidades",
         "tags": [
           "iam"
         ]
@@ -23940,7 +25763,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "IAM \u0026 Usuários — Criar /iam/entidades",
+        "summary": "IAM & Usuários — Criar /iam/entidades",
         "tags": [
           "iam"
         ]
@@ -23986,7 +25809,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "IAM \u0026 Usuários — Excluir /iam/entidades/{id}",
+        "summary": "IAM & Usuários — Excluir /iam/entidades/{id}",
         "tags": [
           "iam"
         ]
@@ -24082,7 +25905,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "IAM \u0026 Usuários — Salvar /iam/entidades/{id}",
+        "summary": "IAM & Usuários — Salvar /iam/entidades/{id}",
         "tags": [
           "iam"
         ]
@@ -24136,7 +25959,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "IAM \u0026 Usuários — Listar/consultar /iam/org-tree",
+        "summary": "IAM & Usuários — Listar/consultar /iam/org-tree",
         "tags": [
           "iam"
         ]
@@ -24190,7 +26013,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "IAM \u0026 Usuários — Listar/consultar /iam/perfis",
+        "summary": "IAM & Usuários — Listar/consultar /iam/perfis",
         "tags": [
           "iam"
         ]
@@ -24278,7 +26101,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "IAM \u0026 Usuários — Criar /iam/perfis",
+        "summary": "IAM & Usuários — Criar /iam/perfis",
         "tags": [
           "iam"
         ]
@@ -24324,7 +26147,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "IAM \u0026 Usuários — Excluir /iam/perfis/{id}",
+        "summary": "IAM & Usuários — Excluir /iam/perfis/{id}",
         "tags": [
           "iam"
         ]
@@ -24420,7 +26243,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "IAM \u0026 Usuários — Salvar /iam/perfis/{id}",
+        "summary": "IAM & Usuários — Salvar /iam/perfis/{id}",
         "tags": [
           "iam"
         ]
@@ -24474,7 +26297,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "IAM \u0026 Usuários — Listar/consultar /iam/permissions",
+        "summary": "IAM & Usuários — Listar/consultar /iam/permissions",
         "tags": [
           "iam"
         ]
@@ -24540,7 +26363,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "IAM \u0026 Usuários — Listar/consultar /iam/unidades",
+        "summary": "IAM & Usuários — Listar/consultar /iam/unidades",
         "tags": [
           "iam"
         ]
@@ -24628,7 +26451,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "IAM \u0026 Usuários — Criar /iam/unidades",
+        "summary": "IAM & Usuários — Criar /iam/unidades",
         "tags": [
           "iam"
         ]
@@ -24674,7 +26497,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "IAM \u0026 Usuários — Excluir /iam/unidades/{id}",
+        "summary": "IAM & Usuários — Excluir /iam/unidades/{id}",
         "tags": [
           "iam"
         ]
@@ -24770,7 +26593,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "IAM \u0026 Usuários — Salvar /iam/unidades/{id}",
+        "summary": "IAM & Usuários — Salvar /iam/unidades/{id}",
         "tags": [
           "iam"
         ]
@@ -24890,7 +26713,7 @@
                 }
               }
             },
-            "description": "`meus-dados-nexus-\u003ctimestamp\u003e.json` (`Content-Disposition: attachment`).\n",
+            "description": "`meus-dados-nexus-<timestamp>.json` (`Content-Disposition: attachment`).\n",
             "x-sismarq-generated": true
           },
           "401": {
@@ -25840,6 +27663,47 @@
         ]
       }
     },
+    "/api/v1/notificacoes/{id}/lida": {
+      "post": {
+        "operationId": "postNotificacoesIdLida",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Success"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Executar ação /notificacoes/{id}/lida",
+        "tags": [
+          "notificacoes"
+        ]
+      }
+    },
     "/api/v1/notificacoes/lidas": {
       "post": {
         "operationId": "postNotificacoesLidas",
@@ -25981,47 +27845,6 @@
           }
         ],
         "summary": "Salvar /notificacoes/preferencias",
-        "tags": [
-          "notificacoes"
-        ]
-      }
-    },
-    "/api/v1/notificacoes/{id}/lida": {
-      "post": {
-        "operationId": "postNotificacoesIdLida",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "$ref": "#/components/parameters/IdempotencyKey"
-          }
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/Success"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "422": {
-            "$ref": "#/components/responses/ValidationError"
-          },
-          "429": {
-            "$ref": "#/components/responses/TooManyRequests"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "summary": "Executar ação /notificacoes/{id}/lida",
         "tags": [
           "notificacoes"
         ]
@@ -28198,7 +30021,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "IAM \u0026 Usuários — Criar /users",
+        "summary": "IAM & Usuários — Criar /users",
         "tags": [
           "iam"
         ]
@@ -28336,7 +30159,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "IAM \u0026 Usuários — Alterar /users/{id}",
+        "summary": "IAM & Usuários — Alterar /users/{id}",
         "tags": [
           "iam"
         ]
@@ -28404,7 +30227,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "IAM \u0026 Usuários — Listar/consultar /users/{id}/lotacoes",
+        "summary": "IAM & Usuários — Listar/consultar /users/{id}/lotacoes",
         "tags": [
           "iam"
         ]
@@ -28484,7 +30307,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "IAM \u0026 Usuários — Executar ação /users/{id}/lotacoes",
+        "summary": "IAM & Usuários — Executar ação /users/{id}/lotacoes",
         "tags": [
           "iam"
         ]
@@ -28538,7 +30361,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "IAM \u0026 Usuários — Excluir /users/{id}/lotacoes/{lotacaoID}",
+        "summary": "IAM & Usuários — Excluir /users/{id}/lotacoes/{lotacaoID}",
         "tags": [
           "iam"
         ]
@@ -28598,7 +30421,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "IAM \u0026 Usuários — Executar ação /users/{id}/password",
+        "summary": "IAM & Usuários — Executar ação /users/{id}/password",
         "tags": [
           "iam"
         ]
@@ -28647,7 +30470,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "IAM \u0026 Usuários — Executar ação /users/{id}/unlock",
+        "summary": "IAM & Usuários — Executar ação /users/{id}/unlock",
         "tags": [
           "iam"
         ]
@@ -29497,7 +31320,7 @@
     },
     "/ws": {
       "get": {
-        "description": "Não modelado como uma operação REST — incluído aqui apenas para descoberta. Exige `?ticket=\u003cvalor\u003e` obtido em `POST /api/v1/ws/ticket`. Ao conectar, o cliente recebe todo envelope de evento da plataforma (`{id,type,version,source,occurred_at,correlation_id,payload}`) como um frame de texto JSON — ver `EventEnvelope` abaixo.\n",
+        "description": "Não modelado como uma operação REST — incluído aqui apenas para descoberta. Exige `?ticket=<valor>` obtido em `POST /api/v1/ws/ticket`. Ao conectar, o cliente recebe todo envelope de evento da plataforma (`{id,type,version,source,occurred_at,correlation_id,payload}`) como um frame de texto JSON — ver `EventEnvelope` abaixo.\n",
         "operationId": "websocketUpgrade",
         "parameters": [
           {
@@ -29542,7 +31365,7 @@
   ],
   "tags": [
     {
-      "description": "Acervo — Gestão Arquivística. Plug-in — Unidades de arquivamento nas três idades (Lei 10.301/2019): classificação pela TTDD, prazos de guarda, localização física, bloqueio judicial, eliminação, recolhimento ao Arquivo Público, instruções normativas e arquivos privados de interesse público. Depende de: atlas.",
+      "description": "Acervo — Gestão Arquivística. Plug-in — Unidades de arquivamento nas três idades (Lei 10.301/2019): classificação pela TTDD, prazos de guarda, localização física, bloqueio judicial, eliminação, recolhimento ao Arquivo Público, instruções normativas, arquivos privados de interesse público, digitalização, busca e consulta pública do acervo. Depende de: atlas.",
       "name": "acervo"
     },
     {
@@ -29599,7 +31422,7 @@
       "name": "ia"
     },
     {
-      "description": "IAM \u0026 Usuários. Núcleo — Identidades, sessões, RBAC multi-escopo (Entidades, Unidades, Departamentos) e mapeamento de grupos do AD.",
+      "description": "IAM & Usuários. Núcleo — Identidades, sessões, RBAC multi-escopo (Entidades, Unidades, Departamentos) e mapeamento de grupos do AD.",
       "name": "iam"
     },
     {

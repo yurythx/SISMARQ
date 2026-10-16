@@ -4,8 +4,8 @@
 interna (controladoria) e externa (CGU/TCE) e para o processo de
 homologação junto à Secretaria de Governo Digital.
 
-- **Última atualização:** 2026-09-09
-- **Branch de referência:** `feat/conformidade-roadmap`
+- **Última atualização:** 2026-10-16
+- **Branch de referência:** árvore de trabalho (Acervo ADRs 032–040)
 - **Escopo:** backend Go 1.26 (microkernel) + frontend Next.js 16
 
 ---
@@ -36,6 +36,10 @@ homologação junto à Secretaria de Governo Digital.
 | `docs/adr/017`, `019`, `022` | TTDD oficial (CCPAD): vigência, histórico e atualização auditada |
 | `docs/adr/020`, `021` | IA governada: conexões com chave cifrada, autorização e mascaramento para fornecedor externo (LGPD art. 33); assistente restrito ao acervo do Atlas — fluxos e TTDD (ADR 023) |
 | `docs/adr/024` | Biblioteca de modelos de documento: versões imutáveis com SHA-256, arquivo conferido pelo conteúdo, download pela API sem autoria nas respostas públicas, alterações auditadas |
+| `docs/adr/032`–`037` | Acervo: unidade, empréstimo, eliminação, recolhimento, normas/privados, digitalização |
+| `docs/adr/038` | Consulta pública e busca do acervo (Typesense só pela API) |
+| `docs/adr/039` | Ingresso do processo encerrado do Trâmite |
+| `docs/adr/040` | PAdES ICP-Brasil adiado até a política municipal |
 
 ## 3. Rastreamento do roadmap
 

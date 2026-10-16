@@ -39,6 +39,9 @@ const UNIDADE = {
   fim_intermediaria: "2017-12-31T00:00:00Z",
   situacao: "NO_CORRENTE",
   local_caminho: "Arquivo Central",
+  recolhida_em: null,
+  recolhimento_id: null,
+  tramite_processo_id: null,
 };
 
 const FICHA = {

@@ -24,6 +24,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/acervo/busca": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Busca no acervo
+         * @description Busca nas unidades de arquivamento e no texto do OCR, no escopo de quem pede (o Arquivo Público vê todo o acervo). O restrito e o sigiloso só aparecem para quem tem a unidade no escopo. Facetas: órgão, classe, espécie, fase, destinação e ano (?orgao=, ?classe=, ?especie=, ?fase=, ?destinacao=, ?ano=); ?digital=true só com representante digital. Também ?nivel_acesso=. Com o índice (Typesense) fora do ar, a busca vai ao banco, sem facetas (origem "banco").
+         */
+        get: operations["getAcervoBusca"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/acervo/comissoes": {
         parameters: {
             query?: never;
@@ -128,6 +148,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/acervo/digitais/{id}/publicacao": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Liberar à consulta pública
+         * @description Libera o representante digital à consulta sem login. Decide quem gere a unidade (recolhida, o Arquivo Público). Só o ostensivo (art. 2º): pronto, de unidade de nível público e não eliminada — o banco confere de novo.
+         */
+        post: operations["postAcervoDigitaisIdPublicacao"];
+        /**
+         * Retirar da consulta pública
+         * @description Retira o representante da consulta sem login. A unidade que deixa de ser pública retira os seus representantes na hora (gatilho do banco).
+         */
+        delete: operations["deleteAcervoDigitaisIdPublicacao"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/acervo/digitais/{id}/reprocessar": {
         parameters: {
             query?: never;
@@ -203,6 +247,78 @@ export interface paths {
          */
         post: operations["postAcervoEmprestimosIdDevolver"];
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/acervo/exposicoes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Exposições virtuais
+         * @description Só o Arquivo Público. As exposições (rascunhos e publicadas), mais recentes primeiro (difusão, art. 5º, X e XI).
+         */
+        get: operations["getAcervoExposicoes"];
+        put?: never;
+        /**
+         * Criar exposição
+         * @description Só o Arquivo Público. Título, resumo, texto (Markdown) e os documentos, na ordem, com legenda. O endereço (slug) sai do título e não muda depois.
+         */
+        post: operations["postAcervoExposicoes"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/acervo/exposicoes/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Exposição
+         * @description Só o Arquivo Público. A exposição com todos os documentos e se cada um está liberado à consulta pública.
+         */
+        get: operations["getAcervoExposicoesId"];
+        /**
+         * Alterar exposição
+         * @description Só o Arquivo Público. Troca o texto e os documentos; o endereço fica.
+         */
+        put: operations["putAcervoExposicoesId"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/acervo/exposicoes/{id}/publicacao": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Publicar exposição
+         * @description Só o Arquivo Público. Exige ao menos um documento liberado; a visita mostra só os liberados.
+         */
+        post: operations["postAcervoExposicoesIdPublicacao"];
+        /**
+         * Recolher exposição
+         * @description Só o Arquivo Público. A exposição sai da página do Arquivo.
+         */
+        delete: operations["deleteAcervoExposicoesIdPublicacao"];
         options?: never;
         head?: never;
         patch?: never;
@@ -454,6 +570,46 @@ export interface paths {
          * @description O Arquivo Público autoriza a relação aprovada (arts. 19 e 65), conferindo de novo cada unidade (bloqueio judicial posterior trava).
          */
         post: operations["postAcervoListagensIdAutorizar"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/acervo/listagens/{id}/autorizar-ccpad": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Autorizar pela CCPAD (art. 35)
+         * @description Membro da CCPAD autoriza a Relação no rito do art. 35 (documento fora da TTDD), depois da ata da CSPAD e antes do Arquivo Público.
+         */
+        post: operations["postAcervoListagensIdAutorizarCcpad"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/acervo/listagens/{id}/autorizar-semad": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Aprovar pela SEMAD (arts. 35 e 36)
+         * @description A SEMAD (acervo:semad, global) aprova a Relação nos ritos dos arts. 35 e 36. Só então o edital pode ser publicado.
+         */
+        post: operations["postAcervoListagensIdAutorizarSemad"];
         delete?: never;
         options?: never;
         head?: never;
@@ -900,6 +1056,106 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/acervo/publico/arquivo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Página do Arquivo Público
+         * @description Sem login. Números do acervo ostensivo, exposições em destaque, os últimos documentos liberados e o canal do SIC para o pedido do que não é ostensivo (série 2.0.03.02 da TTDD da SEMAD).
+         */
+        get: operations["getAcervoPublicoArquivo"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/acervo/publico/busca": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Consulta pública ao acervo
+         * @description Sem login, com limite por IP. Só o ostensivo: a descrição das unidades de acesso público e o texto do OCR dos representantes liberados — o restrito nunca entra nessa coleção. Facetas: órgão, classe, espécie, fase, destinação e ano (?orgao=, ?classe=, ?especie=, ?fase=, ?destinacao=, ?ano=); ?digital=true só com representante digital.
+         */
+        get: operations["getAcervoPublicoBusca"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/acervo/publico/digitais/{id}/arquivo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Documento liberado em fluxo
+         * @description Sem login. O PDF/A liberado, com Range (HTTP 206) para o visualizador buscar só as páginas visíveis. ETag é o SHA-256. Cada abertura conta para o indicador de consultas atendidas.
+         */
+        get: operations["getAcervoPublicoDigitaisIdArquivo"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/acervo/publico/exposicoes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Exposições publicadas
+         * @description Sem login. As exposições virtuais do Arquivo Público.
+         */
+        get: operations["getAcervoPublicoExposicoes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/acervo/publico/exposicoes/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Visita à exposição
+         * @description Sem login. A exposição publicada, só com os documentos liberados.
+         */
+        get: operations["getAcervoPublicoExposicoesSlug"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/acervo/publico/normas": {
         parameters: {
             query?: never;
@@ -932,6 +1188,26 @@ export interface paths {
          * @description Consulta pública: a redação em vigor e todas as anteriores, cada uma com o período em que vigorou e o motivo da alteração (texto compilado).
          */
         get: operations["getAcervoPublicoNormasId"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/acervo/publico/unidades/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ficha pública da unidade
+         * @description Sem login. A descrição ostensiva (sem localização física nem observações) e os representantes liberados. O que não é ostensivo responde 404.
+         */
+        get: operations["getAcervoPublicoUnidadesId"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1400,46 +1676,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/atlas/admin/ttdd/carga/aplicar": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Atlas — Procedimentos e Temporalidade — Criar /atlas/admin/ttdd/carga/aplicar
-         * @description Exige uma permissão específica (recurso:ação) declarada no manifesto do módulo — ver GET /api/v1/iam/permissions.
-         */
-        post: operations["postAtlasAdminTtddCargaAplicar"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/atlas/admin/ttdd/carga/simular": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Atlas — Procedimentos e Temporalidade — Criar /atlas/admin/ttdd/carga/simular
-         * @description Exige uma permissão específica (recurso:ação) declarada no manifesto do módulo — ver GET /api/v1/iam/permissions.
-         */
-        post: operations["postAtlasAdminTtddCargaSimular"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/atlas/admin/ttdd/{codigo}/modelos": {
         parameters: {
             query?: never;
@@ -1480,6 +1716,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/atlas/admin/ttdd/carga/aplicar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Atlas — Procedimentos e Temporalidade — Criar /atlas/admin/ttdd/carga/aplicar
+         * @description Exige uma permissão específica (recurso:ação) declarada no manifesto do módulo — ver GET /api/v1/iam/permissions.
+         */
+        post: operations["postAtlasAdminTtddCargaAplicar"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/atlas/admin/ttdd/carga/simular": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Atlas — Procedimentos e Temporalidade — Criar /atlas/admin/ttdd/carga/simular
+         * @description Exige uma permissão específica (recurso:ação) declarada no manifesto do módulo — ver GET /api/v1/iam/permissions.
+         */
+        post: operations["postAtlasAdminTtddCargaSimular"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/atlas/admin/workflows": {
         parameters: {
             query?: never;
@@ -1498,86 +1774,6 @@ export interface paths {
          * @description Exige uma permissão específica (recurso:ação) declarada no manifesto do módulo — ver GET /api/v1/iam/permissions.
          */
         post: operations["postAtlasAdminWorkflows"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/atlas/admin/workflows/exportar": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Atlas — Procedimentos e Temporalidade — Listar/consultar /atlas/admin/workflows/exportar
-         * @description Exige uma permissão específica (recurso:ação) declarada no manifesto do módulo — ver GET /api/v1/iam/permissions.
-         */
-        get: operations["getAtlasAdminWorkflowsExportar"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/atlas/admin/workflows/importacao/aplicar": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Atlas — Procedimentos e Temporalidade — Criar /atlas/admin/workflows/importacao/aplicar
-         * @description Exige uma permissão específica (recurso:ação) declarada no manifesto do módulo — ver GET /api/v1/iam/permissions.
-         */
-        post: operations["postAtlasAdminWorkflowsImportacaoAplicar"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/atlas/admin/workflows/importacao/simular": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Atlas — Procedimentos e Temporalidade — Criar /atlas/admin/workflows/importacao/simular
-         * @description Exige uma permissão específica (recurso:ação) declarada no manifesto do módulo — ver GET /api/v1/iam/permissions.
-         */
-        post: operations["postAtlasAdminWorkflowsImportacaoSimular"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/atlas/admin/workflows/secretarias": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Atlas — Procedimentos e Temporalidade — Listar/consultar /atlas/admin/workflows/secretarias
-         * @description Exige uma permissão específica (recurso:ação) declarada no manifesto do módulo — ver GET /api/v1/iam/permissions.
-         */
-        get: operations["getAtlasAdminWorkflowsSecretarias"];
-        put?: never;
-        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1748,6 +1944,86 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/atlas/admin/workflows/exportar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Atlas — Procedimentos e Temporalidade — Listar/consultar /atlas/admin/workflows/exportar
+         * @description Exige uma permissão específica (recurso:ação) declarada no manifesto do módulo — ver GET /api/v1/iam/permissions.
+         */
+        get: operations["getAtlasAdminWorkflowsExportar"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/atlas/admin/workflows/importacao/aplicar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Atlas — Procedimentos e Temporalidade — Criar /atlas/admin/workflows/importacao/aplicar
+         * @description Exige uma permissão específica (recurso:ação) declarada no manifesto do módulo — ver GET /api/v1/iam/permissions.
+         */
+        post: operations["postAtlasAdminWorkflowsImportacaoAplicar"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/atlas/admin/workflows/importacao/simular": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Atlas — Procedimentos e Temporalidade — Criar /atlas/admin/workflows/importacao/simular
+         * @description Exige uma permissão específica (recurso:ação) declarada no manifesto do módulo — ver GET /api/v1/iam/permissions.
+         */
+        post: operations["postAtlasAdminWorkflowsImportacaoSimular"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/atlas/admin/workflows/secretarias": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Atlas — Procedimentos e Temporalidade — Listar/consultar /atlas/admin/workflows/secretarias
+         * @description Exige uma permissão específica (recurso:ação) declarada no manifesto do módulo — ver GET /api/v1/iam/permissions.
+         */
+        get: operations["getAtlasAdminWorkflowsSecretarias"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/atlas/chat": {
         parameters: {
             query?: never;
@@ -1853,40 +2129,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/atlas/ttdd/estrutura": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Atlas — Procedimentos e Temporalidade — Listar/consultar /atlas/ttdd/estrutura */
-        get: operations["getAtlasTtddEstrutura"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/atlas/ttdd/exportar": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Atlas — Procedimentos e Temporalidade — Listar/consultar /atlas/ttdd/exportar */
-        get: operations["getAtlasTtddExportar"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/atlas/ttdd/{codigo}": {
         parameters: {
             query?: never;
@@ -1938,6 +2180,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/atlas/ttdd/estrutura": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Atlas — Procedimentos e Temporalidade — Listar/consultar /atlas/ttdd/estrutura */
+        get: operations["getAtlasTtddEstrutura"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/atlas/ttdd/exportar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Atlas — Procedimentos e Temporalidade — Listar/consultar /atlas/ttdd/exportar */
+        get: operations["getAtlasTtddExportar"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/atlas/workflows": {
         parameters: {
             query?: never;
@@ -1947,23 +2223,6 @@ export interface paths {
         };
         /** Atlas — Procedimentos e Temporalidade — Listar/consultar /atlas/workflows */
         get: operations["getAtlasWorkflows"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/atlas/workflows/secretarias": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Atlas — Procedimentos e Temporalidade — Listar/consultar /atlas/workflows/secretarias */
-        get: operations["getAtlasWorkflowsSecretarias"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2003,6 +2262,23 @@ export interface paths {
         post?: never;
         /** Atlas — Procedimentos e Temporalidade — Excluir /atlas/workflows/{id}/seguir */
         delete: operations["deleteAtlasWorkflowsIdSeguir"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/atlas/workflows/secretarias": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Atlas — Procedimentos e Temporalidade — Listar/consultar /atlas/workflows/secretarias */
+        get: operations["getAtlasWorkflowsSecretarias"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -3718,6 +3994,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/notificacoes/{id}/lida": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Executar ação /notificacoes/{id}/lida */
+        post: operations["postNotificacoesIdLida"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/notificacoes/lidas": {
         parameters: {
             query?: never;
@@ -3747,23 +4040,6 @@ export interface paths {
         /** Salvar /notificacoes/preferencias */
         put: operations["putNotificacoesPreferencias"];
         post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/notificacoes/{id}/lida": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Executar ação /notificacoes/{id}/lida */
-        post: operations["postNotificacoesIdLida"];
         delete?: never;
         options?: never;
         head?: never;
@@ -4712,6 +4988,15 @@ export interface components {
             /** Format: uuid */
             unidade_arquivamento_id: string;
         };
+        AcervoBuscaResponse: {
+            facetas: {
+                [key: string]: components["schemas"]["AcervoFaceta"][];
+            };
+            items: components["schemas"]["AcervoItemBusca"][];
+            meta: components["schemas"]["PaginationMeta"];
+            ms: number;
+            origem: string;
+        };
         AcervoComissao: {
             ativa: boolean;
             avisos: string[];
@@ -4783,6 +5068,8 @@ export interface components {
             recolhida_em: string | null;
             /** Format: uuid */
             recolhimento_id: string | null;
+            /** Format: uuid */
+            tramite_processo_id: string | null;
             serie: components["schemas"]["AcervoSerieResumo"];
             situacao: string;
             /** @enum {string} */
@@ -4810,11 +5097,14 @@ export interface components {
             numero: string;
             original_bytes: number;
             original_sha256: string;
+            pades: string;
             paginas: number;
             pdfa_bytes: number;
             pdfa_sha256: string;
             /** Format: date-time */
             processado_em: string | null;
+            /** Format: date-time */
+            publicado_em: string | null;
             responsavel_cpf: string;
             /** Format: uuid */
             responsavel_id: string;
@@ -4852,11 +5142,14 @@ export interface components {
             numero: string;
             original_bytes: number;
             original_sha256: string;
+            pades: string;
             paginas: number;
             pdfa_bytes: number;
             pdfa_sha256: string;
             /** Format: date-time */
             processado_em: string | null;
+            /** Format: date-time */
+            publicado_em: string | null;
             responsavel_cpf: string;
             /** Format: uuid */
             responsavel_id: string;
@@ -4870,6 +5163,38 @@ export interface components {
             unidade_arquivamento_id: string;
             /** Format: date-time */
             verificado_em: string | null;
+        };
+        AcervoDigitalIndice: {
+            conformidade: string;
+            descricao: string;
+            /** Format: date-time */
+            digitalizado_em: string;
+            /** Format: uuid */
+            id: string;
+            numero: string;
+            paginas: number;
+            pdfa_bytes: number;
+            pdfa_sha256: string;
+            /** Format: date-time */
+            publicado_em: string | null;
+        };
+        AcervoDigitalRecente: {
+            assunto: string;
+            conformidade: string;
+            descricao: string;
+            /** Format: date-time */
+            digitalizado_em: string;
+            /** Format: uuid */
+            id: string;
+            numero: string;
+            paginas: number;
+            pdfa_bytes: number;
+            pdfa_sha256: string;
+            /** Format: date-time */
+            publicado_em: string | null;
+            /** Format: uuid */
+            unidade_arquivamento_id: string;
+            unidade_numero: string;
         };
         AcervoDigitalRequest: {
             descricao?: string;
@@ -4925,6 +5250,51 @@ export interface components {
             por: string | null;
             tipo: string;
         };
+        AcervoExposicao: {
+            /** Format: date-time */
+            atualizado_em: string;
+            /** Format: date-time */
+            criado_em: string;
+            /** Format: uuid */
+            id: string;
+            itens?: components["schemas"]["AcervoItemExposicao"][];
+            /** Format: date-time */
+            publicada_em: string | null;
+            resumo: string;
+            slug: string;
+            texto: string;
+            titulo: string;
+        };
+        AcervoExposicaoRequest: {
+            itens?: components["schemas"]["AcervoItemExposicaoReq"][];
+            resumo?: string;
+            texto?: string;
+            titulo: string;
+        };
+        AcervoFaceta: {
+            total: number;
+            valor: string;
+        };
+        AcervoFichaPublica: {
+            assunto: string;
+            codigo_classificacao: string;
+            /** Format: date-time */
+            data_final: string;
+            /** Format: date-time */
+            data_inicial: string;
+            descritor: string;
+            destinacao: string;
+            digitais: components["schemas"]["AcervoDigitalIndice"][];
+            especificacao: string;
+            fase: string;
+            /** Format: uuid */
+            id: string;
+            numero: string;
+            orgao: string;
+            quantidade: number;
+            recolhida: boolean;
+            tipo: string;
+        };
         AcervoGuia: {
             /** Format: date-time */
             criada_em: string;
@@ -4949,6 +5319,41 @@ export interface components {
             /** Format: uuid */
             origem_id: string;
             unidades: string[];
+        };
+        AcervoItemBusca: {
+            ano_final: number;
+            ano_inicial: number;
+            assunto: string;
+            codigo_classificacao: string;
+            descritor: string;
+            destinacao: string;
+            digitais: number;
+            fase: string;
+            /** Format: uuid */
+            id: string;
+            nivel_acesso?: string;
+            numero: string;
+            orgao: string;
+            tipo: string;
+            trecho: string;
+        };
+        AcervoItemExposicao: {
+            descricao: string;
+            /** Format: uuid */
+            digital_id: string;
+            legenda: string;
+            numero: string;
+            ordem: number;
+            paginas: number;
+            publicado: boolean;
+            /** Format: uuid */
+            unidade_arquivamento_id: string;
+            unidade_numero: string;
+        };
+        AcervoItemExposicaoReq: {
+            /** Format: uuid */
+            digital_id: string;
+            legenda?: string;
         };
         AcervoItemListagem: {
             amostra: boolean;
@@ -4991,6 +5396,8 @@ export interface components {
             recolhida_em: string | null;
             /** Format: uuid */
             recolhimento_id: string | null;
+            /** Format: uuid */
+            tramite_processo_id: string | null;
             retirada: boolean;
             situacao: string;
             /** @enum {string} */
@@ -5018,6 +5425,12 @@ export interface components {
             autorizada_em: string | null;
             /** Format: uuid */
             autorizada_por: string | null;
+            /** Format: date-time */
+            ccpad_autorizada_em: string | null;
+            /** Format: uuid */
+            ccpad_autorizada_por: string | null;
+            /** @enum {string} */
+            ata_signum: "AUSENTE";
             /** Format: uuid */
             comissao_id: string;
             /** Format: date-time */
@@ -5036,6 +5449,8 @@ export interface components {
             id: string;
             itens: components["schemas"]["AcervoItemListagem"][];
             numero: string;
+            /** @enum {string} */
+            rito: "ORDINARIO" | "ART_35" | "ART_36";
             parecer_juridico: string;
             pedidos: components["schemas"]["AcervoPedido"][];
             /** Format: uuid */
@@ -5047,6 +5462,16 @@ export interface components {
             termo_eliminado_em: string | null;
             /** Format: uuid */
             termo_registrado_por: string | null;
+            /** @enum {string} */
+            termo_signum: "AUSENTE";
+            /** Format: date-time */
+            termo_copia_em: string | null;
+            termo_copia_arquivo: number;
+            termo_copia_semad: number;
+            /** Format: date-time */
+            semad_autorizada_em: string | null;
+            /** Format: uuid */
+            semad_autorizada_por: string | null;
             total_itens: number;
             /** Format: uuid */
             unidade_id: string;
@@ -5055,6 +5480,8 @@ export interface components {
             contas_aprovadas_em?: string;
             contas_exercicios?: string;
             parecer_juridico?: string;
+            /** @enum {string} */
+            rito?: "ORDINARIO" | "ART_35" | "ART_36";
             /** Format: uuid */
             responsavel_selecao?: string | null;
             retirar?: string[];
@@ -5139,6 +5566,14 @@ export interface components {
             motivo?: string;
             numero: string;
             texto: string;
+        };
+        AcervoPainelPublico: {
+            digitais: number;
+            exposicoes: components["schemas"]["AcervoExposicao"][];
+            recentes: components["schemas"]["AcervoDigitalRecente"][];
+            serie_sic: string;
+            sic_url: string;
+            unidades: number;
         };
         AcervoPedido: {
             /** Format: date-time */
@@ -5357,6 +5792,8 @@ export interface components {
             recolhida_em: string | null;
             /** Format: uuid */
             recolhimento_id: string | null;
+            /** Format: uuid */
+            tramite_processo_id: string | null;
             situacao: string;
             /** @enum {string} */
             tipo: "CAIXA" | "DOCUMENTO" | "DOSSIE" | "LIVRO" | "MAPA" | "OUTRO" | "PASTA" | "PROCESSO";
@@ -7424,6 +7861,52 @@ export interface operations {
             429: components["responses"]["TooManyRequests"];
         };
     };
+    getAcervoBusca: {
+        parameters: {
+            query?: {
+                page?: components["parameters"]["Page"];
+                page_size?: components["parameters"]["PageSize"];
+                /** @description Órgão produtor (nome) */
+                orgao?: string;
+                /** @description Classe do código de classificação (1º nível, ex.: 2) */
+                classe?: string;
+                /** @description Espécie da unidade (CAIXA, PASTA, LIVRO, PROCESSO…) */
+                especie?: string;
+                /** @description Fase (CORRENTE, INTERMEDIARIA, PERMANENTE) */
+                fase?: string;
+                /** @description Destinação (ELIMINACAO, GUARDA_PERMANENTE, INDEFINIDA) */
+                destinacao?: string;
+                /** @description Ano coberto pelas datas-limite */
+                ano?: number;
+                /** @description Nível de acesso (PUBLICO, RESTRITO, SIGILOSO) — só na busca interna */
+                nivel_acesso?: string;
+                q?: string;
+                digital?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoBuscaResponse"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
     getAcervoComissoes: {
         parameters: {
             query?: never;
@@ -7664,6 +8147,70 @@ export interface operations {
             429: components["responses"]["TooManyRequests"];
         };
     };
+    postAcervoDigitaisIdPublicacao: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
+                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
+                 */
+                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoDetalheDigital"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    deleteAcervoDigitaisIdPublicacao: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoDetalheDigital"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
     postAcervoDigitaisIdReprocessar: {
         parameters: {
             query?: never;
@@ -7795,6 +8342,196 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Envelope"] & {
                         data?: components["schemas"]["AcervoDetalhe"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    getAcervoExposicoes: {
+        parameters: {
+            query?: {
+                page?: components["parameters"]["Page"];
+                page_size?: components["parameters"]["PageSize"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Página de itens em `data`, paginação em `meta`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoExposicao"][];
+                        meta?: components["schemas"]["PaginationMeta"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    postAcervoExposicoes: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
+                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
+                 */
+                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AcervoExposicaoRequest"];
+            };
+        };
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoExposicao"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    getAcervoExposicoesId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: components["responses"]["Success"];
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    putAcervoExposicoesId: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
+                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
+                 */
+                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AcervoExposicaoRequest"];
+            };
+        };
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoExposicao"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    postAcervoExposicoesIdPublicacao: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
+                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
+                 */
+                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoExposicao"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    deleteAcervoExposicoesIdPublicacao: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoExposicao"];
                     };
                 };
             };
@@ -8258,6 +8995,76 @@ export interface operations {
         };
     };
     postAcervoListagensIdAutorizar: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
+                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
+                 */
+                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoListagem"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    postAcervoListagensIdAutorizarCcpad: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
+                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
+                 */
+                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoListagem"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    postAcervoListagensIdAutorizarSemad: {
         parameters: {
             query?: never;
             header?: {
@@ -9214,6 +10021,180 @@ export interface operations {
             429: components["responses"]["TooManyRequests"];
         };
     };
+    getAcervoPublicoArquivo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoPainelPublico"];
+                    };
+                };
+            };
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    getAcervoPublicoBusca: {
+        parameters: {
+            query?: {
+                page?: components["parameters"]["Page"];
+                page_size?: components["parameters"]["PageSize"];
+                /** @description Órgão produtor (nome) */
+                orgao?: string;
+                /** @description Classe do código de classificação (1º nível, ex.: 2) */
+                classe?: string;
+                /** @description Espécie da unidade (CAIXA, PASTA, LIVRO, PROCESSO…) */
+                especie?: string;
+                /** @description Fase (CORRENTE, INTERMEDIARIA, PERMANENTE) */
+                fase?: string;
+                /** @description Destinação (ELIMINACAO, GUARDA_PERMANENTE, INDEFINIDA) */
+                destinacao?: string;
+                /** @description Ano coberto pelas datas-limite */
+                ano?: number;
+                q?: string;
+                digital?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoBuscaResponse"];
+                    };
+                };
+            };
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    getAcervoPublicoDigitaisIdArquivo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description O PDF/A inteiro. */
+            200: {
+                headers: {
+                    /** @description bytes */
+                    "Accept-Ranges"?: string;
+                    /** @description O SHA-256 do PDF/A, entre aspas. */
+                    ETag?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": string;
+                };
+            };
+            /** @description O trecho pedido em Range. */
+            206: {
+                headers: {
+                    /** @description bytes */
+                    "Accept-Ranges"?: string;
+                    /** @description bytes início-fim/tamanho */
+                    "Content-Range"?: string;
+                    /** @description O SHA-256 do PDF/A, entre aspas. */
+                    ETag?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": string;
+                };
+            };
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            /** @description Intervalo fora do arquivo (Content-Range: bytes *\/tamanho). */
+            416: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    getAcervoPublicoExposicoes: {
+        parameters: {
+            query?: {
+                page?: components["parameters"]["Page"];
+                page_size?: components["parameters"]["PageSize"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Página de itens em `data`, paginação em `meta`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoExposicao"][];
+                        meta?: components["schemas"]["PaginationMeta"];
+                    };
+                };
+            };
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    getAcervoPublicoExposicoesSlug: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoExposicao"];
+                    };
+                };
+            };
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
     getAcervoPublicoNormas: {
         parameters: {
             query?: {
@@ -9263,6 +10244,33 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Envelope"] & {
                         data?: components["schemas"]["AcervoNorma"];
+                    };
+                };
+            };
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    getAcervoPublicoUnidadesId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AcervoFichaPublica"];
                     };
                 };
             };
@@ -10234,72 +11242,6 @@ export interface operations {
             429: components["responses"]["TooManyRequests"];
         };
     };
-    postAtlasAdminTtddCargaAplicar: {
-        parameters: {
-            query?: never;
-            header?: {
-                /**
-                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
-                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
-                 */
-                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-            };
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Sucesso — payload em `data`. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Envelope"] & {
-                        data?: components["schemas"]["AtlasImpactoCarga"];
-                    };
-                };
-            };
-            401: components["responses"]["Unauthorized"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["ModuleDisabledOrNotFound"];
-            422: components["responses"]["ValidationError"];
-            429: components["responses"]["TooManyRequests"];
-        };
-    };
-    postAtlasAdminTtddCargaSimular: {
-        parameters: {
-            query?: never;
-            header?: {
-                /**
-                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
-                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
-                 */
-                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-            };
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Sucesso — payload em `data`. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Envelope"] & {
-                        data?: components["schemas"]["AtlasImpactoCarga"];
-                    };
-                };
-            };
-            401: components["responses"]["Unauthorized"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["ModuleDisabledOrNotFound"];
-            422: components["responses"]["ValidationError"];
-            429: components["responses"]["TooManyRequests"];
-        };
-    };
     postAtlasAdminTtddCodigoModelos: {
         parameters: {
             query?: never;
@@ -10359,6 +11301,72 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Envelope"] & {
                         data?: components["schemas"]["AtlasModelo"][];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    postAtlasAdminTtddCargaAplicar: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
+                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
+                 */
+                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AtlasImpactoCarga"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    postAtlasAdminTtddCargaSimular: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
+                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
+                 */
+                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AtlasImpactoCarga"];
                     };
                 };
             };
@@ -10433,116 +11441,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Envelope"] & {
                         data?: components["schemas"]["AtlasWorkflow"];
-                    };
-                };
-            };
-            401: components["responses"]["Unauthorized"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["ModuleDisabledOrNotFound"];
-            422: components["responses"]["ValidationError"];
-            429: components["responses"]["TooManyRequests"];
-        };
-    };
-    getAtlasAdminWorkflowsExportar: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: components["responses"]["Success"];
-            401: components["responses"]["Unauthorized"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["ModuleDisabledOrNotFound"];
-            422: components["responses"]["ValidationError"];
-            429: components["responses"]["TooManyRequests"];
-        };
-    };
-    postAtlasAdminWorkflowsImportacaoAplicar: {
-        parameters: {
-            query?: never;
-            header?: {
-                /**
-                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
-                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
-                 */
-                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-            };
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Sucesso — payload em `data`. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Envelope"] & {
-                        data?: components["schemas"]["AtlasImportacaoProcedimentos"];
-                    };
-                };
-            };
-            401: components["responses"]["Unauthorized"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["ModuleDisabledOrNotFound"];
-            422: components["responses"]["ValidationError"];
-            429: components["responses"]["TooManyRequests"];
-        };
-    };
-    postAtlasAdminWorkflowsImportacaoSimular: {
-        parameters: {
-            query?: never;
-            header?: {
-                /**
-                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
-                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
-                 */
-                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-            };
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Sucesso — payload em `data`. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Envelope"] & {
-                        data?: components["schemas"]["AtlasImportacaoProcedimentos"];
-                    };
-                };
-            };
-            401: components["responses"]["Unauthorized"];
-            403: components["responses"]["Forbidden"];
-            404: components["responses"]["ModuleDisabledOrNotFound"];
-            422: components["responses"]["ValidationError"];
-            429: components["responses"]["TooManyRequests"];
-        };
-    };
-    getAtlasAdminWorkflowsSecretarias: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Sucesso — payload em `data`. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Envelope"] & {
-                        data?: components["schemas"]["AtlasProcedimentosOrgao"][];
                     };
                 };
             };
@@ -10873,6 +11771,116 @@ export interface operations {
             429: components["responses"]["TooManyRequests"];
         };
     };
+    getAtlasAdminWorkflowsExportar: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: components["responses"]["Success"];
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    postAtlasAdminWorkflowsImportacaoAplicar: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
+                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
+                 */
+                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AtlasImportacaoProcedimentos"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    postAtlasAdminWorkflowsImportacaoSimular: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
+                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
+                 */
+                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AtlasImportacaoProcedimentos"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    getAtlasAdminWorkflowsSecretarias: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AtlasProcedimentosOrgao"][];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            403: components["responses"]["Forbidden"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
     postAtlasChat: {
         parameters: {
             query?: never;
@@ -11038,49 +12046,6 @@ export interface operations {
             429: components["responses"]["TooManyRequests"];
         };
     };
-    getAtlasTtddEstrutura: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Sucesso — payload em `data`. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Envelope"] & {
-                        data?: components["schemas"]["AtlasEstruturaTTDD"][];
-                    };
-                };
-            };
-            404: components["responses"]["ModuleDisabledOrNotFound"];
-            422: components["responses"]["ValidationError"];
-            429: components["responses"]["TooManyRequests"];
-        };
-    };
-    getAtlasTtddExportar: {
-        parameters: {
-            query?: {
-                codigo?: string;
-                q?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: components["responses"]["Success"];
-            404: components["responses"]["ModuleDisabledOrNotFound"];
-            422: components["responses"]["ValidationError"];
-            429: components["responses"]["TooManyRequests"];
-        };
-    };
     getAtlasTtddCodigo: {
         parameters: {
             query?: never;
@@ -11162,6 +12127,49 @@ export interface operations {
             429: components["responses"]["TooManyRequests"];
         };
     };
+    getAtlasTtddEstrutura: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AtlasEstruturaTTDD"][];
+                    };
+                };
+            };
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    getAtlasTtddExportar: {
+        parameters: {
+            query?: {
+                codigo?: string;
+                q?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: components["responses"]["Success"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
     getAtlasWorkflows: {
         parameters: {
             query?: {
@@ -11189,31 +12197,6 @@ export interface operations {
                     "application/json": components["schemas"]["Envelope"] & {
                         data?: components["schemas"]["AtlasWorkflow"][];
                         meta?: components["schemas"]["PaginationMeta"];
-                    };
-                };
-            };
-            404: components["responses"]["ModuleDisabledOrNotFound"];
-            422: components["responses"]["ValidationError"];
-            429: components["responses"]["TooManyRequests"];
-        };
-    };
-    getAtlasWorkflowsSecretarias: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Sucesso — payload em `data`. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Envelope"] & {
-                        data?: components["schemas"]["AtlasProcedimentosOrgao"][];
                     };
                 };
             };
@@ -11334,6 +12317,31 @@ export interface operations {
                 };
             };
             401: components["responses"]["Unauthorized"];
+            404: components["responses"]["ModuleDisabledOrNotFound"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
+    getAtlasWorkflowsSecretarias: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["AtlasProcedimentosOrgao"][];
+                    };
+                };
+            };
             404: components["responses"]["ModuleDisabledOrNotFound"];
             422: components["responses"]["ValidationError"];
             429: components["responses"]["TooManyRequests"];
@@ -15360,6 +16368,29 @@ export interface operations {
             429: components["responses"]["TooManyRequests"];
         };
     };
+    postNotificacoesIdLida: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
+                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
+                 */
+                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: components["responses"]["Success"];
+            401: components["responses"]["Unauthorized"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
+        };
+    };
     postNotificacoesLidas: {
         parameters: {
             query?: never;
@@ -15436,29 +16467,6 @@ export interface operations {
                     };
                 };
             };
-            401: components["responses"]["Unauthorized"];
-            422: components["responses"]["ValidationError"];
-            429: components["responses"]["TooManyRequests"];
-        };
-    };
-    postNotificacoesIdLida: {
-        parameters: {
-            query?: never;
-            header?: {
-                /**
-                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
-                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
-                 */
-                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
-            };
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: components["responses"]["Success"];
             401: components["responses"]["Unauthorized"];
             422: components["responses"]["ValidationError"];
             429: components["responses"]["TooManyRequests"];

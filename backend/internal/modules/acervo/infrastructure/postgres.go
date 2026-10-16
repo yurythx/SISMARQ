@@ -26,7 +26,7 @@ func NewRepository() *Repository { return &Repository{} }
 const unidadeCols = `u.id, u.numero, u.tipo, u.codigo_classificacao, u.assunto, u.unidade_id, u.data_inicial, u.data_final,
 	u.quantidade, u.especificacao, u.observacoes, u.fase, u.destinacao, u.data_evento, u.contas_aprovadas_em,
 	u.nivel_acesso, u.hipotese_legal, u.local_id, u.posicao, u.created_by, u.created_at, u.updated_at,
-	u.fim_corrente, u.fim_intermediaria, u.situacao, u.recolhida_em, u.recolhimento_id`
+	u.fim_corrente, u.fim_intermediaria, u.situacao, u.recolhida_em, u.recolhimento_id, u.tramite_processo_id`
 
 func scanUnidade(row pgx.Row, extra ...any) (domain.Unidade, domain.Calculo, error) {
 	var u domain.Unidade
@@ -34,7 +34,7 @@ func scanUnidade(row pgx.Row, extra ...any) (domain.Unidade, domain.Calculo, err
 	dest := []any{&u.ID, &u.Numero, &u.Tipo, &u.CodigoClassificacao, &u.Assunto, &u.UnidadeID, &u.DataInicial, &u.DataFinal,
 		&u.Quantidade, &u.Especificacao, &u.Observacoes, &u.Fase, &u.Destinacao, &u.DataEvento, &u.ContasAprovadasEm,
 		&u.NivelAcesso, &u.HipoteseLegal, &u.LocalID, &u.Posicao, &u.CreatedBy, &u.CreatedAt, &u.UpdatedAt,
-		&c.FimCorrente, &c.FimIntermediaria, &c.Situacao, &u.RecolhidaEm, &u.RecolhimentoID}
+		&c.FimCorrente, &c.FimIntermediaria, &c.Situacao, &u.RecolhidaEm, &u.RecolhimentoID, &u.TramiteProcessoID}
 	err := row.Scan(append(dest, extra...)...)
 	return u, c, err
 }
@@ -44,12 +44,12 @@ func (r *Repository) InsertUnidade(ctx context.Context, db database.DBTX, u doma
 	var numero string
 	err := db.QueryRow(ctx, `INSERT INTO acervo_unidades (id, tipo, codigo_classificacao, assunto, unidade_id, data_inicial,
 		data_final, quantidade, especificacao, observacoes, fase, destinacao, data_evento, contas_aprovadas_em, nivel_acesso,
-		hipotese_legal, local_id, posicao, created_by, fim_corrente, fim_intermediaria, situacao)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)
+		hipotese_legal, local_id, posicao, created_by, fim_corrente, fim_intermediaria, situacao, tramite_processo_id)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23)
 		RETURNING numero`,
 		u.ID, u.Tipo, u.CodigoClassificacao, u.Assunto, u.UnidadeID, u.DataInicial, u.DataFinal, u.Quantidade,
 		u.Especificacao, u.Observacoes, u.Fase, u.Destinacao, u.DataEvento, u.ContasAprovadasEm, u.NivelAcesso,
-		u.HipoteseLegal, u.LocalID, u.Posicao, u.CreatedBy, c.FimCorrente, c.FimIntermediaria, c.Situacao).Scan(&numero)
+		u.HipoteseLegal, u.LocalID, u.Posicao, u.CreatedBy, c.FimCorrente, c.FimIntermediaria, c.Situacao, u.TramiteProcessoID).Scan(&numero)
 	if err != nil {
 		return "", fmt.Errorf("acervo.InsertUnidade: %w", err)
 	}
@@ -68,6 +68,18 @@ func (r *Repository) GetUnidade(ctx context.Context, db database.DBTX, id uuid.U
 	}
 	if err != nil {
 		return u, c, fmt.Errorf("acervo.GetUnidade: %w", err)
+	}
+	return u, c, nil
+}
+
+// GetUnidadePorTramite acha a unidade gerada pelo processo (ADR 039).
+func (r *Repository) GetUnidadePorTramite(ctx context.Context, db database.DBTX, processo uuid.UUID) (domain.Unidade, domain.Calculo, error) {
+	u, c, err := scanUnidade(db.QueryRow(ctx, `SELECT `+unidadeCols+` FROM acervo_unidades u WHERE u.tramite_processo_id = $1`, processo))
+	if errors.Is(err, pgx.ErrNoRows) {
+		return u, c, domain.ErrNaoEncontrada
+	}
+	if err != nil {
+		return u, c, fmt.Errorf("acervo.GetUnidadePorTramite: %w", err)
 	}
 	return u, c, nil
 }

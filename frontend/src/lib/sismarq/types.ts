@@ -1051,6 +1051,8 @@ export interface AcervoUnidade {
   /** Entrada no Arquivo Público (Fase 4); a guarda passa a ser dele. */
   recolhida_em: string | null;
   recolhimento_id: string | null;
+  /** Processo encerrado do Trâmite que originou a unidade (ADR 039). */
+  tramite_processo_id: string | null;
 }
 
 export interface AcervoBloqueio {
@@ -1183,7 +1185,8 @@ export interface AcervoListagem {
   numero: string;
   comissao_id: string;
   unidade_id: string;
-  situacao: "RASCUNHO" | "APROVADA" | "AUTORIZADA" | "EM_EDITAL" | "ELIMINADA" | "CANCELADA" | string;
+  situacao: "RASCUNHO" | "APROVADA" | "AUTORIZADA" | "AGUARDANDO_SEMAD" | "EM_EDITAL" | "ELIMINADA" | "CANCELADA" | string;
+  rito: "ORDINARIO" | "ART_35" | "ART_36" | string;
   responsavel_selecao: string | null;
   parecer_juridico: string;
   contas_exercicios: string;
@@ -1194,6 +1197,10 @@ export interface AcervoListagem {
   ata_manifestacoes: string;
   ata_presentes: string[];
   autorizada_em: string | null;
+  ccpad_autorizada_em: string | null;
+  semad_autorizada_em: string | null;
+  ata_signum: string;
+  termo_signum: string;
   devolucao_motivo: string;
   edital_numero: string;
   edital_publicado_em: string | null;
@@ -1204,6 +1211,9 @@ export interface AcervoListagem {
   termo_eliminado_em: string | null;
   termo_acompanhamento: string;
   termo_destinacao_papel: string;
+  termo_copia_em: string | null;
+  termo_copia_arquivo: number;
+  termo_copia_semad: number;
   criada_em: string;
   itens: AcervoItemListagem[];
   pedidos: AcervoPedido[];
@@ -1355,6 +1365,10 @@ export interface AcervoDigital {
   verificado_em: string | null;
   integro: boolean | null;
   criado_em: string;
+  /** Liberado à consulta pública (Fase 6, ADR 038). */
+  publicado_em: string | null;
+  /** Assinatura ICP-Brasil (PAdES). Sem política municipal: sempre AUSENTE (ADR 040). */
+  pades: string;
 }
 
 /** Uma verificação de integridade (fixity) do PDF/A guardado. */
@@ -1369,3 +1383,113 @@ export interface AcervoDetalheDigital extends AcervoDigital {
   verificacoes: AcervoVerificacao[];
   unidade_numero: string;
 }
+
+// --- Acesso, busca e difusão (Fase 6; arts. 2º, 5º, X e XI; ADR 038)
+
+/** Uma unidade encontrada na busca (interna ou pública). */
+export interface AcervoItemBusca {
+  id: string;
+  numero: string;
+  tipo: string;
+  codigo_classificacao: string;
+  descritor: string;
+  assunto: string;
+  orgao: string;
+  ano_inicial: number;
+  ano_final: number;
+  fase: string;
+  destinacao: string;
+  /** Só na busca interna. */
+  nivel_acesso?: string;
+  digitais: number;
+  /** Onde o termo apareceu, com os termos entre <mark>. */
+  trecho: string;
+}
+
+export interface AcervoFaceta {
+  valor: string;
+  total: number;
+}
+
+/** A página da busca: itens, facetas e a origem (o índice ou o banco). */
+export interface AcervoBusca {
+  items: AcervoItemBusca[];
+  meta: PageMeta;
+  facetas: Record<string, AcervoFaceta[]>;
+  origem: "indice" | "banco" | string;
+  ms: number;
+}
+
+/** Representante liberado, na ficha pública. */
+export interface AcervoDigitalPublico {
+  id: string;
+  numero: string;
+  descricao: string;
+  paginas: number;
+  pdfa_bytes: number;
+  pdfa_sha256: string;
+  conformidade: string;
+  digitalizado_em: string;
+  publicado_em: string | null;
+}
+
+/** A descrição ostensiva da unidade (sem localização nem observações). */
+export interface AcervoFichaPublica {
+  id: string;
+  numero: string;
+  tipo: string;
+  codigo_classificacao: string;
+  descritor: string;
+  assunto: string;
+  orgao: string;
+  data_inicial: string;
+  data_final: string;
+  quantidade: number;
+  especificacao: string;
+  fase: string;
+  destinacao: string;
+  recolhida: boolean;
+  digitais: AcervoDigitalPublico[];
+}
+
+export interface AcervoDigitalRecente extends AcervoDigitalPublico {
+  unidade_arquivamento_id: string;
+  unidade_numero: string;
+  assunto: string;
+}
+
+export interface AcervoItemExposicao {
+  digital_id: string;
+  ordem: number;
+  legenda: string;
+  numero: string;
+  descricao: string;
+  paginas: number;
+  unidade_arquivamento_id: string;
+  unidade_numero: string;
+  publicado: boolean;
+}
+
+/** Exposição virtual do Arquivo Público. */
+export interface AcervoExposicao {
+  id: string;
+  slug: string;
+  titulo: string;
+  resumo: string;
+  texto: string;
+  publicada_em: string | null;
+  criado_em: string;
+  atualizado_em: string;
+  itens?: AcervoItemExposicao[];
+}
+
+/** A página do Arquivo Público (sem login). */
+export interface AcervoPainelPublico {
+  sic_url: string;
+  serie_sic: string;
+  unidades: number;
+  digitais: number;
+  exposicoes: AcervoExposicao[];
+  recentes: AcervoDigitalRecente[];
+}
+

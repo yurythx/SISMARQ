@@ -44,6 +44,7 @@ func TestEliminacaoPropagatesDatabaseErrors(t *testing.T) {
 		"SalvarComissao":    func(db database.DBTX) error { return r.SalvarComissao(ctx, db, domain.Comissao{}, true) },
 		"GetComissao":       func(db database.DBTX) error { _, err := r.GetComissao(ctx, db, id); return err },
 		"ComissaoDaUnidade": func(db database.DBTX) error { _, err := r.ComissaoDaUnidade(ctx, db, id); return err },
+		"ComissaoCentral":   func(db database.DBTX) error { _, err := r.ComissaoCentral(ctx, db); return err },
 		"ListComissoes":     func(db database.DBTX) error { _, err := r.ListComissoes(ctx, db); return err },
 		"InsertListagem":    func(db database.DBTX) error { _, err := r.InsertListagem(ctx, db, domain.Listagem{}); return err },
 		"UpdateListagem":    func(db database.DBTX) error { return r.UpdateListagem(ctx, db, domain.Listagem{}) },

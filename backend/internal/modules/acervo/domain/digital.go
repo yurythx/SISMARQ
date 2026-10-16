@@ -97,6 +97,30 @@ type Digital struct {
 	VerificadoEm    *time.Time `json:"verificado_em"`
 	Integro         *bool      `json:"integro"`
 	CriadoEm        time.Time  `json:"criado_em"`
+	// PublicadoEm: liberado à consulta pública (Fase 6, ADR 038).
+	PublicadoEm *time.Time `json:"publicado_em"`
+	// Pades: estado da assinatura ICP-Brasil. Sem política municipal
+	// (decisão 0.6) o valor é sempre AUSENTE — o JSON declara a ausência
+	// para a tela nunca assumir certificado (ADR 040).
+	Pades string `json:"pades"`
+}
+
+// PadesAusente: o PDF/A não tem assinatura ICP-Brasil. Não é falha do
+// pipeline; a política ainda não existe.
+const PadesAusente = "AUSENTE"
+
+// ComEstadoPAdES preenche o campo declarado. Nada no disco muda.
+func (d Digital) ComEstadoPAdES() Digital {
+	if d.Pades == "" {
+		d.Pades = PadesAusente
+	}
+	return d
+}
+
+// AfirmaAssinaturaICP é verdadeiro só com assinatura ICP-Brasil gravada.
+// Enquanto a política 0.6 não existir, permanece falso.
+func AfirmaAssinaturaICP(d Digital) bool {
+	return d.Pades != "" && d.Pades != PadesAusente
 }
 
 // DPIMinimo devolve a resolução exigida para o tipo.
@@ -198,6 +222,9 @@ type FiltroDigital struct {
 	// SoFalhas: os que falharam na integridade ou no pipeline (painel do
 	// Arquivo Público).
 	SoFalhas bool
-	Restrito bool
+	// Publicados: só os liberados à consulta pública (Fase 6).
+	Publicados bool
+	Restrito   bool
+
 	Unidades []uuid.UUID
 }

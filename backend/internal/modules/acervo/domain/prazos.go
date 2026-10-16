@@ -219,3 +219,29 @@ func PodeEliminar(u Unidade, s Serie, bloqueada bool, hoje time.Time) error {
 	}
 	return nil
 }
+
+// PodeEliminarArt35: documento que não consta da TTDD, ou cuja destinação
+// a tabela não define (art. 35). Não substitui o rito ordinário nem libera
+// a guarda permanente, o permanente já recolhido, o bloqueio ou o prazo da
+// série que a TTDD já destina à eliminação.
+func PodeEliminarArt35(u Unidade, s Serie, serieExiste, bloqueada bool, hoje time.Time) error {
+	switch {
+	case u.Fase == FasePermanente:
+		return ErrPermanente
+	case u.Fase == FaseEliminado:
+		return ErrEliminado
+	case bloqueada:
+		return ErrBloqueioJudicial
+	}
+	if serieExiste && DestinacaoDa(s) == DestinacaoGuardaPermanente {
+		return ErrNaoPrevistaNaTTDD
+	}
+	if serieExiste && DestinacaoDa(s) == DestinacaoEliminacao {
+		if err := PodeEliminar(u, s, bloqueada, hoje); err == nil {
+			return ErrRitoOrdinario
+		} else {
+			return err
+		}
+	}
+	return nil
+}

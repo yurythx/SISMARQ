@@ -29,7 +29,9 @@ func (h *Handlers) registerNormas(r chi.Router, central func(http.Handler) http.
 func (h *Handlers) RegisterPublicRoutes(r chi.Router) {
 	r.Get("/acervo/publico/normas", h.NormasPublicas)
 	r.Get("/acervo/publico/normas/{id}", h.NormaPublica)
+	h.registerAcessoPublico(r)
 }
+
 
 // NormaRequest é a criação da norma com a primeira redação.
 type NormaRequest struct {

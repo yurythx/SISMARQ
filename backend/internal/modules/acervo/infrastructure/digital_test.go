@@ -30,13 +30,14 @@ func TestDigitalPropagatesDatabaseErrors(t *testing.T) {
 		"RegistrarVerificacao": func(db database.DBTX) error { return r.RegistrarVerificacao(ctx, db, id, domain.Verificacao{}) },
 		"ListVerificacoes":     func(db database.DBTX) error { _, err := r.ListVerificacoes(ctx, db, id, 10); return err },
 		"EquipeCentral":        func(db database.DBTX) error { _, err := r.EquipeCentral(ctx, db); return err },
+		"EquipeSEMAD":          func(db database.DBTX) error { _, err := r.EquipeSEMAD(ctx, db); return err },
 	}
 	for name, call := range calls {
 		if err := call(dbtest.Fail{}); !errors.Is(err, dbtest.ErrInjected) {
 			t.Errorf("%s com o banco fora: %v", name, err)
 		}
 	}
-	for _, name := range []string{"ParaVerificar", "ListVerificacoes", "EquipeCentral"} {
+	for _, name := range []string{"ParaVerificar", "ListVerificacoes", "EquipeCentral", "EquipeSEMAD"} {
 		if err := calls[name](dbtest.ScanFail{}); err == nil {
 			t.Errorf("%s com linha ilegível deveria falhar", name)
 		}

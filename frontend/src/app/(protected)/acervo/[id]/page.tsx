@@ -201,6 +201,13 @@ export default function UnidadePage() {
                       {u.quantidade} {u.especificacao}
                     </Campo>
                     <Campo nome="Local">{u.local_caminho ? `${u.local_caminho}${u.posicao ? `, ${u.posicao}` : ""}` : "Não localizada"}</Campo>
+                    {u.tramite_processo_id && (
+                      <Campo nome="Processo de origem">
+                        <Link href={`/tramite/${u.tramite_processo_id}`} className="hover:underline">
+                          Aberto no Trâmite
+                        </Link>
+                      </Campo>
+                    )}
                     {u.hipotese_legal && <Campo nome="Hipótese legal">{u.hipotese_legal}</Campo>}
                     {u.observacoes && <Campo nome="Observações">{u.observacoes}</Campo>}
                   </dl>

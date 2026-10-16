@@ -54,6 +54,7 @@ type pipeFalso struct {
 	errMedir, errProc          error
 	naoGrava, saidaPasta       bool // simula PDF/A ausente ou ilegível
 	meta                       domain.Metadados
+	texto                      string // o texto do OCR (padrão: um ofício)
 }
 
 func (p *pipeFalso) Medir(context.Context, string) (int, int, error) {
@@ -79,7 +80,12 @@ func (p *pipeFalso) Processar(_ context.Context, _, saida string, m domain.Metad
 	if pag == 0 {
 		pag = p.paginas
 	}
-	return domain.Resultado{Paginas: pag, Texto: "Ofício nº 12/2015", Conformidade: domain.ConformidadePDFA}, nil
+	texto := p.texto
+	if texto == "" {
+		texto = "Ofício nº 12/2015"
+	}
+	return domain.Resultado{Paginas: pag, Texto: texto, Conformidade: domain.ConformidadePDFA}, nil
+
 }
 
 const pdfOriginal = "%PDF-1.4 imagem digitalizada"
@@ -236,13 +242,13 @@ func TestDigitalizacaoAprovada(t *testing.T) {
 	}
 
 	// Listas: a unidade, o escopo, o Arquivo Público.
-	if items, total, err := s.Digitais(ctx, quem, &u.ID, false, pagination.New(1, 10, 100)); err != nil || total != 1 || items[0].ID != d.ID {
+	if items, total, err := s.Digitais(ctx, quem, domain.FiltroDigital{UnidadeID: &u.ID}, pagination.New(1, 10, 100)); err != nil || total != 1 || items[0].ID != d.ID {
 		t.Fatalf("da unidade: %+v %v", items, err)
 	}
-	if _, total, _ := s.Digitais(ctx, agente(e.outra), nil, false, pagination.New(1, 10, 100)); total != 0 {
+	if _, total, _ := s.Digitais(ctx, agente(e.outra), domain.FiltroDigital{}, pagination.New(1, 10, 100)); total != 0 {
 		t.Fatal("outra unidade não vê")
 	}
-	if _, total, err := s.Digitais(ctx, arquivoPublico(uuid.Nil), nil, false, pagination.New(1, 10, 100)); err != nil || total < 1 {
+	if _, total, err := s.Digitais(ctx, arquivoPublico(uuid.Nil), domain.FiltroDigital{}, pagination.New(1, 10, 100)); err != nil || total < 1 {
 		t.Fatalf("Arquivo Público: %d %v", total, err)
 	}
 }
@@ -471,7 +477,7 @@ func TestIntegridade(t *testing.T) {
 		"/acervo/digitais/"+a.ID.String(), "/acervo/digitais/"+b.ID.String()).Scan(&avisos); err != nil || avisos != 2 {
 		t.Fatalf("avisos à equipe: %d %v", avisos, err)
 	}
-	if items, _, err := s.Digitais(ctx, arquivo, &u.ID, true, pagination.New(1, 10, 100)); err != nil || len(items) != 2 {
+	if items, _, err := s.Digitais(ctx, arquivo, domain.FiltroDigital{UnidadeID: &u.ID, SoFalhas: true}, pagination.New(1, 10, 100)); err != nil || len(items) != 2 {
 		t.Fatalf("painel de falhas: %d %v", len(items), err)
 	}
 	// Na hora: só o Arquivo Público, só o pronto.

@@ -24,7 +24,8 @@ const ALLOW: { method: string; prefix: string }[] = [
   { method: "GET", prefix: "v1/atlas/ttdd" },
   { method: "GET", prefix: "v1/atlas/workflows" },
   { method: "GET", prefix: "v1/atlas/modelos" },
-  // Acervo (ADR 036): instruções normativas publicadas, com o histórico.
+  // Acervo (ADRs 036 e 038): normas publicadas e a consulta pública ao
+  // acervo ostensivo (busca, fichas, documentos liberados e exposições).
   { method: "GET", prefix: "v1/acervo/publico/" },
 ];
 
@@ -46,6 +47,11 @@ async function forward(req: NextRequest, path: string[]): Promise<NextResponse> 
     "X-Request-ID": req.headers.get("x-request-id") ?? crypto.randomUUID(),
     ...forwardedFor(req.headers),
   };
+  // O documento liberado (ADR 038) abre em fluxo: o pdf.js pede trechos.
+  const range = req.headers.get("range");
+  if (range && /^bytes=\d*-\d*$/.test(range)) headers.Range = range;
+  const ifRange = req.headers.get("if-range");
+  if (ifRange && ifRange.length <= 200) headers["If-Range"] = ifRange;
   try {
     const res = await fetch(target, {
       method: req.method,
@@ -66,7 +72,12 @@ async function forward(req: NextRequest, path: string[]): Promise<NextResponse> 
       "x-ratelimit-remaining",
       "x-ratelimit-reset",
       "cache-control",
+      // Trechos do PDF/A (206): o intervalo, o suporte e o ETag (SHA-256).
+      "content-range",
+      "accept-ranges",
+      "etag",
     ];
+
     for (const h of forwardHeaders) {
       const v = res.headers.get(h);
       if (v) respHeaders[h] = v;

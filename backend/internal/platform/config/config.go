@@ -229,6 +229,17 @@ type AcervoDigitalConfig struct {
 	Python       string        // ACERVO_PYTHON_BIN (default "python3")
 }
 
+// AcervoBuscaConfig parametriza a busca e a consulta pública do acervo
+// (Fase 6, ADR 038). O índice usa o Typesense de TYPESENSE_URL; sem ele, a
+// busca fica no Postgres.
+type AcervoBuscaConfig struct {
+	Colecao        string        // ACERVO_INDICE_COLECAO (default sismarq_acervo_v1): a coleção interna
+	ColecaoPublica string        // ACERVO_INDICE_COLECAO_PUBLICA (default sismarq_acervo_publico_v1): só o ostensivo
+	Intervalo      time.Duration // ACERVO_INDICE_INTERVALO (default 5s): reindexação do que mudou
+	Recarga        time.Duration // ACERVO_INDICE_RECARGA (default 24h): carga completa
+	SICURL         string        // ACERVO_SIC_URL: o Serviço de Informação ao Cidadão da Prefeitura
+}
+
 // WorkerConfig guarda as configurações do listener HTTP mínimo próprio do
 // cmd/worker, usado só para /health e /metrics (healthcheck do Docker +
 // scrape do Prometheus) — nunca para tráfego de negócio.
@@ -276,6 +287,7 @@ type Config struct {
 	AuditWORM AuditWORMConfig
 
 	AcervoDigital AcervoDigitalConfig
+	AcervoBusca   AcervoBuscaConfig
 
 	// APIRateLimit é o teto por identidade autenticada (fallback: IP)
 	// aplicado a todo o grupo /api/v1 (gap G-01).
@@ -538,6 +550,14 @@ func Load() (*Config, error) {
 			Timeout:      l.durationVal("ACERVO_OCR_TIMEOUT", 2*time.Hour),
 			OCRmyPDF:     l.str("ACERVO_OCRMYPDF_BIN", false, "ocrmypdf"),
 			Python:       l.str("ACERVO_PYTHON_BIN", false, "python3"),
+		},
+		AcervoBusca: AcervoBuscaConfig{
+			Colecao:        l.str("ACERVO_INDICE_COLECAO", false, "sismarq_acervo_v1"),
+			ColecaoPublica: l.str("ACERVO_INDICE_COLECAO_PUBLICA", false, "sismarq_acervo_publico_v1"),
+			Intervalo:      l.durationVal("ACERVO_INDICE_INTERVALO", 5*time.Second),
+			Recarga:        l.durationVal("ACERVO_INDICE_RECARGA", 24*time.Hour),
+			SICURL:         l.str("ACERVO_SIC_URL", false, ""),
+
 		},
 		Worker: WorkerConfig{
 			MetricsHost: l.str("WORKER_METRICS_HOST", false, "0.0.0.0"),

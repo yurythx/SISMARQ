@@ -12,6 +12,8 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/yurythx/sismarq/internal/modules/acervo/application"
+	"github.com/yurythx/sismarq/internal/modules/acervo/domain"
+
 	"github.com/yurythx/sismarq/internal/platform/auth"
 	"github.com/yurythx/sismarq/pkg/httputil"
 )
@@ -85,7 +87,9 @@ func (h *Handlers) RegistrarDigital(w http.ResponseWriter, r *http.Request) {
 	httputil.WriteCreated(w, d)
 }
 
-// Digitais pagina os representantes (?unidade_id=, ?falhas=true).
+// Digitais pagina os representantes (?unidade_id=, ?falhas=true,
+// ?publicados=true).
+
 func (h *Handlers) Digitais(w http.ResponseWriter, r *http.Request) {
 	unidade, err := httputil.OptionalUUIDQuery(r, "unidade_id")
 	if err != nil {
@@ -94,7 +98,8 @@ func (h *Handlers) Digitais(w http.ResponseWriter, r *http.Request) {
 	}
 	identity, _ := auth.IdentityFromContext(r.Context())
 	p := httputil.Page(r, h.maxPageSize)
-	items, total, err := h.svc.Digitais(r.Context(), identity, unidade, httputil.Query(r, "falhas", 5) == "true", p)
+	items, total, err := h.svc.Digitais(r.Context(), identity, domain.FiltroDigital{UnidadeID: unidade,
+		SoFalhas: httputil.Query(r, "falhas", 5) == "true", Publicados: httputil.Query(r, "publicados", 5) == "true"}, p)
 	if err != nil {
 		h.fail(w, r, err)
 		return
@@ -181,12 +186,19 @@ func (h *Handlers) ArquivoDigital(w http.ResponseWriter, r *http.Request) {
 		h.fail(w, r, err)
 		return
 	}
+	h.enviarPDF(w, r, d, "private, max-age=300")
+}
+
+// enviarPDF responde o PDF/A inteiro ou o trecho do Range (206). Devolve
+// true no pedido sem Range (a abertura do documento ou o download; os
+// trechos que o visualizador pede depois não contam).
+func (h *Handlers) enviarPDF(w http.ResponseWriter, r *http.Request, d domain.Digital, cache string) bool {
 	tamanho := d.PDFABytes
 	inicio, fim, parcial, err := intervalo(r.Header.Get("Range"), tamanho)
 	if err != nil {
 		w.Header().Set("Content-Range", "bytes */"+strconv.FormatInt(tamanho, 10))
 		w.WriteHeader(http.StatusRequestedRangeNotSatisfiable)
-		return
+		return false
 	}
 	n := fim - inicio + 1
 	comprimento := int64(0)
@@ -196,14 +208,14 @@ func (h *Handlers) ArquivoDigital(w http.ResponseWriter, r *http.Request) {
 	rc, err := h.svc.LerArquivo(r.Context(), d, inicio, comprimento)
 	if err != nil {
 		h.fail(w, r, err)
-		return
+		return false
 	}
 	defer rc.Close()
 	hd := w.Header()
 	hd.Set("Content-Type", "application/pdf")
 	hd.Set("Accept-Ranges", "bytes")
 	hd.Set("ETag", `"`+d.PDFASHA256+`"`)
-	hd.Set("Cache-Control", "private, max-age=300")
+	hd.Set("Cache-Control", cache)
 	hd.Set("Content-Disposition", `inline; filename="`+d.Numero+`.pdf"`)
 	hd.Set("Content-Length", strconv.FormatInt(n, 10))
 	status := http.StatusOK
@@ -215,4 +227,6 @@ func (h *Handlers) ArquivoDigital(w http.ResponseWriter, r *http.Request) {
 	if _, err := io.Copy(w, io.LimitReader(rc, n)); err != nil {
 		h.logger.WarnContext(r.Context(), "acervo: envio do PDF/A interrompido", "digital", d.Numero, "error", err)
 	}
+	return !parcial
 }
+

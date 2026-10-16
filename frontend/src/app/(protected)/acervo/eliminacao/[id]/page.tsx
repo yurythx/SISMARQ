@@ -43,6 +43,7 @@ export default function RelacaoPage() {
   const { orgao, unidade } = useOrgao(l?.unidade_id);
   const avalia = can("acervo:avaliacao");
   const central = canGlobal("acervo:central");
+  const semad = canGlobal("acervo:semad");
   const comissao = coms.data?.find((c) => c.id === l?.comissao_id);
 
   async function enviar(caminho: string, corpo: unknown, ok: string, metodo: "post" | "put" = "post") {
@@ -64,7 +65,7 @@ export default function RelacaoPage() {
   });
 
   const s = l ? situacaoListagem(l.situacao) : null;
-  const cancelavel = avalia && !!l && (["RASCUNHO", "APROVADA", "AUTORIZADA"].includes(l.situacao) || (l.situacao === "EM_EDITAL" && !l.amostra_em));
+  const cancelavel = avalia && !!l && (["RASCUNHO", "APROVADA", "AUTORIZADA", "AGUARDANDO_SEMAD"].includes(l.situacao) || (l.situacao === "EM_EDITAL" && !l.amostra_em));
   return (
     <div className="flex flex-col gap-6">
       <Link href="/acervo/eliminacao" className="inline-flex items-center gap-1 text-sm text-muted hover:text-foreground">
@@ -93,7 +94,12 @@ export default function RelacaoPage() {
             />
             <div className="flex flex-wrap items-center gap-2">
               <Badge tone={s.tone}>{s.label}</Badge>
+              {l.rito === "ART_35" && <Badge tone="warning">Art. 35 — fora da TTDD</Badge>}
+              {l.rito === "ART_36" && <Badge tone="warning">Art. 36 — órgão sem TTDD</Badge>}
               {comissao && <span className="text-sm text-muted">{comissao.nome}</span>}
+              {(l.ata_signum === "AUSENTE" || l.termo_signum === "AUSENTE") && (
+                <span className="text-sm text-muted">Ata e termo sem Signum (política 0.6 pendente).</span>
+              )}
               {l.devolucao_motivo && l.situacao === "RASCUNHO" && (
                 <span className="text-sm text-warning">Devolvida pelo Arquivo Público: {l.devolucao_motivo}</span>
               )}
@@ -241,7 +247,18 @@ export default function RelacaoPage() {
               </>
             )}
 
-            {l.situacao === "APROVADA" && central && (
+            {l.situacao === "APROVADA" && l.rito === "ART_35" && !l.ccpad_autorizada_em && (
+              <Etapa titulo="Autorização da CCPAD (art. 35)">
+                <p className="text-sm text-muted">Um membro da Comissão Central autoriza o documento que não consta da TTDD.</p>
+                <div>
+                  <Button disabled={pending} onClick={() => void enviar("/autorizar-ccpad", undefined, "CCPAD autorizou.")}>
+                    Autorizar pela CCPAD
+                  </Button>
+                </div>
+              </Etapa>
+            )}
+
+            {l.situacao === "APROVADA" && central && (l.rito !== "ART_35" || !!l.ccpad_autorizada_em) && (
               <Etapa titulo="Autorização do Arquivo Público (arts. 19 e 65)">
                 <div>
                   <Button disabled={pending} onClick={() => void enviar("/autorizar", undefined, "Eliminação autorizada.")}>
@@ -260,6 +277,32 @@ export default function RelacaoPage() {
                     </Button>
                   </div>
                 </form>
+              </Etapa>
+            )}
+
+            {l.situacao === "AGUARDANDO_SEMAD" && (semad || central) && (
+              <Etapa titulo="Aprovação da SEMAD (arts. 35 e 36)">
+                {semad && (
+                  <div>
+                    <Button disabled={pending} onClick={() => void enviar("/autorizar-semad", undefined, "SEMAD aprovou a eliminação.")}>
+                      Aprovar pela SEMAD
+                    </Button>
+                  </div>
+                )}
+                {central && (
+                  <form
+                    aria-label="Devolver à comissão"
+                    className="flex flex-col gap-2"
+                    onSubmit={form((f) => enviar("/devolver", { motivo: txt(f, "motivo") }, "Relação devolvida."))}
+                  >
+                    <Textarea id="motivo_semad" name="motivo" label="Motivo da devolução" required maxLength={2000} rows={2} />
+                    <div>
+                      <Button type="submit" variant="secondary" disabled={pending}>
+                        Devolver
+                      </Button>
+                    </div>
+                  </form>
+                )}
               </Etapa>
             )}
 

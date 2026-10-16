@@ -145,8 +145,17 @@ func TestDeleteByFilterESearch(t *testing.T) {
 			t.Fatalf("parâmetro %s ausente em %s", p, got)
 		}
 	}
-	if _, err := c.Search(ctx, "c", SearchParams{Q: "x", QueryBy: "title"}); err != nil || strings.Contains(got, "per_page") || strings.Contains(got, "filter_by") {
+	if _, err := c.Search(ctx, "c", SearchParams{Q: "x", QueryBy: "title"}); err != nil || strings.Contains(got, "per_page") || strings.Contains(got, "filter_by") ||
+		strings.Contains(got, "facet_by") || strings.Contains(got, "page=") || strings.Contains(got, "sort_by") {
 		t.Fatalf("parâmetros opcionais não deveriam ir vazios: %s err=%v", got, err)
+	}
+	_, err = c.Search(ctx, "c", SearchParams{Q: "x", QueryBy: "title", Page: 2, FacetBy: "fase,ano", MaxFacetValues: 30, SortBy: "ano:desc",
+		IncludeFields: "id,title", ExcludeFields: "texto", HighlightFields: "texto"})
+	for _, p := range []string{"page=2", "facet_by=fase%2Cano", "max_facet_values=30", "sort_by=ano%3Adesc", "include_fields=id%2Ctitle",
+		"exclude_fields=texto", "highlight_fields=texto"} {
+		if err != nil || !strings.Contains(got, p) {
+			t.Fatalf("parâmetro %s ausente em %s (%v)", p, got, err)
+		}
 	}
 	if _, err := fake(t, func(w http.ResponseWriter, _ *http.Request) { w.WriteHeader(404) }).DeleteByFilter(ctx, "c", "x"); !errors.Is(err, ErrNotFound) {
 		t.Fatalf("404 deveria ser ErrNotFound: %v", err)
@@ -208,6 +217,11 @@ func TestTypesenseReal(t *testing.T) {
 	res, err = c.Search(ctx, name, SearchParams{Q: "*", QueryBy: "title", FilterBy: "module:=" + Quote("mod`x, y")})
 	if err != nil || res.Found != 1 {
 		t.Fatalf("valor com crase, vírgula e && não pode quebrar o filtro: %+v %v", res, err)
+	}
+	res, err = c.Search(ctx, name, SearchParams{Q: "pregao", QueryBy: "title", FacetBy: "module", HighlightFields: "title", Page: 1, PerPage: 1})
+	if err != nil || res.Found != 2 || len(res.Hits) != 1 || len(res.FacetCounts) != 1 || res.FacetCounts[0].FieldName != "module" ||
+		len(res.FacetCounts[0].Counts) != 2 || len(res.Hits[0].Highlights) == 0 || !strings.Contains(res.Hits[0].Highlights[0].Snippet, "<mark>") {
+		t.Fatalf("facetas e trechos: %+v %v", res, err)
 	}
 	if err := c.Import(ctx, name, []map[string]any{{"id": "3"}}); err == nil {
 		t.Fatal("documento sem os campos obrigatórios deveria ser recusado")

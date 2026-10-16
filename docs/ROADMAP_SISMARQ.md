@@ -14,7 +14,7 @@ e a divergência é registrada na seção 6.
 | **Tabela de Temporalidade (TTDD)** | As TTDDs aprovadas pela CCPAD e publicadas no DIORONDON-e, de ago/2025 a set/2026: 13 tabelas, por secretaria. É o mesmo arquivo de `docs/ttdd.pdf`, já carregado no Atlas com 1.686 séries. |
 | **Artigo científico (SISMARQ e RDC-Arq)** | A solução técnica. O SEI cuida da fase corrente e o SISMARQ das fases intermediária e permanente. O artigo descreve três módulos (pipeline, taxonomia e descarte), as exigências do Decreto 10.278/2020 e a busca no Typesense. |
 
-Registrado em 2026-10-15; **Fases 1 a 5 entregues** em 15 e 16/10/2026 (ADRs 032 a 037 — falta a validação da contagem dos prazos e dos Anexos pela Divisão de Arquivo, a ponte com o Trâmite e os ritos especiais da eliminação). Os artigos citados são da Lei 10.301/2019, salvo
+Registrado em 2026-10-15; **Fases 1 a 6 entregues** em 15 e 16/10/2026 (ADRs 032 a 038; ponte Trâmite ADR 039; PAdES adiado ADR 040). Falta a validação da contagem dos prazos e dos Anexos pela Divisão de Arquivo (ver [`docs/acervo/HOMOLOGACAO.md`](acervo/HOMOLOGACAO.md)) e os ritos especiais da eliminação. Os artigos citados são da Lei 10.301/2019, salvo
 indicação em contrário.
 
 ---
@@ -172,9 +172,10 @@ dia a dia.
 cadastrado e localizável, e o primeiro ciclo de empréstimo e devolução
 tiver sido feito pelo sistema.
 
-**Situação (ADR 033):** importação, guia de transferência com aceite,
-empréstimo e etiqueta prontos. A ponte com o Trâmite depende da decisão 0.7
-e do item 7 da seção 6.
+**Situação (ADR 033 e 039):** importação, guia de transferência com aceite,
+empréstimo e etiqueta prontos. O processo encerrado e classificado no
+Trâmite vira unidade de arquivamento (ADR 039). O SEI (decisão 0.7) entra
+depois pelo mesmo padrão de evento.
 
 ### Fase 3 — Avaliação e eliminação: a esteira das comissões
 
@@ -229,10 +230,10 @@ item 2.3) e protege o gestor da responsabilidade penal (art. 66).
    - ao ser publicada, a nova versão entra no Atlas pela atualização com
      relatório de impacto que já existe (ADR 022).
 
-**Situação (ADR 034):** comissões, relação, ata, autorização, edital com
-trava de 30 dias, pedidos, amostragem, termo e os Anexos I a IV prontos.
-Faltam os ritos especiais (item 7), a aprovação da TTDD (item 8), a
-assinatura no Signum e o envio da cópia do termo (art. 38, parágrafo único).
+**Situação (ADRs 034 e 041):** comissões, relação, ata, autorização,
+edital com trava de 30 dias, pedidos, amostragem, termo, Anexos I a IV,
+ritos 35/36 e cópia do Termo na caixa. Faltam a aprovação da TTDD pelo
+fluxo da CSPAD (item 8) e a assinatura Signum nas atas (JSON `AUSENTE`).
 
 **Pronto quando:**
 - uma eliminação real da secretaria piloto tiver sido feita de ponta a
@@ -318,7 +319,8 @@ Quadro 2 (módulo SISMARQ_PIPELINE).
 **Situação (ADR 037):** entrada pela tela, pipeline (ocrmypdf, PDF/A-2b,
 OCR, DPI, XMP do Decreto, SHA-256), guarda com object lock, verificação de
 integridade com alerta e visualizador em fluxo prontos; o pipeline real roda
-no CI. Faltam o PAdES ICP-Brasil e a pasta monitorada (decisão 0.6).
+no CI. O PAdES ICP-Brasil está adiado de propósito até a decisão 0.6
+([ADR 040](adr/040-pades-icp-brasil-adiado.md)); falta a pasta monitorada.
 
 **Pronto quando:**
 - um lote real for digitalizado com os metadados conferidos;
@@ -351,9 +353,15 @@ no CI. Faltam o PAdES ICP-Brasil e a pasta monitorada (decisão 0.6).
 - **Difusão** (art. 5º, X e XI): página do Arquivo Público, acervo em
   destaque e exposições virtuais. Prioridade baixa.
 
+**Situação (ADR 038):** busca pela API (Typesense com fallback Postgres),
+consulta pública ostensiva em `/arquivo`, publicação de digitais com
+trava no banco, exposições virtuais e SIC (`2.0.03.02`) para o não
+ostensivo. O Typesense **não** é consultado do navegador (secção 6, item 6).
+
 **Pronto quando** o cidadão encontrar, sem login, um documento permanente
 digitalizado, e um documento restrito não aparecer para quem não tem
-acesso.
+acesso. A implementação cobre esse critério; a Divisão de Arquivo
+homologa com um lote real.
 
 ### Fase 7 — Integração com o SEI e os demais sistemas
 
@@ -372,6 +380,9 @@ pacote AIP").
   combinar com quem mantém o SEI.
 - **Egress** (webhooks) para avisar os sistemas da Prefeitura sobre
   eliminações e recolhimentos.
+
+**Situação (ADR 042):** o envelope `ProcessoSEI` existe no domínio e
+`UnidadeDoSEI` recusa o ingresso até a 0.7. Não há cliente HTTP.
 
 **Pronto quando** um processo concluído no SEI chegar ao acervo sem
 redigitação, com o hash conferido.
@@ -425,7 +436,7 @@ Fase 0 ──► Fase 1 ──► Fase 2 ──► Fase 3 ──► Fase 4 ─�
 
 | Exigência | Base | Fase | Hoje |
 |---|---|---|---|
-| Acesso pleno, com sigilo como exceção | Arts. 2º e 7º, I | 6 | Parcial (site público) |
+| Acesso pleno, com sigilo como exceção | Arts. 2º e 7º, I | 6 | **Pronto** (consulta pública ostensiva, busca e SIC — ADR 038) |
 | Órgão central e órgãos setoriais | Arts. 8º a 12 | 1 | **Pronto** (escopo do Acervo e `acervo:central` — ADR 032) |
 | Sistema informatizado que atenda ao e-ARQ Brasil | Art. 13 | 8 | Falta |
 | Três idades (corrente, intermediária, permanente) | Art. 18 | 1 | **Pronto** (ADR 032) |
@@ -442,15 +453,15 @@ Fase 0 ──► Fase 1 ──► Fase 2 ──► Fase 3 ──► Fase 4 ─�
 | Fragmentação e doação | Art. 40 | 3 | **Pronto** (registrada no termo — ADR 034) |
 | Bloqueio por ação judicial | Arts. 32, II e 44 | 1 | **Pronto** (ADR 032) |
 | TTDD nos sistemas informatizados | Art. 45 | 7 | Parcial (API pública) |
-| Documentos digitais e híbridos | Art. 48 | 5 | Falta |
+| Documentos digitais e híbridos | Art. 48 | 5 | **Pronto** (digitalização — ADR 037; PAdES adiado — ADR 040) |
 | Recolhimento com registro de entrada | Arts. 5º, VII e 53 | 4 | **Pronto** (preparo, instrumento descritivo, registro e cópia à origem — ADR 035) |
 | Arquivos privados de interesse público | Arts. 55 a 58 | 4 | **Pronto** (parecer, decreto, guarda e preferência — ADR 036) |
 | Capacitação | Arts. 5º, VIII e 11, VIII | 8 | Falta |
 | Digitalização com PDF/A, metadados e hash | Decreto 10.278; artigo 4.1 | 5 | **Pronto** (PDF/A-2b, XMP do Decreto, SHA-256, fixity — ADR 037; falta o PAdES) |
-| Assinatura ICP-Brasil (PAdES) | Artigo, Quadro 3 | 5 | Falta (Signum é eletrônico) |
+| Assinatura ICP-Brasil (PAdES) | Artigo, Quadro 3 | 5 | Adiado (ADR 040; decisão 0.6) |
 | Auditoria imutável | Artigo, Quadro 2 | — | **Pronto** |
-| Busca facetada (Typesense) | Artigo, item 4.4 | 6 | Parcial (infraestrutura, ADR 031) |
-| Visualizador em fluxo (HTTP 206) | Artigo, item 4.5 | 5 | Falta |
+| Busca facetada (Typesense) | Artigo, item 4.4 | 6 | **Pronto** (pela API, não no browser — ADR 038) |
+| Visualizador em fluxo (HTTP 206) | Artigo, item 4.5 | 5 | **Pronto** (ADR 037) |
 
 ## 6. Inconsistências e pontos a confirmar nos documentos
 
@@ -474,14 +485,11 @@ Resolver na Fase 0. Até lá, o sistema adota o que está entre parênteses.
    "enquanto vigorar". O sistema precisa de uma data de evento informada
    por quem cadastra, e a Divisão de Arquivo deve dizer qual evento vale
    para cada tipo de série.
-6. **Typesense no navegador.** O artigo propõe que o navegador consulte o
-   Typesense diretamente. Isso conflita com o sigilo do acervo, e a
-   solução fica para a decisão da Fase 6. O artigo também usa `tenant_id`,
-   mas a plataforma atende um município por implantação (ADR 015), então o
-   campo não entra.
-7. **Trâmite e SEI.** O artigo põe a fase corrente no SEI. O Trâmite da
-   plataforma deve ficar como ponte para o que não passa pelo SEI, sem
-   competir com ele. A Prefeitura precisa confirmar.
+6. **Typesense no navegador.** Resolvido no ADR 038: a busca é pela API;
+   o Typesense não é exposto ao browser; não há `tenant_id` (ADR 015).
+7. **Trâmite e SEI.** O Trâmite já é ponte para o que não passa pelo SEI
+   (ingresso no acervo, ADR 039). A Prefeitura ainda confirma a versão do
+   SEI e a API (decisão 0.7, Fase 7).
 
 ## 7. Como manter este roadmap
 

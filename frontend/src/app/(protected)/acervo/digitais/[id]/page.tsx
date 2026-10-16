@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Download } from "lucide-react";
+import { ArrowLeft, Download, Globe } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
@@ -29,8 +29,11 @@ function Campo({ nome, children }: { nome: string; children: React.ReactNode }) 
  * integridade e o documento em fluxo. */
 export default function DigitalPage() {
   const { id } = useParams<{ id: string }>();
-  const { canGlobal } = useSismarq();
+  const { can, canGlobal } = useSismarq();
   const central = canGlobal("acervo:central");
+  // Quem gere a unidade (recolhida, o Arquivo Público) libera; o backend
+  // confere o escopo e que a unidade é ostensiva.
+  const gerir = central || can("acervo:manage");
   const q = useApiQuery<AcervoDetalheDigital>(`v1/acervo/digitais/${id}`);
   const { run, pending } = useAction();
   const d = q.data;
@@ -39,6 +42,15 @@ export default function DigitalPage() {
     const r = await run(
       () => apiClient.post<AcervoDetalheDigital>(`v1/acervo/digitais/${id}/${qual}`),
       qual === "verificar" ? "Integridade verificada." : "Devolvido ao processamento.",
+    );
+    if (r) await q.mutate(r.data, { revalidate: false });
+  }
+
+  async function publicacao(liberar: boolean) {
+    const caminho = `v1/acervo/digitais/${id}/publicacao`;
+    const r = await run(
+      () => (liberar ? apiClient.post<AcervoDetalheDigital>(caminho) : apiClient.delete<AcervoDetalheDigital>(caminho)),
+      liberar ? "Liberado à consulta pública." : "Retirado da consulta pública.",
     );
     if (r) await q.mutate(r.data, { revalidate: false });
   }
@@ -64,6 +76,16 @@ export default function DigitalPage() {
                       <Download size={16} aria-hidden="true" /> Baixar PDF/A
                     </a>
                   )}
+                  {gerir && d.situacao === "PRONTO" && !d.publicado_em && (
+                    <Button variant="secondary" disabled={pending} onClick={() => void publicacao(true)}>
+                      <Globe size={16} aria-hidden="true" /> Liberar à consulta pública
+                    </Button>
+                  )}
+                  {gerir && d.publicado_em && (
+                    <Button variant="secondary" disabled={pending} onClick={() => void publicacao(false)}>
+                      Retirar da consulta pública
+                    </Button>
+                  )}
                   {central && d.situacao === "PRONTO" && (
                     <Button variant="secondary" disabled={pending} onClick={() => void acao("verificar")}>
                       Verificar integridade
@@ -81,7 +103,13 @@ export default function DigitalPage() {
               <Badge tone={s.tone}>{s.label}</Badge>
               {d.integro === true && <Badge tone="success">Íntegro na última verificação</Badge>}
               {d.integro === false && <Badge tone="danger">Integridade falhou — o hash não confere</Badge>}
+              {d.publicado_em && (
+                <Link href={`/arquivo/unidades/${d.unidade_arquivamento_id}?doc=${d.id}`} className="text-sm text-primary hover:underline">
+                  Na consulta pública desde {fmtDia(d.publicado_em)}
+                </Link>
+              )}
             </div>
+
             {d.motivo && <p className="text-sm">{d.motivo}</p>}
 
             <dl className="grid gap-3 rounded-xl border border-surface-border bg-surface p-4 sm:grid-cols-3">
@@ -94,6 +122,11 @@ export default function DigitalPage() {
                 {d.dpi_medido ? `${d.dpi_medido} DPI medidos` : "—"} (declarado {d.dpi_declarado} DPI, {d.tipo_documento.toLowerCase()})
               </Campo>
               <Campo nome="Formato">{d.conformidade && `${d.conformidade} · ${d.paginas} página(s) · ${fmtBytes(d.pdfa_bytes)}`}</Campo>
+              <Campo nome="Assinatura ICP-Brasil (PAdES)">
+                {d.pades === "AUSENTE" || !d.pades
+                  ? "Não aplicada — aguarda a política municipal de certificado (decisão 0.6)"
+                  : d.pades}
+              </Campo>
               <Campo nome="Guarda imutável até">{fmtDia(d.retencao_ate)}</Campo>
               <Campo nome="Tentativas">{String(d.tentativas)}</Campo>
               <Campo nome="SHA-256 do PDF/A">

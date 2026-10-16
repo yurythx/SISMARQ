@@ -2,6 +2,7 @@ package application_test
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"net/http"
 	"net/http/httptest"
@@ -12,6 +13,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 
+	"github.com/yurythx/sismarq/internal/domain/events"
 	"github.com/yurythx/sismarq/internal/domain/pagination"
 	"github.com/yurythx/sismarq/internal/modules/acervo/application"
 	"github.com/yurythx/sismarq/internal/modules/acervo/domain"
@@ -46,7 +48,9 @@ func TestEveryRepositoryFailureIsPropagated(t *testing.T) {
 	planilha := "tipo;codigo_classificacao;unidade;data_inicial;data_final;local\nCAIXA;" + codElim + ";" + e.unidade.String() +
 		";01/01/2018;31/12/2018;" + predio.Caminho + "\n"
 	_, membros := e.cspad(t, real)
+	_, ccpadIDs := e.ccpad(t, real)
 	cspad := avaliador(e.unidade)
+	ccpadMembro := membroCCPAD(ccpadIDs[0], e.unidade)
 	orig, base := e.agora, dia("2026-09-01")
 	// rito monta uma relação até a etapa dada: 0 rascunho, 1 aprovada,
 	// 2 autorizada, 3 em edital, 4 com pedido, 5 amostrada.
@@ -153,7 +157,28 @@ func TestEveryRepositoryFailureIsPropagated(t *testing.T) {
 		}
 		return d
 	}
+	// liberado: um representante pronto, já na consulta pública.
+	liberado := func() application.DetalheDigital {
+		d := digital(true)
+		if _, err := dreal.PublicarDigital(ctx, dquem, d.ID, true); err != nil {
+			t.Fatal(err)
+		}
+		return d
+	}
+	// exposicao: com um documento liberado; publicada se pedido.
+	exposicao := func(publicada bool) domain.Exposicao {
+		d := liberado()
+		x, err := dreal.SalvarExposicao(ctx, admin, nil, application.NovaExposicao{Titulo: "E " + uuid.NewString(), Itens: []application.NovoItem{{DigitalID: d.ID}}})
+		if err == nil && publicada {
+			x, err = dreal.PublicarExposicao(ctx, admin, x.ID, true)
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		return x
+	}
 	bloqueada := func() (application.Detalhe, uuid.UUID) {
+
 		d := comLocal()
 		d, err := real.Bloquear(ctx, admin, d.ID, "1", "")
 		if err != nil {
@@ -435,7 +460,85 @@ func TestEveryRepositoryFailureIsPropagated(t *testing.T) {
 		},
 		"Digitais": func() func(*application.Service) error {
 			return func(s *application.Service) error {
-				_, _, err := dcfg(s).Digitais(ctx, dquem, nil, false, pagination.New(1, 5, 100))
+				_, _, err := dcfg(s).Digitais(ctx, dquem, domain.FiltroDigital{Publicados: true}, pagination.New(1, 5, 100))
+				return err
+			}
+		},
+		"PublicarDigital": func() func(*application.Service) error {
+			d := digital(true)
+			return func(s *application.Service) error { _, err := s.PublicarDigital(ctx, dquem, d.ID, true); return err }
+		},
+		"HandleTramite": func() func(*application.Service) error {
+			raw, err := json.Marshal(map[string]any{
+				"id": uuid.NewString(), "numero": "2025.1", "assunto": "a", "codigo_ttdd": codElim,
+				"unidade_origem_id": e.unidade.String(), "sigilo": "publico",
+				"created_at": "2024-01-01T00:00:00Z", "concluido_at": "2024-02-01T00:00:00Z",
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			return func(s *application.Service) error {
+				return s.HandleTramite(ctx, events.Event{Type: "tramite.processo.concluido", Payload: raw})
+			}
+		},
+		"RetirarDigital": func() func(*application.Service) error {
+			d := liberado()
+			return func(s *application.Service) error { _, err := s.PublicarDigital(ctx, dquem, d.ID, false); return err }
+		},
+		"DocumentoPublico": func() func(*application.Service) error {
+			d := liberado()
+			return func(s *application.Service) error { _, err := s.DocumentoPublico(ctx, d.ID); return err }
+		},
+		"ArquivoPublico": func() func(*application.Service) error {
+			return func(s *application.Service) error { _, err := s.ArquivoPublico(ctx); return err }
+		},
+		"BuscaInterna": func() func(*application.Service) error {
+			return func(s *application.Service) error { _, err := s.Buscar(ctx, dquem, domain.Consulta{Q: "x"}); return err }
+		},
+		"IndexarPendentes": func() func(*application.Service) error {
+			u := comLocal()
+			return func(s *application.Service) error {
+				if _, err := e.pool.Exec(ctx, `DELETE FROM acervo_indice_pendentes`); err != nil {
+					t.Fatal(err)
+				}
+				if _, err := e.pool.Exec(ctx, `INSERT INTO acervo_indice_pendentes (unidade_id) VALUES ($1)`, u.ID); err != nil {
+					t.Fatal(err)
+				}
+				_, err := s.WithBusca(application.ConfigBusca{Indice: &indiceFalso{}}).IndexarPendentes(ctx)
+				return err
+			}
+		},
+		"Recarregar": func() func(*application.Service) error {
+			return func(s *application.Service) error {
+				_, err := s.WithBusca(application.ConfigBusca{Indice: &indiceFalso{}}).Recarregar(ctx)
+				return err
+			}
+		},
+		"CriarExposicao": func() func(*application.Service) error {
+			d := digital(true)
+			return func(s *application.Service) error {
+				_, err := s.SalvarExposicao(ctx, admin, nil, application.NovaExposicao{Titulo: "F " + uuid.NewString(), Itens: []application.NovoItem{{DigitalID: d.ID}}})
+				return err
+			}
+		},
+		"AlterarExposicao": func() func(*application.Service) error {
+			x := exposicao(false)
+			return func(s *application.Service) error {
+				_, err := s.SalvarExposicao(ctx, admin, &x.ID, application.NovaExposicao{Titulo: "G", Itens: []application.NovoItem{{DigitalID: x.Itens[0].DigitalID}}})
+				return err
+			}
+		},
+		"PublicarExposicao": func() func(*application.Service) error {
+			x := exposicao(false)
+			return func(s *application.Service) error { _, err := s.PublicarExposicao(ctx, admin, x.ID, true); return err }
+		},
+		"RecolherExposicao": func() func(*application.Service) error {
+			x := exposicao(true)
+			return func(s *application.Service) error { _, err := s.PublicarExposicao(ctx, admin, x.ID, false); return err }
+		},
+		"Exposicoes": func() func(*application.Service) error {
+			return func(s *application.Service) error {
+				_, _, err := s.Exposicoes(ctx, admin, pagination.New(1, 5, 100))
 				return err
 			}
 		},
@@ -499,6 +602,40 @@ func TestEveryRepositoryFailureIsPropagated(t *testing.T) {
 		"Autorizar": func() func(*application.Service) error {
 			l := rito(1)
 			return naData(base, func(s *application.Service) error { _, err := s.Autorizar(ctx, admin, l.ID); return err })
+		},
+		"AutorizarCCPAD": func() func(*application.Service) error {
+			u := e.criar(codIndef)
+			l, err := real.CriarListagem(ctx, cspad, application.NovaListagem{UnidadeID: e.unidade, Rito: domain.RitoArt35, ParecerJuridico: "P",
+				Unidades: []uuid.UUID{u.ID}})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := real.Aprovar(ctx, cspad, l.ID, application.Ata{Numero: "1", Em: base, Presentes: membros[:3]}); err != nil {
+				t.Fatal(err)
+			}
+			return naData(base, func(s *application.Service) error { _, err := s.AutorizarCCPAD(ctx, ccpadMembro, l.ID); return err })
+		},
+		"AutorizarSEMAD": func() func(*application.Service) error {
+			u := e.criar(codIndef)
+			l, err := real.CriarListagem(ctx, cspad, application.NovaListagem{UnidadeID: e.unidade, Rito: domain.RitoArt35, ParecerJuridico: "P",
+				Unidades: []uuid.UUID{u.ID}})
+			if err != nil {
+				t.Fatal(err)
+			}
+			passos := []func() error{
+				func() error {
+					_, err := real.Aprovar(ctx, cspad, l.ID, application.Ata{Numero: "1", Em: base, Presentes: membros[:3]})
+					return err
+				},
+				func() error { _, err := real.AutorizarCCPAD(ctx, ccpadMembro, l.ID); return err },
+				func() error { _, err := real.Autorizar(ctx, admin, l.ID); return err },
+			}
+			for _, p := range passos {
+				if err := p(); err != nil {
+					t.Fatal(err)
+				}
+			}
+			return naData(base, func(s *application.Service) error { _, err := s.AutorizarSEMAD(ctx, semad(), l.ID); return err })
 		},
 		"DevolverListagem": func() func(*application.Service) error {
 			l := rito(1)

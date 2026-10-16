@@ -65,7 +65,15 @@ const BASE = {
   numero: "LE-2026-00001",
   comissao_id: "c1",
   unidade_id: "un1",
+  rito: "ORDINARIO",
   situacao: "RASCUNHO",
+  ata_signum: "AUSENTE",
+  termo_signum: "AUSENTE",
+  ccpad_autorizada_em: null as string | null,
+  semad_autorizada_em: null as string | null,
+  termo_copia_em: null as string | null,
+  termo_copia_arquivo: 0,
+  termo_copia_semad: 0,
   responsavel_selecao: null,
   parecer_juridico: "Parecer 7/2026",
   contas_exercicios: "2015",
@@ -162,7 +170,7 @@ describe("Relações de eliminação", () => {
     fireEvent.submit(screen.getByRole("form", { name: "Nova relação de eliminação" }));
     await waitFor(() => expect(router.push).toHaveBeenCalledWith("/acervo/eliminacao/l1"));
     const post = backend.calls.find((c) => c.method === "POST");
-    expect(post?.body).toMatchObject({ unidade_id: "un1", unidades: ["u1"], parecer_juridico: "Parecer 1", contas_exercicios: "2015" });
+    expect(post?.body).toMatchObject({ unidade_id: "un1", rito: "ORDINARIO", unidades: ["u1"], parecer_juridico: "Parecer 1", contas_exercicios: "2015" });
   });
 });
 
@@ -218,6 +226,25 @@ describe("Ficha da relação", () => {
     await userEvent.click(screen.getByRole("button", { name: "Autorizar eliminação" }));
     await chamou(backend, "POST", "v1/acervo/listagens/l1/autorizar");
     expect(await screen.findByText(/Publique o edital/)).toBeInTheDocument();
+  });
+
+  it("art. 35: CCPAD e SEMAD", async () => {
+    const backend = mockBackend(
+      rotas({ ...BASE, situacao: "APROVADA", rito: "ART_35" }, {
+        "POST v1/acervo/listagens/l1/autorizar-ccpad": { data: { ...BASE, situacao: "APROVADA", rito: "ART_35", ccpad_autorizada_em: "2026-09-02T00:00:00Z" } },
+      }),
+    );
+    renderApp(<RelacaoPage />);
+    await userEvent.click(await screen.findByRole("button", { name: "Autorizar pela CCPAD" }));
+    await chamou(backend, "POST", "v1/acervo/listagens/l1/autorizar-ccpad");
+    const sem = mockBackend(
+      rotas({ ...BASE, situacao: "AGUARDANDO_SEMAD", rito: "ART_35", ccpad_autorizada_em: "2026-09-02T00:00:00Z" }, {
+        "POST v1/acervo/listagens/l1/autorizar-semad": { data: { ...BASE, situacao: "AUTORIZADA", rito: "ART_35" } },
+      }),
+    );
+    renderApp(<RelacaoPage />);
+    await userEvent.click(await screen.findByRole("button", { name: "Aprovar pela SEMAD" }));
+    await chamou(sem, "POST", "v1/acervo/listagens/l1/autorizar-semad");
   });
 
   it("autorizada: registra o edital", async () => {

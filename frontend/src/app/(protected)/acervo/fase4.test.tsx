@@ -54,6 +54,7 @@ const UNIDADE = {
   local_caminho: "",
   recolhida_em: null,
   recolhimento_id: null,
+  tramite_processo_id: null,
 };
 
 const PREPARO = { classificados: true, avaliados: true, organizados: true, higienizados: true, acondicionados: true };

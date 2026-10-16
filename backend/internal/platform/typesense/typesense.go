@@ -47,18 +47,47 @@ type SearchParams struct {
 	Weights  string
 	FilterBy string
 	PerPage  int
+	// Page começa em 1 (0 = primeira página).
+	Page int
+	// FacetBy lista os campos (com facet no schema) a contar.
+	FacetBy        string
+	MaxFacetValues int
+	SortBy         string
+	// IncludeFields/ExcludeFields limitam o que volta em cada documento.
+	IncludeFields string
+	ExcludeFields string
+	// HighlightFields: os campos de onde sai o trecho destacado.
+	HighlightFields string
 }
 
 // Hit é um documento encontrado, com a pontuação de texto do Typesense.
 type Hit struct {
-	Document  map[string]any `json:"document"`
-	TextMatch uint64         `json:"text_match"`
+	Document   map[string]any `json:"document"`
+	TextMatch  uint64         `json:"text_match"`
+	Highlights []Highlight    `json:"highlights"`
+}
+
+// Highlight é o trecho de um campo com os termos encontrados entre <mark>.
+type Highlight struct {
+	Field   string `json:"field"`
+	Snippet string `json:"snippet"`
+}
+
+// FacetCount conta os valores de um campo facetado.
+type FacetCount struct {
+	FieldName string `json:"field_name"`
+	Counts    []struct {
+		Value string `json:"value"`
+		Count int    `json:"count"`
+	} `json:"counts"`
 }
 
 // SearchResult é a resposta de uma busca.
 type SearchResult struct {
-	Found int   `json:"found"`
-	Hits  []Hit `json:"hits"`
+	Found       int          `json:"found"`
+	Hits        []Hit        `json:"hits"`
+	FacetCounts []FacetCount `json:"facet_counts"`
+	SearchTime  int          `json:"search_time_ms"`
 }
 
 // Client fala com um nó do Typesense.
@@ -183,6 +212,21 @@ func (c *Client) Search(ctx context.Context, collection string, p SearchParams) 
 	}
 	if p.PerPage > 0 {
 		q.Set("per_page", strconv.Itoa(p.PerPage))
+	}
+	if p.Page > 0 {
+		q.Set("page", strconv.Itoa(p.Page))
+	}
+	if p.FacetBy != "" {
+		q.Set("facet_by", p.FacetBy)
+	}
+	if p.MaxFacetValues > 0 {
+		q.Set("max_facet_values", strconv.Itoa(p.MaxFacetValues))
+	}
+	for k, v := range map[string]string{"sort_by": p.SortBy, "include_fields": p.IncludeFields, "exclude_fields": p.ExcludeFields,
+		"highlight_fields": p.HighlightFields} {
+		if v != "" {
+			q.Set(k, v)
+		}
 	}
 	var out SearchResult
 	err := c.do(ctx, http.MethodGet, "/collections/"+url.PathEscape(collection)+"/documents/search", q, nil, &out)

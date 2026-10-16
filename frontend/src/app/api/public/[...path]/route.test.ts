@@ -47,7 +47,36 @@ describe("proxy BFF público (allowlist)", () => {
     expect(upstream).toHaveBeenCalledTimes(1);
   });
 
+  it("documento liberado do Acervo: repassa o Range e devolve o 206 com o intervalo", async () => {
+    upstream.mockResolvedValueOnce(
+      new Response(new Uint8Array([37, 80, 68, 70]), {
+        status: 206,
+        headers: { "content-type": "application/pdf", "content-range": "bytes 0-3/100", "accept-ranges": "bytes", etag: '"abc"' },
+      }),
+    );
+    const res = await GET(
+      new NextRequest("http://app/api/public/v1/acervo/publico/digitais/1/arquivo", { headers: { range: "bytes=0-3", "if-range": '"abc"' } }),
+      params("v1", "acervo", "publico", "digitais", "1", "arquivo"),
+    );
+    expect(res.status).toBe(206);
+    expect(res.headers.get("content-range")).toBe("bytes 0-3/100");
+    expect(res.headers.get("accept-ranges")).toBe("bytes");
+    expect(res.headers.get("etag")).toBe('"abc"');
+    expect(new Uint8Array(await res.arrayBuffer())).toEqual(new Uint8Array([37, 80, 68, 70]));
+    const init = upstream.mock.calls[0]![1];
+    expect(init.headers.Range).toBe("bytes=0-3");
+    expect(init.headers["If-Range"]).toBe('"abc"');
+    // Range malformado ou If-Range enorme não passam.
+    await GET(
+      new NextRequest("http://app/x", { headers: { range: "bytes=0-1,5-9", "if-range": "x".repeat(201) } }),
+      params("v1", "acervo", "publico", "digitais", "1", "arquivo"),
+    );
+    expect(upstream.mock.calls[1]![1].headers.Range).toBeUndefined();
+    expect(upstream.mock.calls[1]![1].headers["If-Range"]).toBeUndefined();
+  });
+
   it("encaminha rotas da allowlist, sem token, com o IP do visitante (atrás de proxy confiável)", async () => {
+
     vi.stubEnv("TRUST_PROXY_HEADERS", "true");
     const res = await GET(
       new NextRequest("http://app/api/public/v1/catalog/services?q=x", {

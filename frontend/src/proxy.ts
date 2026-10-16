@@ -4,6 +4,7 @@ import { getToken } from "next-auth/jwt";
 
 import { accessTokenUsable } from "@/lib/auth/tokenState";
 import { API_PUBLIC_URL, MINIO_PUBLIC_URL, WS_PUBLIC_URL, toOrigin } from "@/lib/env";
+import { isProtectedPath } from "@/lib/nav/protected";
 
 // O Next.js 16 renomeou a convenção middleware.ts para proxy.ts (mesmo
 // mecanismo, só o nome do arquivo/export mudou). Esta função tem duas
@@ -21,30 +22,6 @@ import { API_PUBLIC_URL, MINIO_PUBLIC_URL, WS_PUBLIC_URL, toOrigin } from "@/lib
 // 2. Proteção de rota: redireciona visitas não autenticadas a qualquer
 //    seção protegida (PROTECTED_PREFIXES) para /login, sem deixar a
 //    página nem começar a renderizar.
-// Seções autenticadas — tudo o que vive em app/(protected)/. O grupo de
-// rotas não aparece na URL, então cada prefixo é listado aqui. Módulos
-// plugáveis entram mesmo desativados: o 404 do módulo inativo é decidido
-// pela API (Guard do Kernel), nunca pelo proxy.
-const PROTECTED_PREFIXES = [
-  "/dashboard",
-  "/configuracao",
-  "/monitoramento",
-  "/auditoria",
-  "/perfil",
-  "/busca",
-  "/mercurio",
-  "/wiki",
-  "/agenda",
-  "/diretorio",
-  "/arquivos",
-  "/signum",
-  "/tramite",
-  "/atlas",
-  "/acervo",
-  "/gestao",
-  "/exemplos",
-];
-
 export async function proxy(request: NextRequest) {
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
   const isDev = process.env.NODE_ENV === "development";
@@ -103,10 +80,7 @@ export async function proxy(request: NextRequest) {
   requestHeaders.set("x-nonce", nonce);
   requestHeaders.set("Content-Security-Policy", cspHeader);
 
-  const isProtectedRoute = PROTECTED_PREFIXES.some(
-    (prefix) => request.nextUrl.pathname === prefix || request.nextUrl.pathname.startsWith(prefix + "/"),
-  );
-  if (isProtectedRoute) {
+  if (isProtectedPath(request.nextUrl.pathname)) {
     const token = await getToken({ req: request });
     // accessTokenUsable cobre também o token VENCIDO (o login local não
     // renova e o callback jwt não roda em toda navegação) — sem isso o

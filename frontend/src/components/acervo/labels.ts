@@ -84,6 +84,7 @@ export function situacaoGuia(s: string) {
 export const SITUACAO_LISTAGEM: Record<string, { label: string; tone: Tone; ajuda: string }> = {
   RASCUNHO: { label: "Em seleção", tone: "neutral", ajuda: "A CSPAD monta a relação e junta o parecer jurídico (art. 32, § 4º)." },
   APROVADA: { label: "Aprovada pela CSPAD", tone: "info", ajuda: "Aguarda a autorização do Arquivo Público (arts. 19 e 65)." },
+  AGUARDANDO_SEMAD: { label: "Aguardando a SEMAD", tone: "warning", ajuda: "Arts. 35 e 36: a Secretaria Municipal de Administração ainda não aprovou." },
   AUTORIZADA: { label: "Autorizada", tone: "info", ajuda: "Publique o Edital de Ciência no Diário Oficial do Município (art. 37)." },
   EM_EDITAL: { label: "Em edital", tone: "warning", ajuda: "Prazo de 30 dias para pedidos; faça a amostragem (art. 39)." },
   ELIMINADA: { label: "Eliminada", tone: "success", ajuda: "Termo de Eliminação registrado (Anexo II)." },

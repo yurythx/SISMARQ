@@ -65,6 +65,8 @@ const DIGITAL = {
   verificado_em: "2026-10-17T00:00:00Z",
   integro: true,
   criado_em: "2026-10-16T14:30:00Z",
+  publicado_em: null,
+  pades: "AUSENTE",
 };
 const DETALHE = {
   ...DIGITAL,
