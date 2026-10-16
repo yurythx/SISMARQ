@@ -16,12 +16,9 @@ import {
   Check,
   Info,
   ShieldCheck,
-  Server,
   Layers,
   ChevronDown,
   ChevronUp,
-  Cpu,
-  Database,
   ArrowRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";

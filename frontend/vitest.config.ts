@@ -13,6 +13,10 @@ export default defineConfig({
     // o Vitest tenta rodar esses arquivos como se fossem seus e falha
     // com um erro de import, achado real adicionando o Playwright.
     exclude: ["node_modules", ".next", "e2e"],
+    // Os formulários longos (userEvent.type campo a campo) passam de 5 s
+    // com a instrumentação de cobertura e a máquina carregada; 15 s ainda
+    // pega um teste travado.
+    testTimeout: 15_000,
     // Meta de cobertura do frontend (ADR 010): o CI roda com --coverage e
     // falha se cair abaixo destes pisos. Suba-os junto com novos testes.
     coverage: {

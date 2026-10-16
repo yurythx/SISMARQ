@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, type ChangeEvent } from "react";
-import { Camera, Upload, AlertCircle, RefreshCw, CheckCircle2 } from "lucide-react";
+import { Camera, Upload, AlertCircle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 interface QRScannerTabProps {

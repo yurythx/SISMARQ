@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { porFuncao, resumoProcedimentos } from "@/components/atlas/secretaria";
 import type { Workflow } from "@/lib/sismarq/types";
-import { identityRoutes, mockBackend, page, renderApp } from "@/test/backend";
+import { fail, identityRoutes, mockBackend, page, renderApp } from "@/test/backend";
 import { resetNavigation, router } from "@/test/navigation";
 
 vi.mock("next/navigation", async () => (await import("@/test/navigation")).navigationModule);
@@ -385,5 +385,51 @@ describe("Atlas — procedimentos por secretaria", () => {
     mockBackend({ ...identityRoutes({ permissions: [] }) });
     renderApp(<CadernoPage />);
     expect(await screen.findByText(/caderno da entrevista é da gestão/)).toBeInTheDocument();
+  });
+});
+
+describe("caderno com várias funções", () => {
+  it("filtra em memória, alterna funções na URL e volta à secretaria inteira", async () => {
+    resetNavigation({ prefixo: "2.0" }, "/atlas/secretarias/2.0/caderno", "situacao=RASCUNHO&funcao=2.0.06&funcoes=2.0.02, 9.9.99");
+    const backend = mockBackend({
+      ...identityRoutes({ permissions: ["atlas:manage"] }),
+      "GET v1/atlas/admin/workflows/secretarias": { data: [] },
+      "GET v1/atlas/admin/workflows": page([FERIAS, COMPRAS, SEM_SERIE]),
+      "GET v1/atlas/ttdd/estrutura": { data: [{ ...ESTRUTURA[0], funcoes: [ESTRUTURA[0]!.funcoes[1]!] }] },
+      "GET v1/atlas/admin/workflows/wf-1": { data: detalhe(FERIAS) },
+      "GET v1/atlas/admin/workflows/wf-2": fail(500),
+    });
+    renderApp(<CadernoPage />);
+    expect(await screen.findByRole("heading", { level: 1, name: "Órgão 2.0" })).toBeInTheDocument();
+    expect(screen.getByText("Funções Selecionadas (2)")).toBeInTheDocument();
+    expect(screen.getByText(/2 procedimentos/)).toBeInTheDocument();
+    expect(screen.queryByText(/ADM.OUT.001/)).not.toBeInTheDocument();
+    // Busca a secretaria inteira (sem função) e filtra aqui.
+    expect(backend.calls.some((c) => c.path === "v1/atlas/admin/workflows" && c.query.get("prefixo_ttdd") === "2.0")).toBe(true);
+    expect(screen.getByRole("link", { name: /Voltar à secretaria/ })).toHaveAttribute("href", "/atlas/secretarias/2.0?situacao=RASCUNHO");
+
+    await userEvent.click(await screen.findByRole("button", { name: /2.0.06\s*Gestão de Pessoas/ }));
+    expect(router.replace).toHaveBeenLastCalledWith("/atlas/secretarias/2.0/caderno?situacao=RASCUNHO&funcao=2.0.02");
+    await userEvent.click(screen.getByRole("button", { name: "Ver toda a secretaria" }));
+    expect(router.replace).toHaveBeenLastCalledWith("/atlas/secretarias/2.0/caderno?situacao=RASCUNHO");
+  });
+
+  it("acrescenta uma função e lida com a ficha que não carrega", async () => {
+    resetNavigation({ prefixo: "2.0" }, "/atlas/secretarias/2.0/caderno");
+    mockBackend({
+      ...identityRoutes({ permissions: ["atlas:manage"] }),
+      "GET v1/atlas/admin/workflows/secretarias": { data: RESUMO },
+      "GET v1/atlas/admin/workflows": page([FERIAS]),
+      "GET v1/atlas/ttdd/estrutura": { data: ESTRUTURA },
+      "GET v1/atlas/admin/workflows/wf-1": fail(500),
+    });
+    renderApp(<CadernoPage />);
+    expect(await screen.findByText(/1 procedimento$/)).toBeInTheDocument();
+    await userEvent.click(await screen.findByRole("button", { name: /2.0.02\s*Gestão de Compras/ }));
+    expect(router.replace).toHaveBeenLastCalledWith("/atlas/secretarias/2.0/caderno?funcao=2.0.02");
+    await userEvent.click(screen.getByRole("button", { name: "Ver toda a secretaria" }));
+    expect(router.replace).toHaveBeenLastCalledWith("/atlas/secretarias/2.0/caderno?");
+    const tentar = await screen.findAllByRole("button", { name: /Tentar novamente/ });
+    await userEvent.click(tentar[0]!);
   });
 });
