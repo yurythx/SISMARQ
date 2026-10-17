@@ -1,4 +1,4 @@
-# Configurações e Segredos Locais
+# ConfiguraÃ§Ãµes e Segredos Locais
 .env
 .env.local
 .env.*.local
@@ -23,10 +23,11 @@ bin/
 *.dylib
 *.test
 *.out
-# Saída do go test do CI local (scripts de verificação).
+# SaÃ­da do go test do CI local (scripts de verificaÃ§Ã£o).
 backend/test.log
 coverage/
 **/coverage/
+backend/coverage
 *.lcov
 
 # IDEs e Editores
@@ -39,11 +40,11 @@ coverage/
 .DS_Store
 Thumbs.db
 
-# Projeto de referência (port da acessibilidade) — nunca versionar aqui
+# Projeto de referÃªncia (port da acessibilidade) â nunca versionar aqui
 Projeto Nexus/
 Projeto-Nexus/
 
-# Binários compilados do backend (nunca versionar artefatos de build)
+# BinÃ¡rios compilados do backend (nunca versionar artefatos de build)
 backend/api
 backend/worker
 backend/migrate
@@ -53,13 +54,13 @@ backend/seedadmin
 secrets/ca/
 .env.bak-*
 
-# Python (cenários de teste)
+# Python (cenÃ¡rios de teste)
 __pycache__/
 
 # Marca do povoamento de teste (scripts/demo-data/cenarios/popular.py)
 .demo-popular
 
-# Export bruto do Active Directory: contém nomes de servidores (LGPD).
+# Export bruto do Active Directory: contÃ©m nomes de servidores (LGPD).
 # A estrutura limpa, sem dados pessoais, fica em deploy/estrutura/.
 docs/AD/
 
@@ -75,6 +76,6 @@ deploy/infra/ansible/inventory.ini
 deploy/infra/ansible/secrets.yml
 *.retry
 
-# Relat�rios de cobertura gerados localmente
+# Relatórios de cobertura gerados localmente
 backend/coverage
 

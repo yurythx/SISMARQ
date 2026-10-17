@@ -24,6 +24,7 @@ tar --exclude-vcs-ignores --exclude=.git \
     --exclude=terraform.tfvars --exclude=secrets.yml \
     --exclude=inventory.ini --exclude=.env \
     --exclude=backend/api --exclude=backend/worker \
+    --exclude=backend/coverage --exclude=frontend/coverage --exclude=coverage \
     -cf - . | "${SSH[@]}" "$USER@$HOST" "mkdir -p '$REMOTE' && cd '$REMOTE' && tar xf -"
 
 "${SSH[@]}" "$USER@$HOST" bash -s <<EOF

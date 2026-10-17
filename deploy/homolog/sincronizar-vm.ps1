@@ -17,6 +17,7 @@ tar --exclude=.git --exclude=node_modules --exclude=frontend/node_modules `
     --exclude=*.tfstate --exclude=*.tfstate.* --exclude=terraform.tfvars `
     --exclude=secrets.yml --exclude=inventory.ini --exclude=.env `
     --exclude=backend/api --exclude=backend/worker --exclude=backend/*.test `
+    --exclude=backend/coverage --exclude=frontend/coverage --exclude=coverage `
     -cf $tar .
 
 scp @SshOpts $tar "${User}@${HostName}:/tmp/sismarq-homolog.tar"
