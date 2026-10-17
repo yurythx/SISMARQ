@@ -1,9 +1,6 @@
-// Marca do SISMARQ — um SELO/CARIMBO da marca, não um
-// monograma de app. Anéis concêntricos (o carimbo oficial), o "A" de
-// SISMARQ recortado em branco no centro (dois traços diagonais + travessão)
-// e um traço em tinta de carimbo (#8a1c1c) na base: o mesmo motivo de
-// "documento oficial" que atravessa o resto da interface. Azul
-// da marca (mesma faixa da Topbar/paleta).
+// Marca do SISMARQ — um SELO/CARIMBO da marca. Anéis concêntricos,
+// o monograma "S" e um traço em tinta de carimbo (#8a1c1c) na base.
+// Azul da marca (mesma faixa da Topbar/paleta).
 //
 // Sem <defs>/gradientes de propósito: quando dois <Logo> coexistem no DOM
 // (ex.: variante desktop + variante mobile na tela de login, uma delas com
@@ -32,7 +29,7 @@ export function Logo({ size = 32, className = "" }: { size?: number; className?:
       <circle cx="14" cy="14" r="10" fill="none" stroke="#F8FAFC" strokeOpacity="0.9" strokeWidth="1" />
       <circle cx="14" cy="14" r="7.6" fill="none" stroke="#F8FAFC" strokeOpacity="0.32" strokeWidth="0.75" />
 
-      {/* Monograma: "N" de SISMARQ */}
+      {/* Monograma: S de SISMARQ */}
       <text
         x="14"
         y="17.5"
@@ -43,7 +40,7 @@ export function Logo({ size = 32, className = "" }: { size?: number; className?:
         fontFamily="sans-serif"
         letterSpacing="0"
       >
-        N
+        S
       </text>
 
       {/* Traço em tinta de carimbo */}
