@@ -14,6 +14,10 @@ next-env.d.ts
 coverage
 playwright-report
 test-results
+**/*.test.ts
+**/*.test.tsx
+**/__tests__
+src/test
 *.log
 npm-debug.log*
 

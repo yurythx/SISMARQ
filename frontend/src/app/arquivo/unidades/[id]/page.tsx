@@ -22,7 +22,7 @@ async function carregar(id: string): Promise<AcervoFichaPublica | null> {
   }
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const f = await carregar((await params).id);
   if (!f) return { title: "Unidade não encontrada" };
   return {
