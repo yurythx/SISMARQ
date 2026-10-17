@@ -42,7 +42,7 @@ func (m *Module) Manifest() kernel.Manifest {
 	return kernel.Manifest{
 		Key:            Key,
 		Name:           "Diretório",
-		Description:    "Consulta de pessoas e setores com base nos dados sincronizados do AD.",
+		Description:    "Pessoas e setores da Superintendência e das unidades, a partir do Active Directory.",
 		DefaultEnabled: true,
 		Public:         false,
 		Icon:           "contact",

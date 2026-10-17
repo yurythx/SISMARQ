@@ -2,11 +2,12 @@
 
 import {
   BRANDING_COOKIE,
+  BRANDING_COOKIE_LEGACY,
   DEFAULT_BRANDING,
   parseBrandingCookie,
   type SystemBrandingConfig,
 } from "./brandingConfig";
-import { deleteCookie, readCookie, writeCookie } from "@/lib/prefs/cookies";
+import { deleteCookie, readCookiePrefer, writeCookie } from "@/lib/prefs/cookies";
 
 // Store externo (useSyncExternalStore) do branding no navegador. A
 // identidade da organização chega do servidor (primeBrandingStore, com o
@@ -19,7 +20,7 @@ const listeners = new Set<Listener>();
 let cached: SystemBrandingConfig | null = null;
 
 function prefsFromCookie(): Pick<SystemBrandingConfig, "highContrast" | "fontSizeScale"> {
-  const parsed = parseBrandingCookie(readCookie(BRANDING_COOKIE));
+  const parsed = parseBrandingCookie(readCookiePrefer(BRANDING_COOKIE, BRANDING_COOKIE_LEGACY));
   return { highContrast: parsed.highContrast, fontSizeScale: parsed.fontSizeScale };
 }
 
@@ -64,6 +65,7 @@ function emit() {
 
 function persistPrefs(c: SystemBrandingConfig) {
   writeCookie(BRANDING_COOKIE, JSON.stringify({ highContrast: c.highContrast, fontSizeScale: c.fontSizeScale }));
+  deleteCookie(BRANDING_COOKIE_LEGACY);
 }
 
 export function updateBrandingStore(partial: Partial<SystemBrandingConfig>): void {
@@ -75,5 +77,6 @@ export function updateBrandingStore(partial: Partial<SystemBrandingConfig>): voi
 export function resetBrandingStore(): void {
   cached = { ...read(), highContrast: false, fontSizeScale: 100 };
   deleteCookie(BRANDING_COOKIE);
+  deleteCookie(BRANDING_COOKIE_LEGACY);
   emit();
 }

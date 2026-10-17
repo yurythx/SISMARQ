@@ -7,8 +7,10 @@
 ## Contexto
 
 A Fase 7 pede recolhimento automático do que nasce digital no SEI
-(pacote AIP: documentos, metadados, hashes e trilha). Isso depende da
-decisão 0.7: versão em uso, se há API e quem autoriza a integração.
+(pacote AIP: documentos, metadados, hashes e trilha). A decisão 0.7
+([ADR 043](043-fase0-decisoes-institucionais.md)) registrou: o envelope
+fica pronto; **ainda não** há versão, API, autorização nem ambiente de
+homologação. Sem isso não se liga cliente.
 
 Inventar um cliente REST, um webhook ou um “SEI de laboratório” afirmaria
 uma integração que o município não tem.

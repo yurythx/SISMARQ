@@ -5097,6 +5097,7 @@ export interface components {
             numero: string;
             original_bytes: number;
             original_sha256: string;
+            origem: string;
             pades: string;
             paginas: number;
             pdfa_bytes: number;
@@ -5142,6 +5143,7 @@ export interface components {
             numero: string;
             original_bytes: number;
             original_sha256: string;
+            origem: string;
             pades: string;
             paginas: number;
             pdfa_bytes: number;
@@ -5198,9 +5200,10 @@ export interface components {
         };
         AcervoDigitalRequest: {
             descricao?: string;
-            dpi_declarado: number;
+            dpi_declarado?: number;
             equipamento: string;
             object_key: string;
+            origem?: string;
             responsavel_cpf?: string;
             tipo_documento: string;
         };

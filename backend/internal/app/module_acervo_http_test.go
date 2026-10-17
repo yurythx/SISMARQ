@@ -83,6 +83,40 @@ func TestAcervoHTTP(t *testing.T) {
 	h.expect(http.StatusOK, http.MethodGet, "/api/v1/acervo/locais", agenteA, "")
 }
 
+// Amostra C1 pela API real (TTDD do Atlas): o painel e a ficha batem com
+// deploy/homolog/seed-acervo.sql — códigos da SEMAD, prazos de 16/10/2026.
+func TestAcervoHTTPAmostraC1(t *testing.T) {
+	h := newHarness(t)
+	admin := h.admin()
+	o := h.orgEscopo(t)
+	corpo := func(codigo, ini, fim, evento string) string {
+		ev := ""
+		if evento != "" {
+			ev = `,"data_evento":"` + evento + `"`
+		}
+		return `{"tipo":"CAIXA","codigo_classificacao":"` + codigo + `","unidade_id":"` + o.a +
+			`","data_inicial":"` + ini + `","data_final":"` + fim + `","quantidade":1,"especificacao":"homolog"` + ev + `}`
+	}
+	criar := func(codigo, ini, fim, evento, situacao string) {
+		t.Helper()
+		u := data[acervoUnidade](t, h.expect(http.StatusCreated, http.MethodPost, "/api/v1/acervo/unidades", admin, corpo(codigo, ini, fim, evento)))
+		if u.Situacao != situacao {
+			t.Errorf("%s cadastro situacao=%s queria %s (%s)", codigo, u.Situacao, situacao, u.Numero)
+		}
+		got := data[acervoUnidade](t, h.expect(http.StatusOK, http.MethodGet, "/api/v1/acervo/unidades/"+u.ID, admin, ""))
+		if got.Situacao != situacao {
+			t.Errorf("%s ficha situacao=%s queria %s", codigo, got.Situacao, situacao)
+		}
+	}
+	// Datas no passado: o cadastro entra em CORRENTE; a situação segue o prazo.
+	criar("2.0.01.00.01", "2015-01-01", "2015-12-31", "", acervoDomain.SituacaoTransferir) // ainda corrente no cadastro
+	// 2.0.05.00.00 está na carga da migration 000134 ("enquanto estiver vigorando").
+	criar("2.0.05.00.00", "2020-01-01", "2023-12-31", "", acervoDomain.SituacaoAguardaEvento)
+	criar("2.0.05.00.00", "2020-01-01", "2023-12-31", "2024-06-01", acervoDomain.SituacaoTransferir)
+	criar("2.0.01.00.01", "2026-01-01", "2026-06-30", "", acervoDomain.SituacaoNoCorrente)
+	h.expect(http.StatusOK, http.MethodGet, "/api/v1/acervo/painel?unidade_id="+o.a, admin, "")
+}
+
 // A porta de TTDD do Acervo lê o Atlas: série inexistente vira
 // ErrSerieInvalida; outras falhas sobem.
 func TestTTDDPort(t *testing.T) {

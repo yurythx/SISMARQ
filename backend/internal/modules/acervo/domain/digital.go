@@ -38,6 +38,14 @@ const (
 	DocPlanta = "PLANTA" // plantas, mapas e imagens de alta densidade
 )
 
+// Origem do arquivo enviado (ADR 044). SCAN é o papel digitalizado
+// (Decreto 10.278/2020: imagens, DPI mínimo). NATO_DIGITAL é o PDF já
+// eletrônico: o pipeline gera PDF/A e OCR, sem exigir DPI de scanner.
+const (
+	OrigemScan        = "SCAN"
+	OrigemNatoDigital = "NATO_DIGITAL"
+)
+
 // MaxTentativas antes de o representante ficar FALHOU.
 const MaxTentativas = 3
 
@@ -72,6 +80,7 @@ type Digital struct {
 	UnidadeID uuid.UUID `json:"unidade_arquivamento_id"`
 	Descricao string    `json:"descricao"`
 	TipoDoc   string    `json:"tipo_documento"`
+	Origem    string    `json:"origem"`
 	// Metadados do Decreto 10.278/2020 (art. 9º e Anexo II).
 	Equipamento     string     `json:"equipamento"`
 	DPIDeclarado    int        `json:"dpi_declarado"`
@@ -99,14 +108,14 @@ type Digital struct {
 	CriadoEm        time.Time  `json:"criado_em"`
 	// PublicadoEm: liberado à consulta pública (Fase 6, ADR 038).
 	PublicadoEm *time.Time `json:"publicado_em"`
-	// Pades: estado da assinatura ICP-Brasil. Sem política municipal
-	// (decisão 0.6) o valor é sempre AUSENTE — o JSON declara a ausência
-	// para a tela nunca assumir certificado (ADR 040).
+	// Pades: estado da assinatura ICP-Brasil. Sem certificado municipal
+	// (A1/A3/HSM) o valor é sempre AUSENTE — o JSON declara a ausência
+	// (ADR 040; decisão 0.6 no ADR 043).
 	Pades string `json:"pades"`
 }
 
 // PadesAusente: o PDF/A não tem assinatura ICP-Brasil. Não é falha do
-// pipeline; a política ainda não existe.
+// pipeline; o município ainda não tem certificado.
 const PadesAusente = "AUSENTE"
 
 // ComEstadoPAdES preenche o campo declarado. Nada no disco muda.
@@ -118,7 +127,7 @@ func (d Digital) ComEstadoPAdES() Digital {
 }
 
 // AfirmaAssinaturaICP é verdadeiro só com assinatura ICP-Brasil gravada.
-// Enquanto a política 0.6 não existir, permanece falso.
+// Enquanto não houver certificado municipal, permanece falso.
 func AfirmaAssinaturaICP(d Digital) bool {
 	return d.Pades != "" && d.Pades != PadesAusente
 }
@@ -135,18 +144,32 @@ func DPIMinimo(tipo string, texto, planta int) int {
 func NovoDigital(d Digital) (Digital, error) {
 	d.Descricao, d.Equipamento = strings.TrimSpace(d.Descricao), strings.TrimSpace(d.Equipamento)
 	d.TipoDoc = strings.ToUpper(strings.TrimSpace(d.TipoDoc))
+	d.Origem = strings.ToUpper(strings.TrimSpace(d.Origem))
+	if d.Origem == "" {
+		d.Origem = OrigemScan
+	}
 	switch {
 	case d.TipoDoc != DocTexto && d.TipoDoc != DocPlanta:
 		return d, invalido("tipo_documento", "use TEXTO ou PLANTA")
+	case d.Origem != OrigemScan && d.Origem != OrigemNatoDigital:
+		return d, invalido("origem", "use SCAN (papel digitalizado) ou NATO_DIGITAL")
 	case utf8.RuneCountInString(d.Descricao) > 500:
 		return d, invalido("descricao", "até 500 caracteres")
 	case d.Equipamento == "" || utf8.RuneCountInString(d.Equipamento) > 200:
-		return d, invalido("equipamento", "informe o scanner (modelo e número de série), até 200 caracteres")
+		return d, invalido("equipamento", "informe o scanner ou o sistema de origem, até 200 caracteres")
+	case d.Origem == OrigemNatoDigital:
+		d.DPIDeclarado = 0
 	case d.DPIDeclarado < 72 || d.DPIDeclarado > 4800:
-		return d, invalido("dpi_declarado", "entre 72 e 4800")
+		return d, invalido("dpi_declarado", "entre 72 e 4800 para digitalização do papel")
 	}
 	d.ID, d.Situacao = uuid.New(), DigitalEnviado
 	return d, nil
+}
+
+// ExigeDPIScan: só o papel digitalizado precisa de imagens e resolução
+// mínima do Decreto 10.278. Nato-digital não é scan.
+func ExigeDPIScan(origem string) bool {
+	return origem != OrigemNatoDigital
 }
 
 // PodeDigitalizar: a unidade eliminada não tem mais papel a digitalizar.
@@ -202,6 +225,13 @@ type Pipeline interface {
 	Medir(ctx context.Context, original string) (paginas, dpi int, err error)
 	// Processar gera o PDF/A em saida, com o OCR e os metadados.
 	Processar(ctx context.Context, original, saida string, m Metadados) (Resultado, error)
+}
+
+// AssinadorICP é a porta do Decreto 10.278 (PAdES). O Arquivo Municipal
+// digitaliza; ainda não há certificado A1/A3/HSM. Nenhum adaptador é
+// composto em internal/app enquanto Pades permanece AUSENTE (ADR 040).
+type AssinadorICP interface {
+	Assinar(ctx context.Context, pdfa []byte) (assinado []byte, estado string, err error)
 }
 
 // MovDigitalizacao é a movimentação do representante digital na unidade.

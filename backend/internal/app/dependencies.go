@@ -43,7 +43,7 @@ import (
 )
 
 // OutboxSource identifica este backend no campo Source de todo evento.
-const OutboxSource = "projeto-nexus.platform"
+const OutboxSource = "sismarq.platform"
 
 // RateLimiters agrupa os limitadores distribuídos (Redis).
 type RateLimiters struct {

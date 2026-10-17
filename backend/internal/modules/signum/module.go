@@ -40,7 +40,7 @@ func (m *Module) Manifest() kernel.Manifest {
 	return kernel.Manifest{
 		Key:            Key,
 		Name:           "Signum",
-		Description:    "Assinatura eletrônica com cerimônia de reautenticação e hash de integridade SHA-256.",
+		Description:    "Assinatura eletrônica com reautenticação e hash SHA-256 (integridade; PAdES/ICP-Brasil conforme ADR vigente).",
 		DefaultEnabled: true,
 		Public:         true,
 		Icon:           "pen-tool",

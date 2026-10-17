@@ -1,9 +1,9 @@
 .PHONY: dev up down logs build test lint format \
 	deploy prod-seed-admin prod-ps prod-logs prod-limpeza prod-down iam-scope-report ia-modelo estrutura-gerar estrutura-aplicar ttdd-impacto ttdd-aplicar \
-	demo-keycloak demo-generate demo-seed demo-test demo-popular \
+	demo-keycloak demo-generate demo-seed demo-test demo-popular homolog-acervo homolog-digitais homolog-conferir \
 	migrate-up migrate-down migrate-status migrate-redo seed-admin \
 	backend-shell frontend-shell rabbitmq-status clean \
-	backend-build backend-test backend-lint backend-sec backend-format pipeline-real \
+	backend-build backend-test backend-lint backend-sec backend-format pipeline-real test-db-reset \
 	frontend-build frontend-test frontend-lint frontend-format \
 	infra-init infra-plan infra-apply infra-destroy infra-deploy
 
@@ -78,6 +78,18 @@ demo-generate: ## Regera realm do Keycloak + SQL + CSV a partir de scripts/demo-
 demo-seed: ## Aplica (idempotente) a estrutura organizacional e os usuários fictícios no Postgres
 	$(COMPOSE_PROD) exec -T postgres psql -q -v ON_ERROR_STOP=1 -U $(DB_USER) -d $(DB_NAME) < deploy/demo/seed-demo.sql
 
+homolog-acervo: ## Organograma real + TTDD + caixas fictícias da SEMAD (homologação C1)
+	$(MAKE) estrutura-aplicar
+	$(MAKE) ttdd-aplicar
+	$(COMPOSE_PROD) exec -T postgres psql -q -v ON_ERROR_STOP=1 -U $(DB_USER) -d $(DB_NAME) < deploy/homolog/seed-acervo.sql
+	$(COMPOSE_PROD) exec -T postgres psql -q -v ON_ERROR_STOP=1 -U $(DB_USER) -d $(DB_NAME) < deploy/homolog/seed-digitais.sql
+
+homolog-digitais: ## Metadados de digitalização fictícios (SCAN e nato-digital) nas caixas HOM-UA
+	$(COMPOSE_PROD) exec -T postgres psql -q -v ON_ERROR_STOP=1 -U $(DB_USER) -d $(DB_NAME) < deploy/homolog/seed-digitais.sql
+
+homolog-conferir: ## Confere o seed HOM-UA / RD-HOM (não substitui a ata humana)
+	$(COMPOSE_PROD) exec -T postgres psql -v ON_ERROR_STOP=1 -U $(DB_USER) -d $(DB_NAME) < deploy/homolog/conferir.sql
+
 demo-test: ## Cenários ponta a ponta com os usuários fictícios (login real pelo Keycloak)
 	python3 scripts/demo-data/cenarios/tramite.py
 	python3 scripts/demo-data/cenarios/modulos.py
@@ -115,6 +127,14 @@ frontend-build:
 ## --- Testes ---
 
 test: backend-test frontend-test ## Roda as suítes de teste do backend e do frontend
+
+TEST_PG_CONTAINER ?= sismarq-test-pg
+TEST_DB_NAME ?= nexus_test
+TEST_DB_USER ?= nexus
+TEST_DB_PASSWORD ?= nexus_ci_password
+
+test-db-reset: ## Recria o Postgres de teste vazio (template0) e aplica as migrations
+	./scripts/test-db-reset.sh
 
 backend-test: 
 	cd backend && go test ./... -p 1
@@ -196,11 +216,12 @@ infra-init: ## Inicializa o Terraform na pasta deploy/infra/terraform
 infra-plan: ## Executa o planejamento da infraestrutura Proxmox
 	cd deploy/infra/terraform && terraform plan
 
-infra-apply: ## Provisiona a VM 201 KVM no Proxmox e gera o inventário
+infra-apply: ## Provisiona a VM KVM no Proxmox (192.168.1.13) e gera o inventário
 	cd deploy/infra/terraform && terraform apply
 
 infra-destroy: ## Destroi a infraestrutura no Proxmox
 	cd deploy/infra/terraform && terraform destroy
 
-infra-deploy: ## Executa o playbook Ansible para configurar Docker e subir o SISMARQ
-	cd deploy/infra/ansible && ansible-playbook site.yml
+infra-deploy: ## Docker + stack SISMARQ na VM (SSO oficial se secrets.yml existir)
+	cd deploy/infra/ansible && ansible-galaxy collection install -r requirements.yml --force && \
+		if [ -f secrets.yml ]; then ansible-playbook site.yml -e @secrets.yml; else ansible-playbook site.yml; fi

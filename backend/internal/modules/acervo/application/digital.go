@@ -16,6 +16,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 
+	apperrors "github.com/yurythx/sismarq/internal/domain/errors"
 	"github.com/yurythx/sismarq/internal/domain/pagination"
 	"github.com/yurythx/sismarq/internal/modules/acervo/domain"
 	"github.com/yurythx/sismarq/internal/platform/audit"
@@ -47,8 +48,8 @@ const (
 	verificacoesMax = 20
 )
 
-// TiposDigital: o scanner entrega PDF (uma imagem por página).
-var TiposDigital = []string{"application/pdf"}
+// TiposDigital: PDF do scanner ou nato-digital, e TIFF multipágina.
+var TiposDigital = []string{"application/pdf", "image/tiff"}
 
 // ConfigDigital parametriza a digitalização (config.AcervoDigitalConfig).
 type ConfigDigital struct {
@@ -97,15 +98,40 @@ func (s *Service) UploadDigital(ctx context.Context, identity auth.Identity, uni
 	if _, _, err := s.unidadeParaDigitalizar(ctx, s.pool, identity, unidade, false); err != nil {
 		return modkit.UploadTicket{}, MapError(err)
 	}
-	return modkit.NewUpload(ctx, s.dig.Store, s.dig.Bucket, prefixoDigital+"/"+unidade.String(), filename, "application/pdf",
+	ct, err := tipoArquivoDigital(filename)
+	if err != nil {
+		return modkit.UploadTicket{}, err
+	}
+	return modkit.NewUpload(ctx, s.dig.Store, s.dig.Bucket, prefixoDigital+"/"+unidade.String(), filename, ct,
 		TiposDigital, s.dig.URLExpiry)
 }
 
-// NovoEnvio é o registro do PDF enviado, com os metadados do Decreto.
+func tipoArquivoDigital(filename string) (string, error) {
+	switch strings.ToLower(filepath.Ext(filename)) {
+	case ".pdf":
+		return "application/pdf", nil
+	case ".tif", ".tiff":
+		return "image/tiff", nil
+	default:
+		return "", apperrors.Validation("envie um PDF ou um TIFF")
+	}
+}
+
+func extensaoOriginal(key string) string {
+	switch e := strings.ToLower(filepath.Ext(key)); e {
+	case ".tif", ".tiff":
+		return e
+	default:
+		return ".pdf"
+	}
+}
+
+// NovoEnvio é o registro do arquivo enviado, com os metadados do Decreto.
 type NovoEnvio struct {
 	ObjectKey      string
 	Descricao      string
 	TipoDoc        string
+	Origem         string
 	Equipamento    string
 	DPI            int
 	ResponsavelCPF string
@@ -135,8 +161,8 @@ func (s *Service) RegistrarDigital(ctx context.Context, identity auth.Identity, 
 	if err != nil {
 		return DetalheDigital{}, MapError(err)
 	}
-	d, err := domain.NovoDigital(domain.Digital{UnidadeID: unidade, Descricao: in.Descricao, TipoDoc: in.TipoDoc, Equipamento: in.Equipamento,
-		DPIDeclarado: in.DPI, ResponsavelID: identity.UserID, ResponsavelNome: identity.Name, ResponsavelCPF: cpf})
+	d, err := domain.NovoDigital(domain.Digital{UnidadeID: unidade, Descricao: in.Descricao, TipoDoc: in.TipoDoc, Origem: in.Origem,
+		Equipamento: in.Equipamento, DPIDeclarado: in.DPI, ResponsavelID: identity.UserID, ResponsavelNome: identity.Name, ResponsavelCPF: cpf})
 	if err != nil {
 		return DetalheDigital{}, MapError(err)
 	}
@@ -261,7 +287,7 @@ func (s *Service) pipeline(ctx context.Context, d *domain.Digital) (string, stri
 		return "", "", err
 	}
 	defer os.RemoveAll(dir)
-	original := filepath.Join(dir, "original.pdf")
+	original := filepath.Join(dir, "original"+extensaoOriginal(d.OriginalKey))
 	if err := s.baixar(ctx, d.OriginalKey, original); err != nil {
 		return "", "", err
 	}
@@ -270,13 +296,15 @@ func (s *Service) pipeline(ctx context.Context, d *domain.Digital) (string, stri
 		return "", "", err
 	}
 	d.DPIMedido = dpi
-	minimo := domain.DPIMinimo(d.TipoDoc, s.dig.DPITexto, s.dig.DPIPlanta)
-	switch {
-	case dpi == 0:
-		return "o PDF não traz imagens digitalizadas: o Decreto 10.278 trata da digitalização do papel", "", nil
-	case dpi < minimo:
-		return fmt.Sprintf("resolução de %d DPI abaixo do mínimo de %d DPI para %s; digitalize de novo", dpi, minimo,
-			strings.ToLower(d.TipoDoc)), "", nil
+	if domain.ExigeDPIScan(d.Origem) {
+		minimo := domain.DPIMinimo(d.TipoDoc, s.dig.DPITexto, s.dig.DPIPlanta)
+		switch {
+		case dpi == 0:
+			return "o arquivo não traz imagens digitalizadas: o Decreto 10.278 trata da digitalização do papel; para PDF já eletrônico use a origem nato-digital", "", nil
+		case dpi < minimo:
+			return fmt.Sprintf("resolução de %d DPI abaixo do mínimo de %d DPI para %s; digitalize de novo", dpi, minimo,
+				strings.ToLower(d.TipoDoc)), "", nil
+		}
 	}
 	u, c, err := s.repo.GetUnidade(ctx, s.pool, d.UnidadeID, false)
 	if err != nil {
@@ -354,6 +382,10 @@ func (s *Service) guardar(ctx context.Context, arquivo, key string, ate time.Tim
 // RunDigitalizacao processa a fila até esvaziar e espera o intervalo.
 func (s *Service) RunDigitalizacao(intervalo time.Duration) func(ctx context.Context) error {
 	return func(ctx context.Context) error {
+		if intervalo <= 0 {
+			<-ctx.Done()
+			return nil
+		}
 		ticker := time.NewTicker(intervalo)
 		defer ticker.Stop()
 		for {
@@ -482,6 +514,10 @@ func (s *Service) VerificarIntegridade(ctx context.Context) (int, error) {
 // RunIntegridade é o worker da verificação periódica (fixity).
 func (s *Service) RunIntegridade(intervalo time.Duration) func(ctx context.Context) error {
 	return func(ctx context.Context) error {
+		if intervalo <= 0 {
+			<-ctx.Done()
+			return nil
+		}
 		ticker := time.NewTicker(intervalo)
 		defer ticker.Stop()
 		for {

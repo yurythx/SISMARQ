@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -21,6 +22,7 @@ type Ferramentas struct {
 	PDFInfo   string
 	PDFImages string
 	PDFToText string
+	TIFFInfo  string
 	Python    string
 	// Timeout de cada programa (o OCR de centenas de páginas demora).
 	Timeout time.Duration
@@ -38,6 +40,7 @@ func (f Ferramentas) comPadroes() Ferramentas {
 	padrao(&f.PDFInfo, "pdfinfo")
 	padrao(&f.PDFImages, "pdfimages")
 	padrao(&f.PDFToText, "pdftotext")
+	padrao(&f.TIFFInfo, "tiffinfo")
 	padrao(&f.Python, "python3")
 	padrao(&f.Idioma, "por")
 	if f.Timeout <= 0 {
@@ -83,9 +86,63 @@ func (p *PipelineExec) paginas(ctx context.Context, arquivo string) (int, error)
 	return strconv.Atoi(string(m[1]))
 }
 
+func ehTIFF(arquivo string) bool {
+	switch strings.ToLower(filepath.Ext(arquivo)) {
+	case ".tif", ".tiff":
+		return true
+	default:
+		return false
+	}
+}
+
+var (
+	reTiffDir = regexp.MustCompile(`(?m)^TIFF Directory`)
+	reTiffRes = regexp.MustCompile(`(?i)Resolution:\s*([0-9.]+)\s*,\s*([0-9.]+)\s*pixels/inch`)
+	reTiffX   = regexp.MustCompile(`(?i)XResolution:\s*([0-9.]+)`)
+	reTiffY   = regexp.MustCompile(`(?i)YResolution:\s*([0-9.]+)`)
+)
+
+func parseTiffInfo(out string) (paginas, dpi int, err error) {
+	paginas = len(reTiffDir.FindAllStringIndex(out, -1))
+	if paginas == 0 {
+		return 0, 0, fmt.Errorf("tiffinfo: nenhuma página TIFF encontrada")
+	}
+	menor := 0
+	for _, m := range reTiffRes.FindAllStringSubmatch(out, -1) {
+		x, _ := strconv.ParseFloat(m[1], 64)
+		y, _ := strconv.ParseFloat(m[2], 64)
+		if d := int(min(x, y)); d > 0 && (menor == 0 || d < menor) {
+			menor = d
+		}
+	}
+	if menor == 0 {
+		xs, ys := reTiffX.FindAllStringSubmatch(out, -1), reTiffY.FindAllStringSubmatch(out, -1)
+		n := min(len(xs), len(ys))
+		for i := 0; i < n; i++ {
+			x, _ := strconv.ParseFloat(xs[i][1], 64)
+			y, _ := strconv.ParseFloat(ys[i][1], 64)
+			if d := int(min(x, y)); d > 0 && (menor == 0 || d < menor) {
+				menor = d
+			}
+		}
+	}
+	return paginas, menor, nil
+}
+
+func (p *PipelineExec) medirTIFF(ctx context.Context, original string) (int, int, error) {
+	out, err := p.rodar(ctx, p.f.TIFFInfo, original)
+	if err != nil {
+		return 0, 0, err
+	}
+	return parseTiffInfo(string(out))
+}
+
 // Medir conta as páginas e acha a menor resolução das imagens do original
-// (pdfimages -list: colunas x-ppi e y-ppi).
+// (pdfimages -list: colunas x-ppi e y-ppi; tiffinfo no TIFF).
 func (p *PipelineExec) Medir(ctx context.Context, original string) (int, int, error) {
+	if ehTIFF(original) {
+		return p.medirTIFF(ctx, original)
+	}
 	paginas, err := p.paginas(ctx, original)
 	if err != nil {
 		return 0, 0, err

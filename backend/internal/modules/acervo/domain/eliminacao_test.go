@@ -214,6 +214,15 @@ func TestEditalPedidosAmostraTermo(t *testing.T) {
 	if PodeAutorizarCCPAD(listagem(ListagemAprovada, 1), cc, cc.Membros[0].UserID) == nil {
 		t.Fatal("CCPAD no rito ordinário")
 	}
+	rascunho := esp
+	rascunho.Situacao = ListagemRascunho
+	if PodeAutorizarCCPAD(rascunho, cc, cc.Membros[0].UserID) == nil {
+		t.Fatal("CCPAD antes da ata")
+	}
+	ord := listagem(ListagemAguardandoSEMAD, 1)
+	if PodeAutorizarSEMAD(ord) == nil {
+		t.Fatal("SEMAD no rito ordinário")
+	}
 	if PodeAutorizarCCPAD(esp, Comissao{Tipo: ComissaoSetorial, Ativa: true}, uuid.New()) == nil {
 		t.Fatal("CSPAD não substitui a CCPAD")
 	}

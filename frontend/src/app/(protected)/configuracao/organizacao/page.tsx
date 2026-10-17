@@ -146,7 +146,7 @@ export default function OrganizacaoPage() {
         onRetry={() => void mutate()}
         empty={(tree ?? []).length === 0}
         emptyTitle="Nenhuma entidade cadastrada"
-        emptyDescription="Comece cadastrando a entidade (órgão ou empresa) raiz."
+        emptyDescription="Comece cadastrando o órgão da administração municipal."
       >
         <ul className="flex flex-col gap-4">
           {(tree ?? []).map((ent) => (

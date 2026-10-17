@@ -1,5 +1,5 @@
-// Package calendar é o plugin Agenda: eventos corporativos e reserva de
-// salas (calendar:manage para curadoria de salas e moderação).
+// Package calendar é o plugin Agenda: eventos do Arquivo Público e reserva
+// de salas (calendar:manage para curadoria e moderação). Permanece plugável.
 package calendar
 
 import (
@@ -33,9 +33,9 @@ func (m *Module) Manifest() kernel.Manifest {
 	return kernel.Manifest{
 		Key:            Key,
 		Name:           "Agenda",
-		Description:    "Eventos corporativos e reserva de salas sem conflito de horário.",
+		Description:    "Eventos do Arquivo Público e reserva de salas sem conflito de horário; agenda pública em /eventos.",
 		DefaultEnabled: true,
-		Public:         false,
+		Public:         true,
 		Icon:           "calendar",
 		Route:          "/agenda",
 		Permissions:    []kernel.PermissionInfo{{Key: "calendar:manage", Description: "Gerenciar salas e moderar eventos de terceiros"}},

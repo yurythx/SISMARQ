@@ -27,7 +27,7 @@ export default function DigitaisPage() {
       <PageHeader
         eyebrow="Acervo"
         title="Digitalização"
-        description="Representantes digitais com valor probatório (Decreto Federal 10.278/2020): PDF/A com OCR, metadados no XMP, SHA-256 e guarda imutável, conferida periodicamente. Digitalizar não libera a eliminação de documento permanente (arts. 20 e 42)."
+        description="O Arquivo Municipal digitaliza os representantes com valor probatório (Decreto Federal 10.278/2020): PDF/A com OCR, metadados no XMP, SHA-256 e guarda imutável. Sem certificado ICP-Brasil municipal a assinatura PAdES permanece ausente. Digitalizar não libera a eliminação de documento permanente (arts. 20 e 42)."
       />
       <label className="flex items-center gap-2 text-sm">
         <input

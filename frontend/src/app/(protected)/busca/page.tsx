@@ -31,7 +31,7 @@ function Busca() {
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader eyebrow="Busca global" title={q ? `Resultados para “${q}”` : "Buscar"} description="Pesquisa unificada sobre os módulos ativos, respeitando suas permissões." />
+      <PageHeader eyebrow="Busca global" title={q ? `Resultados para “${q}”` : "Buscar"} description="Pesquisa unificada sobre os módulos ativos (inclusive o acervo, quando indexado), respeitando suas permissões." />
       <form
         role="search"
         className="flex items-end gap-2"

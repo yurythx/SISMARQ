@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth/next";
-import { Cpu, Layers, Shield, Zap } from "lucide-react";
+import { Archive, Cpu, Landmark, Shield } from "lucide-react";
 
 import { ModulesGrid } from "@/components/dashboard/ModulesGrid";
 import { authOptions } from "@/lib/auth/options";
@@ -55,17 +55,17 @@ export default async function DashboardOverviewPage() {
       <header className="flex flex-col gap-1 border-b border-surface-border pb-6">
         <p className="dateline">{today}</p>
         <h1 className="text-3xl font-bold tracking-tight">{firstName ? `Olá, ${firstName}` : "Visão geral"}</h1>
-        <p className="text-sm text-muted">Módulos disponíveis para você e o estado da plataforma.</p>
+        <p className="text-sm text-muted">Acervo, Tabela de Temporalidade e o estado do sistema.</p>
       </header>
 
       <section aria-labelledby="indicadores" className="flex flex-col gap-3">
         <h2 id="indicadores" className="text-xs font-semibold uppercase tracking-widest text-muted">
-          Plataforma
+          SISMARQ
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCell label="Arquitetura" value="Microkernel" hint="Plug-ins ativados em runtime" icon={Layers} />
-          <StatCell label="Identidade" value="Keycloak + RS256" hint="Federação AD · fallback local" icon={Shield} />
-          <StatCell label="Mensageria" value="Outbox + RabbitMQ" hint="Entrega garantida com DLQ" icon={Zap} />
+          <StatCell label="Acervo" value="Três idades" hint="Lei 10.301/2019, art. 18" icon={Archive} />
+          <StatCell label="TTDD" value="Atlas" hint="Classificação e prazos de guarda" icon={Landmark} />
+          <StatCell label="Rastreio" value="Auditoria" hint="Cadeia SHA-256 e cópia WORM" icon={Shield} />
           <StatCell
             label="Estado do núcleo"
             value={health.status === "ok" ? "Saudável" : health.status === "degraded" ? "Degradado" : "Indisponível"}

@@ -29,7 +29,7 @@ func (h *Handlers) registerDigital(r chi.Router, ler, gerir, central func(http.H
 	r.With(central).Post("/digitais/{id}/reprocessar", h.digitalAcao(h.svc.Reprocessar))
 }
 
-// UploadDigitalRequest pede a URL de envio do PDF digitalizado.
+// UploadDigitalRequest pede a URL de envio do PDF ou TIFF.
 type UploadDigitalRequest struct {
 	Filename string `json:"filename" validate:"required,max=255"`
 }
@@ -60,8 +60,9 @@ type DigitalRequest struct {
 	ObjectKey      string `json:"object_key" validate:"required,max=300"`
 	Descricao      string `json:"descricao" validate:"max=500"`
 	TipoDoc        string `json:"tipo_documento" validate:"required,max=10"`
+	Origem         string `json:"origem" validate:"max=20"`
 	Equipamento    string `json:"equipamento" validate:"required,max=200"`
-	DPI            int    `json:"dpi_declarado" validate:"required"`
+	DPI            int    `json:"dpi_declarado"`
 	ResponsavelCPF string `json:"responsavel_cpf" validate:"max=20"`
 }
 
@@ -79,7 +80,7 @@ func (h *Handlers) RegistrarDigital(w http.ResponseWriter, r *http.Request) {
 	}
 	identity, _ := auth.IdentityFromContext(r.Context())
 	d, err := h.svc.RegistrarDigital(r.Context(), identity, id, application.NovoEnvio{ObjectKey: req.ObjectKey, Descricao: req.Descricao,
-		TipoDoc: req.TipoDoc, Equipamento: req.Equipamento, DPI: req.DPI, ResponsavelCPF: req.ResponsavelCPF})
+		TipoDoc: req.TipoDoc, Origem: req.Origem, Equipamento: req.Equipamento, DPI: req.DPI, ResponsavelCPF: req.ResponsavelCPF})
 	if err != nil {
 		h.fail(w, r, err)
 		return

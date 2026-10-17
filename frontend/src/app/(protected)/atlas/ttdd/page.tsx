@@ -6,6 +6,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 
 import { ArvoreTTDD, contem } from "@/components/atlas/ArvoreTTDD";
+import { AvisoAtividadesMeio } from "@/components/atlas/AvisoAtividadesMeio";
 import { SeloVigencia } from "@/components/atlas/SeloVigencia";
 import { Trilha } from "@/components/atlas/Trilha";
 import { destinacao, fase } from "@/components/atlas/labels";
@@ -117,6 +118,7 @@ function Consulta() {
           </div>
         }
       />
+      <AvisoAtividadesMeio />
 
       <div className="grid gap-6 lg:grid-cols-12">
         <aside className="lg:col-span-4 xl:col-span-3">

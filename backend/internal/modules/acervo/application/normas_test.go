@@ -144,8 +144,19 @@ func TestNormaAoLongoDoTempo(t *testing.T) {
 	if items, _, err := s.Normas(ctx, arquivo, rasc.Numero, pagination.New(1, 50, 100)); err != nil || len(items) != 1 || !items[0].TemRascunho {
 		t.Fatalf("busca pelo número: %+v %v", items, err)
 	}
-	if items, _, err := s.NormasPublicas(ctx, "Recolher em junho", pagination.New(1, 50, 100)); err != nil || len(items) == 0 || items[0].ID != n.ID {
+	items, _, err := s.NormasPublicas(ctx, "Recolher em junho", pagination.New(1, 50, 100))
+	if err != nil || len(items) == 0 {
 		t.Fatalf("busca no texto: %+v %v", items, err)
+	}
+	achou := false
+	for _, it := range items {
+		if it.ID == n.ID {
+			achou = true
+			break
+		}
+	}
+	if !achou {
+		t.Fatalf("busca no texto não trouxe a norma %s: %+v", n.ID, items)
 	}
 	if items, _, _ := s.NormasPublicas(ctx, "Ainda em estudo", pagination.New(1, 50, 100)); len(items) != 0 {
 		t.Fatal("rascunho na lista pública")

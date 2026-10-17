@@ -189,8 +189,11 @@ func TestRecolhimentoRegular(t *testing.T) {
 	if _, total, _ := s.Recolhimentos(ctx, agente(e.outra), pagination.New(1, 10, 100)); total != 0 {
 		t.Fatal("outra origem não vê")
 	}
-	if items, total, err := s.Recolhimentos(ctx, arquivo, pagination.New(1, 10, 100)); err != nil || total < 1 || items[0].ID != r.ID {
+	if _, total, err := s.Recolhimentos(ctx, arquivo, pagination.New(1, 10, 100)); err != nil || total < 1 {
 		t.Fatalf("o Arquivo vê: %v %v", total, err)
+	}
+	if got, err := s.Recolhimento(ctx, arquivo, r.ID); err != nil || got.ID != r.ID {
+		t.Fatalf("o Arquivo lê o recolhimento: %+v %v", got, err)
 	}
 	if _, total, _ := s.Recolhimentos(ctx, origem, pagination.New(1, 10, 100)); total != 1 {
 		t.Fatalf("a origem vê os seus: %d", total)

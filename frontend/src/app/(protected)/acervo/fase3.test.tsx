@@ -353,6 +353,7 @@ describe("Anexos I a IV", () => {
     expect(await screen.findByRole("heading", { name: titulo })).toBeInTheDocument();
     expect(screen.getByText(texto)).toBeInTheDocument();
     if (n !== "4") expect(await screen.findByText("Secretaria Municipal de Administração", { selector: "dd" })).toBeInTheDocument();
+    if (n === "1") expect(screen.getByText(/Titular da Superintendência de Arquivo Público/)).toBeInTheDocument();
     if (n === "4") expect(await screen.findByText("Bruno Jurídico")).toBeInTheDocument();
   });
 

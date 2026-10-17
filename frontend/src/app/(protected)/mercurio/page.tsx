@@ -258,7 +258,10 @@ function Mercurio() {
     <div className="-mx-4 -mb-10 -mt-6 grid h-[calc(100dvh-var(--topbar-h))] grid-cols-1 sm:-mx-8 md:grid-cols-[16rem_1fr]">
       <nav aria-label="Salas do Mercúrio" className="hidden min-h-0 overflow-y-auto border-r border-surface-border p-3 md:block">
         <div className="mb-3 flex items-center justify-between px-2">
-          <h1 className="text-lg font-semibold">Mercúrio</h1>
+          <div>
+            <h1 className="text-lg font-semibold">Mercúrio</h1>
+            <p className="text-[11px] text-muted">Canais da Superintendência</p>
+          </div>
           {can("mercurio:manage") && (
             <Button variant="ghost" size="sm" aria-label="Gerenciar salas" onClick={() => setAdmin(true)}>
               <Settings2 size={16} aria-hidden="true" />

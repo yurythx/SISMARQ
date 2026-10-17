@@ -74,12 +74,12 @@ func (d *Deliverer) Deliver(ctx context.Context, t domain.Target, del domain.Del
 		return 0, err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("User-Agent", "Nexus-Egress/1.0")
-	req.Header.Set("X-Nexus-Event", del.EventType)
-	req.Header.Set("X-Nexus-Delivery", del.ID.String())
+	req.Header.Set("User-Agent", "SISMARQ-Egress/1.0")
+	req.Header.Set("X-SISMARQ-Event", del.EventType)
+	req.Header.Set("X-SISMARQ-Delivery", del.ID.String())
 	req.Header.Set("X-Idempotency-Key", del.EventID.String())
 	if t.Secret != "" {
-		req.Header.Set("X-Nexus-Signature", Sign(t.Secret, time.Now().Unix(), body))
+		req.Header.Set("X-SISMARQ-Signature", Sign(t.Secret, time.Now().Unix(), body))
 	}
 	resp, err := d.client.Do(req)
 	if err != nil {

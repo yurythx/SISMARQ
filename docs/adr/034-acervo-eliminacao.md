@@ -75,8 +75,10 @@ série vigente, sem bloqueio judicial) já impediam a eliminação avulsa. A Fas
    direta no banco não pula etapa.
 5. **Diário Oficial do Município**. O modelo do Anexo III fala em "Diário
    Oficial do Estado", mas o art. 37 manda publicar no do Município. O
-   sistema segue o artigo e o texto gerado diz "Diário Oficial do
-   Município".
+   sistema segue o artigo: o texto gerado diz "Diário Oficial do
+   Município" e o veículo confirmado é o **DIORONDON-e** (ADR 043).
+   O titular que autoriza nos Anexos é a **Superintendência de Arquivo
+   Público** (nome atual; a lei ainda fala em Divisão).
 6. **Documentos**: a tela gera os Anexos I a IV preenchidos, com o texto dos
    modelos da lei, para imprimir e assinar. Na ata, a frase "aprovada por
    unanimidade" do modelo virou "aprovada pelos membros presentes": o

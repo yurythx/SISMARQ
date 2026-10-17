@@ -28,7 +28,7 @@ func fakes(t *testing.T, scripts map[string]string) Ferramentas {
 		return p
 	}
 	return Ferramentas{OCRmyPDF: bin("ocrmypdf"), PDFInfo: bin("pdfinfo"), PDFImages: bin("pdfimages"), PDFToText: bin("pdftotext"),
-		Python: bin("python3"), Timeout: 10 * time.Second}
+		TIFFInfo: bin("tiffinfo"), Python: bin("python3"), Timeout: 10 * time.Second}
 }
 
 const pdfimagesSaida = `page   num  type   width height color comp bpc  enc interp  object ID x-ppi y-ppi size ratio
@@ -61,6 +61,42 @@ func TestPipelineMedir(t *testing.T) {
 		if _, _, err := NovoPipeline(fakes(t, s)).Medir(context.Background(), "x.pdf"); err == nil {
 			t.Errorf("%s: sem erro", nome)
 		}
+	}
+}
+
+func TestParseTiffInfo(t *testing.T) {
+	out := `TIFF Directory at offset 0x8 (8)
+  Image Width: 2480 Image Length: 3508
+  Resolution: 300, 301 pixels/inch
+TIFF Directory at offset 0x100 (256)
+  Resolution: 298, 300 pixels/inch
+`
+	pag, dpi, err := parseTiffInfo(out)
+	if err != nil || pag != 2 || dpi != 298 {
+		t.Fatalf("parse: %d %d %v", pag, dpi, err)
+	}
+	if _, _, err := parseTiffInfo("nada"); err == nil {
+		t.Fatal("sem páginas")
+	}
+	xy := `TIFF Directory at offset 0x8 (8)
+  XResolution: 600
+  YResolution: 300
+`
+	if pag, dpi, err := parseTiffInfo(xy); err != nil || pag != 1 || dpi != 300 {
+		t.Fatalf("X/YResolution: %d %d %v", pag, dpi, err)
+	}
+}
+
+func TestPipelineMedirTIFF(t *testing.T) {
+	f := fakes(t, map[string]string{
+		"tiffinfo": `echo "TIFF Directory at offset 0x8 (8)"; echo "  Resolution: 300, 300 pixels/inch"`,
+	})
+	pag, dpi, err := NovoPipeline(f).Medir(context.Background(), "lote.tiff")
+	if err != nil || pag != 1 || dpi != 300 {
+		t.Fatalf("tiff: %d %d %v", pag, dpi, err)
+	}
+	if _, _, err := NovoPipeline(fakes(t, map[string]string{"tiffinfo": `exit 1`})).Medir(context.Background(), "x.tif"); err == nil {
+		t.Fatal("tiffinfo falha")
 	}
 }
 
@@ -102,7 +138,7 @@ func TestPipelineProcessar(t *testing.T) {
 		}
 	}
 	// Padrões: nomes no PATH, OCR em português e 2 h por programa.
-	if p := NovoPipeline(Ferramentas{}); p.f.OCRmyPDF != "ocrmypdf" || p.f.Idioma != "por" || p.f.Timeout != 2*time.Hour || p.f.Python != "python3" {
+	if p := NovoPipeline(Ferramentas{}); p.f.OCRmyPDF != "ocrmypdf" || p.f.TIFFInfo != "tiffinfo" || p.f.Idioma != "por" || p.f.Timeout != 2*time.Hour || p.f.Python != "python3" {
 		t.Fatalf("padrões: %+v", p.f)
 	}
 }

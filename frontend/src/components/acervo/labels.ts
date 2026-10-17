@@ -220,6 +220,47 @@ export function situacaoDigital(s: string) {
   return SITUACAO_DIGITAL[s] ?? { label: s, tone: "neutral" as Tone };
 }
 
+/** Origem do arquivo enviado (ADR 044). */
+export const ORIGEM_DIGITAL: Record<string, string> = {
+  SCAN: "Digitalização do papel",
+  NATO_DIGITAL: "Nato-digital",
+};
+
+export function origemDigital(s?: string | null): string {
+  return ORIGEM_DIGITAL[s ?? ""] ?? (s || "Digitalização do papel");
+}
+
+/** Nome atual do órgão central nos Anexos gerados (TTDD 2025; ADR 043). A lei
+ * ainda fala em Divisão de Arquivo Público. */
+export const ORGAO_ARQUIVO = "Superintendência de Arquivo Público";
+export const ORGAO_ARQUIVO_EXTENSO =
+  "Superintendência de Arquivo Público do Município de Rondonópolis, Estado de Mato Grosso";
+
+/** Ajuda da data do evento conforme a condição da TTDD (ADR 043, item 0.8.5). */
+export function ajudaEvento(condicao?: string | null, descritor?: string | null): string {
+  const c = (condicao ?? "").toLowerCase();
+  const d = (descritor ?? "").toLowerCase();
+  if (c.includes("vigor")) {
+    if (/contrat|convên|conven|termo de/.test(d)) {
+      return "Informe a data em que o contrato, convênio ou termo deixou de vigorar (encerramento, rescisão ou término do prazo). Use o documento que comprova o evento.";
+    }
+    if (/gestão|gestao|mandato|exercício|exercicio/.test(d)) {
+      return "Informe a data do término da gestão, do mandato ou do exercício a que a série se refere.";
+    }
+    if (/funcional|servidor|lotação|lotacao|cargo/.test(d)) {
+      return "Informe a data do desligamento, da vacância ou do fim do vínculo.";
+    }
+    return "Informe a data em que a relação jurídica deixou de vigorar (fim de contrato, gestão, licença ou outro fato previsto na série). Não estime: use o documento que comprova o evento.";
+  }
+  if (/ap[oó]s a data do evento/.test(c)) {
+    return "Informe a data do fato que a TTDD chama de evento; os dias ou meses da condição contam a partir dela.";
+  }
+  if (/prescri/.test(c)) {
+    return "Informe a data em que se considera prescrita a pretensão (marco legal ou administrativo da série).";
+  }
+  return "Preencha só se a série da TTDD tiver prazo por condição (vigência, evento, prescrição). A data-limite (ano inicial e final) continua obrigatória. Se a TTDD for republicada, a unidade já classificada não some.";
+}
+
 /** Tamanho legível (KB, MB, GB). */
 export function fmtBytes(n: number): string {
   if (n < 1024) return `${n} B`;

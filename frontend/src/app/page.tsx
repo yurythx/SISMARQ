@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Archive, ArrowRight, CalendarClock, FileSearch, HelpCircle, Landmark, MessageSquare, Newspaper } from "lucide-react";
+import { Archive, ArrowRight, CalendarClock, FileSearch, HelpCircle, Landmark, MessageSquare, Newspaper, ScanLine } from "lucide-react";
 
 import { PublicShell } from "@/components/layout/PublicShell";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
@@ -9,7 +9,7 @@ import { listPublishedServices } from "@/lib/catalog/catalog";
 import { listPublicPosts } from "@/lib/blog/publicBlog";
 import { ServiceIcon, getCategoryIconStyles } from "@/lib/catalog/icons";
 import { APP_URL } from "@/lib/env";
-import { IDADES, LEI, RITO_ELIMINACAO } from "@/lib/sismarq/conteudo";
+import { DIGITALIZACAO_FLUXO, IDADES, LEI, RITO_ELIMINACAO } from "@/lib/sismarq/conteudo";
 
 export const dynamic = "force-dynamic";
 
@@ -100,6 +100,35 @@ export default async function HomePage() {
                     <p className="text-xs">{idade.fonte}</p>
                   </CardContent>
                 </Card>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        {/* Digitalização */}
+        <section className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6" aria-labelledby="digitalizacao">
+          <div className="flex flex-col gap-2">
+            <p className="dateline">Decreto 10.278/2020 · Lei 10.301/2019, art. 48</p>
+            <h2 id="digitalizacao" className="text-3xl font-bold tracking-tight text-foreground">
+              Como o documento digital entra no SISMARQ
+            </h2>
+            <p className="max-w-3xl text-base text-muted">
+              Há dois caminhos, e eles não se misturam. O papel passa pelo scanner (PDF ou TIFF) com a resolução do
+              Decreto federal. O PDF que já nasceu eletrônico (nato-digital) segue para PDF/A e OCR, sem fingir que foi
+              escaneado. Em ambos os casos o hash e a guarda imutável ficam no repositório; digitalizar não libera a
+              eliminação do permanente.
+            </p>
+            <p className="inline-flex items-center gap-2 text-sm text-primary">
+              <ScanLine size={16} aria-hidden="true" /> Servidor autenticado envia o arquivo na ficha da unidade de
+              arquivamento.
+            </p>
+          </div>
+          <ol className="grid gap-4 md:grid-cols-2">
+            {DIGITALIZACAO_FLUXO.map((etapa) => (
+              <li key={etapa.titulo} className="flex flex-col gap-2 rounded-xl border border-surface-border bg-surface p-5 shadow-xs">
+                <h3 className="text-base font-bold text-foreground">{etapa.titulo}</h3>
+                <p className="text-sm text-muted">{etapa.descricao}</p>
+                <p className="mt-auto text-xs text-muted">{etapa.fonte}</p>
               </li>
             ))}
           </ol>

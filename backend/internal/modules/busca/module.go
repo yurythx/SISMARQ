@@ -39,7 +39,7 @@ func (m *Module) Manifest() kernel.Manifest {
 	return kernel.Manifest{
 		Key:            Key,
 		Name:           "Busca Global",
-		Description:    "Busca unificada sobre os módulos ativos (Blog, Wiki, Arquivos, Catálogo, Diretório, Trâmite).",
+		Description:    "Busca unificada sobre os módulos ativos (Blog, Wiki, Arquivos, Catálogo, Diretório, Trâmite, Acervo).",
 		DefaultEnabled: true,
 		Icon:           "search",
 		Route:          "/busca",

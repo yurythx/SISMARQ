@@ -15,14 +15,14 @@ import (
 	"github.com/yurythx/sismarq/internal/platform/database"
 )
 
-const digitalCols = `d.id, d.numero, d.unidade_id, d.descricao, d.tipo_documento, d.equipamento, d.dpi_declarado, d.responsavel_id,
+const digitalCols = `d.id, d.numero, d.unidade_id, d.descricao, d.tipo_documento, d.origem, d.equipamento, d.dpi_declarado, d.responsavel_id,
 	d.responsavel_nome, d.responsavel_cpf, d.codigo_classificacao, d.digitalizado_em, d.situacao, d.motivo, d.tentativas,
 	d.original_key, d.original_sha256, d.original_bytes, d.pdfa_key, d.pdfa_sha256, d.pdfa_bytes, d.paginas, d.dpi_medido,
 	d.conformidade, d.retencao_ate, d.processado_em, d.verificado_em, d.integro, d.criado_em, d.publicado_em`
 
 func scanDigital(row pgx.Row) (domain.Digital, error) {
 	var d domain.Digital
-	err := row.Scan(&d.ID, &d.Numero, &d.UnidadeID, &d.Descricao, &d.TipoDoc, &d.Equipamento, &d.DPIDeclarado, &d.ResponsavelID,
+	err := row.Scan(&d.ID, &d.Numero, &d.UnidadeID, &d.Descricao, &d.TipoDoc, &d.Origem, &d.Equipamento, &d.DPIDeclarado, &d.ResponsavelID,
 		&d.ResponsavelNome, &d.ResponsavelCPF, &d.CodigoClass, &d.DigitalizadoEm, &d.Situacao, &d.Motivo, &d.Tentativas,
 		&d.OriginalKey, &d.OriginalSHA256, &d.OriginalBytes, &d.PDFAKey, &d.PDFASHA256, &d.PDFABytes, &d.Paginas, &d.DPIMedido,
 		&d.Conformidade, &d.RetencaoAte, &d.ProcessadoEm, &d.VerificadoEm, &d.Integro, &d.CriadoEm, &d.PublicadoEm)
@@ -32,11 +32,11 @@ func scanDigital(row pgx.Row) (domain.Digital, error) {
 // InsertDigital grava o envio e devolve o identificador (RD-AAAA-NNNNNN).
 func (r *Repository) InsertDigital(ctx context.Context, db database.DBTX, d domain.Digital) (string, error) {
 	var numero string
-	if err := db.QueryRow(ctx, `INSERT INTO acervo_digitais (id, unidade_id, descricao, tipo_documento, equipamento, dpi_declarado,
+	if err := db.QueryRow(ctx, `INSERT INTO acervo_digitais (id, unidade_id, descricao, tipo_documento, origem, equipamento, dpi_declarado,
 		responsavel_id, responsavel_nome, responsavel_cpf, codigo_classificacao, digitalizado_em, situacao, original_key,
 		original_sha256, original_bytes, criado_por, criado_em)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $7, $16) RETURNING numero`,
-		d.ID, d.UnidadeID, d.Descricao, d.TipoDoc, d.Equipamento, d.DPIDeclarado, d.ResponsavelID, d.ResponsavelNome,
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $8, $17) RETURNING numero`,
+		d.ID, d.UnidadeID, d.Descricao, d.TipoDoc, d.Origem, d.Equipamento, d.DPIDeclarado, d.ResponsavelID, d.ResponsavelNome,
 		d.ResponsavelCPF, d.CodigoClass, d.DigitalizadoEm, d.Situacao, d.OriginalKey, d.OriginalSHA256, d.OriginalBytes,
 		d.CriadoEm).Scan(&numero); err != nil {
 		return "", fmt.Errorf("acervo.InsertDigital: %w", err)

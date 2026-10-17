@@ -50,6 +50,14 @@ export default function MapeamentoADPage() {
 
   return (
     <div className="flex flex-col gap-6">
+      <p className="text-sm text-muted">
+        Os logins vêm do Keycloak (federação LDAP). Para o Acervo, mapeie o grupo da Superintendência de Arquivo
+        Público a um perfil com <code className="font-mono text-xs">acervo:central</code> em escopo global; o grupo
+        da SEMAD que aprova os arts. 35 e 36 a um perfil com{" "}
+        <code className="font-mono text-xs">acervo:semad</code> global; e os membros da CSPAD (quando houver
+        portaria) a um perfil com <code className="font-mono text-xs">acervo:avaliacao</code> no órgão. Sem o grupo
+        da SEMAD a cópia do Termo (art. 38) não chega lá.
+      </p>
       <Card>
         <CardHeader>
           <CardTitle as="h2" className="flex items-center gap-2">

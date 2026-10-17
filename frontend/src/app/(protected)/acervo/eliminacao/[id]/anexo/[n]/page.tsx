@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import type { ReactNode } from "react";
 
-import { TIPOS, ano, fmtDia, porExtenso } from "@/components/acervo/labels";
+import { ORGAO_ARQUIVO, ORGAO_ARQUIVO_EXTENSO, TIPOS, ano, fmtDia, porExtenso } from "@/components/acervo/labels";
 import { useOrgao } from "@/components/acervo/useOrgao";
 import { DataState } from "@/components/sismarq/DataState";
 import { Button } from "@/components/ui/Button";
@@ -157,7 +157,7 @@ export default function AnexoPage() {
                 <p className="mt-6">
                   LOCAL/DATA: Rondonópolis, {l.autorizada_em ? fmtDia(l.autorizada_em) : "____/____/______"}
                 </p>
-                <Assinatura>Autorizo — Titular da Divisão de Arquivo Público</Assinatura>
+                <Assinatura>Autorizo — Titular da {ORGAO_ARQUIVO}</Assinatura>
               </>
             )}
 
@@ -166,7 +166,7 @@ export default function AnexoPage() {
                 <p className="text-justify">
                   Aos {porExtenso(l.termo_eliminado_em).dia} dias do mês de {porExtenso(l.termo_eliminado_em).mes} do ano de{" "}
                   {porExtenso(l.termo_eliminado_em).ano}, o(a) {unidade}, de acordo com o que consta da Listagem de Eliminação de Documentos nº{" "}
-                  {l.numero}, aprovada pelo(a) titular da Divisão de Arquivo Público do Município de Rondonópolis, Estado de Mato Grosso, por intermédio
+                  {l.numero}, aprovada pelo(a) titular da {ORGAO_ARQUIVO_EXTENSO}, por intermédio
                   da autorização de {fmtDia(l.autorizada_em)} e respectivo Edital de Ciência de Eliminação de Documentos nº {l.edital_numero}, publicado no
                   Diário Oficial do Município de Rondonópolis em {fmtDia(l.edital_publicado_em)}
                   {l.edital_diario && ` (${l.edital_diario})`}, procedeu à eliminação de {mensuracao(eliminados)} dos documentos relativos aos conjuntos
@@ -191,7 +191,7 @@ export default function AnexoPage() {
                 <p className="text-justify">
                   <strong>Nº {l.edital_numero}</strong> — O(A) Presidente da Comissão Permanente de Avaliação, designado(a) pela{" "}
                   {comissao?.portaria || "Portaria nº ____"}, de acordo com a Listagem de Eliminação de Documentos nº {l.numero}, autorizada pela
-                  Divisão de Arquivo Público do Município de Rondonópolis, Estado de Mato Grosso — Órgão Central do SISMARQ, faz saber a quem possa
+                  {ORGAO_ARQUIVO_EXTENSO} — Órgão Central do SISMARQ, faz saber a quem possa
                   interessar que a partir do 30º dia subsequente à data de publicação deste Edital no Diário Oficial do Município (Lei Municipal nº
                   10.301/2019, art. 37), se não houver oposição, o(a) {unidade} eliminará {mensuracao(relacionados)} dos documentos relativos aos
                   conjuntos documentais relacionados abaixo, do(a) {orgao}.

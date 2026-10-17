@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
 
-import { fmtBytes, situacaoDigital } from "@/components/acervo/labels";
+import { fmtBytes, origemDigital, situacaoDigital } from "@/components/acervo/labels";
 import { useAction } from "@/components/sismarq/useAction";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -17,17 +17,18 @@ import { putToTicket } from "@/lib/sismarq/upload";
 
 const EM_ANDAMENTO = ["ENVIADO", "PROCESSANDO"];
 
-/** Os representantes digitais da unidade e o envio de um novo PDF do
- * scanner (Decreto 10.278/2020): o arquivo vai direto ao armazenamento e o
- * worker gera o PDF/A com OCR, metadados e hash. */
+/** Os representantes digitais da unidade e o envio (Decreto 10.278/2020 e
+ * ADR 044): scan do papel (PDF/TIFF com DPI) ou PDF nato-digital. O worker
+ * gera o PDF/A com OCR, metadados e hash. */
 export function DigitaisDaUnidade({ unidadeId, podeGerir }: { unidadeId: string; podeGerir: boolean }) {
   const { run, pending } = useAction();
   const [arquivo, setArquivo] = useState<File | null>(null);
+  const [origem, setOrigem] = useState<"SCAN" | "NATO_DIGITAL">("SCAN");
   const lista = useApiPage<AcervoDigital>(withQuery("v1/acervo/digitais", { unidade_id: unidadeId, page_size: 50 }), {
-    // Enquanto há algo na fila, acompanha o pipeline.
     refreshInterval: (dados) => ((dados?.items ?? []).some((d) => EM_ANDAMENTO.includes(d.situacao)) ? 5000 : 0),
   });
   const itens = lista.data?.items ?? [];
+  const scan = origem === "SCAN";
 
   async function enviar(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -43,14 +44,16 @@ export function DigitaisDaUnidade({ unidadeId, podeGerir }: { unidadeId: string;
         object_key: ticket.object_key,
         descricao: txt("descricao"),
         tipo_documento: txt("tipo_documento"),
+        origem,
         equipamento: txt("equipamento"),
-        dpi_declarado: Number(f.get("dpi_declarado")),
+        dpi_declarado: scan ? Number(f.get("dpi_declarado")) : 0,
         responsavel_cpf: txt("responsavel_cpf"),
       });
     }, "Enviado: o PDF/A fica pronto depois do processamento.");
     if (r) {
       form.reset();
       setArquivo(null);
+      setOrigem("SCAN");
       await lista.mutate();
     }
   }
@@ -77,9 +80,10 @@ export function DigitaisDaUnidade({ unidadeId, podeGerir }: { unidadeId: string;
                     </Link>
                     {d.descricao && <span> — {d.descricao}</span>}
                     <p className="text-xs text-muted">
+                      {origemDigital(d.origem)}
                       {d.situacao === "PRONTO"
-                        ? `${d.paginas} página(s) · ${d.dpi_medido} DPI · ${fmtBytes(d.pdfa_bytes)} · ${d.conformidade}`
-                        : d.motivo || `${fmtBytes(d.original_bytes)} enviados`}
+                        ? ` · ${d.paginas} página(s) · ${d.dpi_medido || "—"} DPI · ${fmtBytes(d.pdfa_bytes)} · ${d.conformidade}`
+                        : ` · ${d.motivo || `${fmtBytes(d.original_bytes)} enviados`}`}
                     </p>
                   </div>
                   <div className="flex gap-2">
@@ -93,14 +97,29 @@ export function DigitaisDaUnidade({ unidadeId, podeGerir }: { unidadeId: string;
         )}
         {podeGerir && (
           <form onSubmit={enviar} aria-label="Enviar digitalização" className="flex flex-col gap-3 border-t border-surface-border pt-3">
+            <p className="text-xs text-muted">
+              Dois caminhos: o papel digitalizado (Decreto 10.278 — imagens e DPI mínimo) e o PDF já eletrônico
+              (nato-digital), que segue para PDF/A e OCR sem a conferência de scanner.
+            </p>
+            <Select
+              id="origem"
+              name="origem"
+              label="Origem do arquivo *"
+              value={origem}
+              onChange={(e) => setOrigem(e.target.value === "NATO_DIGITAL" ? "NATO_DIGITAL" : "SCAN")}
+              options={[
+                { value: "SCAN", label: "Papel digitalizado (scanner — PDF ou TIFF)" },
+                { value: "NATO_DIGITAL", label: "Nato-digital (PDF já eletrônico)" },
+              ]}
+            />
             <div className="flex flex-col gap-1">
               <label htmlFor="arquivo-digital" className="text-sm font-medium">
-                PDF do scanner *
+                {scan ? "Arquivo do scanner (PDF ou TIFF) *" : "PDF nato-digital *"}
               </label>
               <input
                 id="arquivo-digital"
                 type="file"
-                accept="application/pdf"
+                accept={scan ? "application/pdf,image/tiff,.pdf,.tif,.tiff" : "application/pdf,.pdf"}
                 required
                 onChange={(e) => setArquivo(e.target.files?.[0] ?? null)}
                 className="text-sm"
@@ -113,14 +132,23 @@ export function DigitaisDaUnidade({ unidadeId, podeGerir }: { unidadeId: string;
                 label="Tipo *"
                 defaultValue="TEXTO"
                 options={[
-                  { value: "TEXTO", label: "Texto (mínimo 300 DPI)" },
-                  { value: "PLANTA", label: "Planta ou mapa (mínimo 600 DPI)" },
+                  { value: "TEXTO", label: "Texto (mínimo 300 DPI no scan)" },
+                  { value: "PLANTA", label: "Planta ou mapa (mínimo 600 DPI no scan)" },
                 ]}
               />
-              <Input id="equipamento" name="equipamento" label="Scanner (modelo e nº de série) *" required maxLength={200} />
-              <Input id="dpi_declarado" name="dpi_declarado" type="number" label="Resolução (DPI) *" required min={72} max={4800} defaultValue={300} />
+              <Input
+                id="equipamento"
+                name="equipamento"
+                label={scan ? "Scanner (modelo e nº de série) *" : "Sistema de origem *"}
+                required
+                maxLength={200}
+                placeholder={scan ? "Ex.: Fujitsu fi-7160" : "Ex.: SEI / editor PDF"}
+              />
+              {scan && (
+                <Input id="dpi_declarado" name="dpi_declarado" type="number" label="Resolução (DPI) *" required min={72} max={4800} defaultValue={300} />
+              )}
               <Input id="descricao" name="descricao" label="Parte ou volume" maxLength={500} placeholder="Ex.: volume 1 de 3" />
-              <Input id="responsavel_cpf" name="responsavel_cpf" label="CPF de quem digitalizou" maxLength={14} placeholder="Guardado mascarado" />
+              <Input id="responsavel_cpf" name="responsavel_cpf" label="CPF de quem enviou" maxLength={14} placeholder="Guardado mascarado" />
             </div>
             <div>
               <Button type="submit" disabled={pending || !arquivo}>

@@ -309,6 +309,42 @@ func TestDigitalizacaoReprovada(t *testing.T) {
 	}
 }
 
+// PDF nato-digital (sem imagens / DPI 0) não é reprovado: o Decreto 10.278
+// é do scan do papel. TIFF é aceito no upload.
+func TestNatoDigitalEUploadTIFF(t *testing.T) {
+	e := novoEnv(t)
+	ctx := context.Background()
+	e.agora = dia("2026-10-16")
+	e.limparFila(t)
+	store := &wormMem{Memory: storagetest.New(), dias: map[string]int{}}
+	pipe := &pipeFalso{paginas: 1, dpi: 0}
+	s := e.digital(t, store, pipe)
+	quem := digitalizador(t, e, e.unidade)
+	u := e.criar(codPerm)
+	if _, err := s.UploadDigital(ctx, quem, u.ID, "nota.docx"); codigoDe(err) != apperrors.CodeValidation {
+		t.Fatalf("extensão: %v", err)
+	}
+	tk, err := s.UploadDigital(ctx, quem, u.ID, "lote.tiff")
+	if err != nil || !strings.HasSuffix(tk.ObjectKey, ".tiff") {
+		t.Fatalf("tiff: %+v %v", tk, err)
+	}
+	if err := store.Put(ctx, "app", tk.ObjectKey, strings.NewReader("II*\x00tiff"), 6, "image/tiff"); err != nil {
+		t.Fatal(err)
+	}
+	d, err := s.RegistrarDigital(ctx, quem, u.ID, application.NovoEnvio{ObjectKey: tk.ObjectKey, TipoDoc: "TEXTO",
+		Origem: domain.OrigemNatoDigital, Equipamento: "PDF nato-digital (SEI)", DPI: 0})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if ok, err := s.ProcessarProximo(ctx); !ok || err != nil {
+		t.Fatal(err)
+	}
+	got, _ := s.Digital(ctx, quem, d.ID)
+	if got.Situacao != domain.DigitalPronto || got.Origem != domain.OrigemNatoDigital || got.DPIMedido != 0 {
+		t.Fatalf("nato: %+v", got.Digital)
+	}
+}
+
 // Falha no pipeline: tenta de novo e, na terceira, fica FALHOU com o
 // original guardado; o Arquivo Público reprocessa.
 func TestDigitalizacaoFalhaEReprocessa(t *testing.T) {
@@ -501,10 +537,17 @@ func TestIntegridade(t *testing.T) {
 	if got, _ := s.Digital(ctx, quem, c.ID); got.Situacao != domain.DigitalPronto {
 		t.Fatalf("o worker processou a fila: %+v", got.Digital)
 	}
-	e.agora = e.agora.Add(25 * time.Hour)
 	cctx2, cancel2 := context.WithTimeout(ctx, 200*time.Millisecond)
 	defer cancel2()
 	if err := s.RunIntegridade(10 * time.Millisecond)(cctx2); err != nil {
+		t.Fatal(err)
+	}
+	parado, cancel0 := context.WithCancel(ctx)
+	cancel0()
+	if err := s.RunDigitalizacao(0)(parado); err != nil {
+		t.Fatal(err)
+	}
+	if err := s.RunIntegridade(0)(parado); err != nil {
 		t.Fatal(err)
 	}
 }

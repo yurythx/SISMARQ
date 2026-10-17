@@ -30,7 +30,7 @@ func (m *Module) Manifest() kernel.Manifest {
 	return kernel.Manifest{
 		Key:            Key,
 		Name:           "Contato",
-		Description:    "Formulário público institucional com rate limit dedicado.",
+		Description:    "Formulário público do Arquivo Público (SIC/contato) com rate limit dedicado.",
 		DefaultEnabled: true,
 		Public:         true,
 		Icon:           "mail",

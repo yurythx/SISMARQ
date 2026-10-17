@@ -1,5 +1,5 @@
-// Package blog é o plugin Blog: publicações internas e comunicados com
-// fluxo rascunho -> publicação; publicar emite blog.post.published.
+// Package blog é o plugin Blog: comunicados e notícias do Arquivo Público
+// com fluxo rascunho -> publicação; publicar emite blog.post.published.
 package blog
 
 import (
@@ -39,7 +39,7 @@ func (m *Module) Manifest() kernel.Manifest {
 	return kernel.Manifest{
 		Key:            Key,
 		Name:           "Blog",
-		Description:    "Publicações institucionais, artigos e comunicados.",
+		Description:    "Comunicados e notícias do Arquivo Público (rascunho, publicação e arquivo).",
 		DefaultEnabled: true,
 		Public:         true,
 		Icon:           "newspaper",

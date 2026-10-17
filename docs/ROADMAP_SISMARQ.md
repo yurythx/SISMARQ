@@ -14,7 +14,7 @@ e a divergência é registrada na seção 6.
 | **Tabela de Temporalidade (TTDD)** | As TTDDs aprovadas pela CCPAD e publicadas no DIORONDON-e, de ago/2025 a set/2026: 13 tabelas, por secretaria. É o mesmo arquivo de `docs/ttdd.pdf`, já carregado no Atlas com 1.686 séries. |
 | **Artigo científico (SISMARQ e RDC-Arq)** | A solução técnica. O SEI cuida da fase corrente e o SISMARQ das fases intermediária e permanente. O artigo descreve três módulos (pipeline, taxonomia e descarte), as exigências do Decreto 10.278/2020 e a busca no Typesense. |
 
-Registrado em 2026-10-15; **Fases 1 a 6 entregues** em 15 e 16/10/2026 (ADRs 032 a 038; ponte Trâmite ADR 039; PAdES adiado ADR 040). Falta a validação da contagem dos prazos e dos Anexos pela Divisão de Arquivo (ver [`docs/acervo/HOMOLOGACAO.md`](acervo/HOMOLOGACAO.md)) e os ritos especiais da eliminação. Os artigos citados são da Lei 10.301/2019, salvo
+Registrado em 2026-10-15; **Fases 1 a 6 entregues** em 15 e 16/10/2026 (ADRs 032 a 042). **Fase 0 registrada** em 16/10/2026 ([ADR 043](adr/043-fase0-decisoes-institucionais.md); quadro em [`docs/acervo/FASE0.md`](acervo/FASE0.md)): piloto SEMAD, IAM Keycloak/LDAP, lei municipal + federal sem decreto regulamentador. Falta a homologação com a Superintendência de Arquivo Público ([`docs/acervo/HOMOLOGACAO.md`](acervo/HOMOLOGACAO.md)). Os artigos citados são da Lei 10.301/2019, salvo
 indicação em contrário.
 
 ---
@@ -80,23 +80,22 @@ fim da Fase 0, porque dependem das decisões dela.
 
 **Objetivo:** fechar o que não depende do código e trava as fases seguintes.
 
-| Item | Base | O que decidir ou obter |
-|---|---|---|
-| 0.1 | Art. 68 e art. 33 ("deste Decreto") | Existe o **decreto regulamentador**? O sistema segue o decreto, se ele existir. |
-| 0.2 | Art. 47, parágrafo único | O **Regimento Interno** do Arquivo Público, com o cronograma de recolhimento. |
-| 0.3 | Art. 31, §§ 3º, 6º e 7º | **Portarias** da CCPAD e de cada CSPAD: membros, presidentes e secretários. Viram cadastro na Fase 3. |
-| 0.4 | Art. 26 | **Atividades-meio.** As TTDDs publicadas não têm as classes do CONARQ (01 a 07). Decidir se o município adota o código de atividades-meio do CONARQ e carregá-lo no Atlas. |
-| 0.5 | Art. 31, § 5º | **Cobertura da TTDD.** Quais secretarias ainda não têm TTDD publicada (o prazo legal venceu em 2021). Para elas vale o art. 36. |
-| 0.6 | Artigo, item 4.1 | **Política de digitalização:** 300 DPI para texto e 600 DPI para plantas, scanners, quem digitaliza e certificado ICP-Brasil. |
-| 0.7 | Artigo, Quadro 1 | **SEI:** a versão em uso, se tem API e quem autoriza a integração (Fase 7). |
-| 0.8 | Seção 6 | Resolver as **inconsistências** listadas na seção 6. |
-| 0.9 | LGPD | RIPD do acervo (modelo em [`RIPD_MODELO.md`](RIPD_MODELO.md)), com dados pessoais de servidores, pacientes e contribuintes. |
-| 0.10 | Infraestrutura | Estimativa de volume do passivo (metros lineares, páginas), disco, MinIO e backup. |
+| Item | Base | O que decidir ou obter | Situação |
+|---|---|---|---|
+| 0.1 | Art. 68 e art. 33 ("deste Decreto") | Existe o **decreto regulamentador**? | **Registrado:** não existe. Vale a Lei 10.301 e a legislação federal (ADR 043). |
+| 0.2 | Art. 47, parágrafo único | O **Regimento Interno** do Arquivo Público, com o cronograma de recolhimento. | Em elaboração; a tela de normas já recebe. |
+| 0.3 | Art. 31, §§ 3º, 6º e 7º | **Portarias** da CCPAD e de cada CSPAD. | Posterior; cadastro em `/acervo/comissoes` só com portaria real. |
+| 0.4 | Art. 26 | **Atividades-meio** CONARQ (01 a 07). | **Adota** (art. 26). Carga da tabela CONARQ pela tela; Atlas explica o porquê. |
+| 0.5 | Art. 36 | Secretarias **sem** TTDD de atividades-fim. | `ART_36` só se o órgão não estiver no Atlas. Lista em FASE0.md. |
+| 0.6 | Decreto 10.278 | Quem digitaliza, SMB, certificado ICP-Brasil. | Arquivo Municipal; sem certificado; `pades=AUSENTE` (ADR 040). |
+| 0.7 | Artigo, Quadro 1 | **SEI:** versão, API, autorização. | Envelope pronto, sem cliente (ADR 042). |
+| 0.8 | Seção 6 | Inconsistências. | DIORONDON-e; Superintendência; evento na vigência (ADR 043). |
+| 0.9 | LGPD | RIPD do acervo. | DPO ainda não começou ([`RIPD_MODELO.md`](RIPD_MODELO.md)). |
+| 0.10 | Infraestrutura | Volume, disco, backup. | Qualitativo (~70 anos, ~300 mil hab.); números na implantação. |
 
-**Pronto quando** cada item tiver resposta registrada, num ADR ou na seção
-6, e a secretaria piloto estiver escolhida. A sugestão é a SEMAD
-(Administração, Gestão de Pessoas e Inovação): é onde fica o Arquivo
-Público (art. 5º) e a TTDD dela está na versão II.
+**Pronto quando** cada item tiver resposta registrada e a secretaria piloto
+estiver escolhida. **Piloto: SEMAD.** Registro: [FASE0.md](acervo/FASE0.md)
+e [ADR 043](adr/043-fase0-decisoes-institucionais.md).
 
 ### Fase 1 — Núcleo arquivístico: o acervo e suas travas
 
@@ -286,14 +285,15 @@ Quadro 2 (módulo SISMARQ_PIPELINE).
 
 **Entregas:**
 - **Entrada:**
-  - pasta monitorada (SMB/FTP) e envio pela tela;
-  - cada lote ligado à unidade de arquivamento da Fase 1.
+  - envio pela tela da unidade (ADR 037); pasta SMB/FTP adiada (0.6);
+  - origem `SCAN` (papel, PDF ou TIFF, DPI do Decreto) ou `NATO_DIGITAL`
+    (PDF já eletrônico, sem DPI de scanner) — ADR 044.
 - **Processamento no worker:**
   - `ocrmypdf` com alinhamento (deskew), limpeza e OCR em português;
   - saída **PDF/A** (ISO 19005);
   - **SHA-256** do arquivo;
   - extração do texto para a busca;
-  - conferência da **resolução**: 300 DPI para texto e 600 DPI para plantas.
+  - conferência da **resolução** só no SCAN: 300 DPI para texto e 600 DPI para plantas.
 - **Metadados do Decreto 10.278** gravados no XMP do PDF e no banco:
   - identificador único;
   - responsável pela digitalização, com o CPF mascarado nos logs;
@@ -443,7 +443,7 @@ Fase 0 ──► Fase 1 ──► Fase 2 ──► Fase 3 ──► Fase 4 ─�
 | Eliminação só prevista na TTDD e autorizada | Arts. 19 e 65 | 1 e 3 | **Pronto** (travas — ADR 032; rito com autorização — ADR 034) |
 | Permanente inalienável | Arts. 20 e 42 | 1 | **Pronto** (domínio e banco — ADR 032) |
 | Classificação duplex com código de 5 níveis | Arts. 24 e 25 | 1 | **Pronto** (unidade classificada pela TTDD — ADR 032) |
-| Classes das atividades-meio do CONARQ | Art. 26 | 0 e 1 | Falta |
+| Classes das atividades-meio do CONARQ | Art. 26 | 0 e 1 | **Adoção registrada** (ADR 043); carga 01–07 pela tela quando a Superintendência importar a tabela CONARQ |
 | TTDD com prazos e destinação | Arts. 27 a 30 | — | **Pronto** (Atlas) |
 | Comissões CCPAD e CSPAD | Arts. 31 e 32 | 3 | **Pronto** (composição conferida — ADR 034) |
 | Aprovação da TTDD de atividades-fim | Art. 32, §§ 4º a 8º | 3 | Parcial (carga com impacto) |
@@ -453,11 +453,11 @@ Fase 0 ──► Fase 1 ──► Fase 2 ──► Fase 3 ──► Fase 4 ─�
 | Fragmentação e doação | Art. 40 | 3 | **Pronto** (registrada no termo — ADR 034) |
 | Bloqueio por ação judicial | Arts. 32, II e 44 | 1 | **Pronto** (ADR 032) |
 | TTDD nos sistemas informatizados | Art. 45 | 7 | Parcial (API pública) |
-| Documentos digitais e híbridos | Art. 48 | 5 | **Pronto** (digitalização — ADR 037; PAdES adiado — ADR 040) |
+| Documentos digitais e híbridos | Art. 48 | 5 | **Pronto** (digitalização — ADR 037 e 044; PAdES adiado — ADR 040) |
 | Recolhimento com registro de entrada | Arts. 5º, VII e 53 | 4 | **Pronto** (preparo, instrumento descritivo, registro e cópia à origem — ADR 035) |
 | Arquivos privados de interesse público | Arts. 55 a 58 | 4 | **Pronto** (parecer, decreto, guarda e preferência — ADR 036) |
 | Capacitação | Arts. 5º, VIII e 11, VIII | 8 | Falta |
-| Digitalização com PDF/A, metadados e hash | Decreto 10.278; artigo 4.1 | 5 | **Pronto** (PDF/A-2b, XMP do Decreto, SHA-256, fixity — ADR 037; falta o PAdES) |
+| Digitalização com PDF/A, metadados e hash | Decreto 10.278; artigo 4.1 | 5 | **Pronto** (PDF/A-2b, SCAN e nato-digital, TIFF — ADR 037 e 044; falta o PAdES) |
 | Assinatura ICP-Brasil (PAdES) | Artigo, Quadro 3 | 5 | Adiado (ADR 040; decisão 0.6) |
 | Auditoria imutável | Artigo, Quadro 2 | — | **Pronto** |
 | Busca facetada (Typesense) | Artigo, item 4.4 | 6 | **Pronto** (pela API, não no browser — ADR 038) |
@@ -469,22 +469,22 @@ Resolver na Fase 0. Até lá, o sistema adota o que está entre parênteses.
 
 1. **Onde se publica o edital.** O art. 37 manda publicar no Diário Oficial
    **do Município**. O modelo do Anexo III fala em Diário Oficial **do
-   Estado**. (Adotado: DIORONDON-e, conforme o artigo da lei e o artigo
-   científico.)
+   Estado**. (**Confirmado:** DIORONDON-e — ADR 043.)
 2. **Nome do órgão.** A lei fala em "Divisão de Arquivo Público" da
    Secretaria Municipal de Administração. A TTDD de 2025 fala em
-   "Superintendência de Arquivo Público" da Secretaria Municipal de
-   Administração, Gestão de Pessoas e Inovação. (Adotado: o nome atual em
-   cadastro configurável, que aparece nos modelos gerados.)
+   "Superintendência de Arquivo Público". (**Confirmado:** Superintendência
+   nos Anexos gerados; a FAQ registra os dois nomes.)
 3. **Lei ou decreto.** O art. 33 chama o Anexo IV de "parte integrante
-   deste Decreto", e o art. 68 prevê um decreto regulamentador. É preciso
-   confirmar se o decreto existe e se altera algum modelo.
-4. **Atividades-meio.** As 13 TTDDs publicadas cobrem atividades-fim por
-   secretaria, e nenhuma traz as classes 01 a 07 do art. 26.
-5. **Prazos por condição.** Centenas de séries usam "vigorando" ou
-   "enquanto vigorar". O sistema precisa de uma data de evento informada
-   por quem cadastra, e a Divisão de Arquivo deve dizer qual evento vale
-   para cada tipo de série.
+   deste Decreto", e o art. 68 prevê um decreto regulamentador. **Não há**
+   decreto municipal publicado. Os Anexos da lei vigoram; "deste Decreto"
+   é redação do modelo, não um ato (ADR 043, item 0.1).
+4. **Atividades-meio.** O município **adota** as classes 01 a 07 do CONARQ
+   (art. 26). As TTDDs já no Atlas são atividades-fim; a carga 01–07 entra
+   pela tela, sem códigos inventados.
+5. **Prazos por condição.** Séries com "vigorando" / "enquanto vigorar":
+   quem cadastra informa a **data do evento** comprovada (fim de contrato,
+   gestão, vínculo ou o fato da condição). A TTDD pode ser republicada
+   (ADR 019). Homologação C1 confere uma amostra.
 6. **Typesense no navegador.** Resolvido no ADR 038: a busca é pela API;
    o Typesense não é exposto ao browser; não há `tenant_id` (ADR 015).
 7. **Trâmite e SEI.** O Trâmite já é ponte para o que não passa pelo SEI

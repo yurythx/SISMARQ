@@ -1,6 +1,6 @@
 "use client";
 
-import { Archive, BookOpen, FileUp, GalleryHorizontal, HandHelping, Landmark, MapPin, Plus, ScanLine, Search, Trash2, Truck } from "lucide-react";
+import { FileUp, Plus } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -35,7 +35,7 @@ const ORDEM_PAINEL = [
 /** Acervo (ADR 032): as unidades de arquivamento no escopo de quem consulta,
  * com o painel do que transferir, avaliar ou recolher (Lei 10.301/2019). */
 export default function AcervoPage() {
-  const { can, canGlobal } = useSismarq();
+  const { can } = useSismarq();
   const [q, setQ] = useState("");
   const [fase, setFase] = useState("");
   const [sit, setSit] = useState("");
@@ -53,53 +53,16 @@ export default function AcervoPage() {
         title="Acervo"
         description="Unidades de arquivamento nas três idades — corrente, intermediária e permanente (Lei 10.301/2019, art. 18) — com os prazos da Tabela de Temporalidade."
         actions={
-          <>
-            <Link href="/acervo/busca" className={buttonClass("secondary", "md")}>
-              <Search size={16} aria-hidden="true" /> Busca
-            </Link>
-            <Link href="/acervo/guias" className={buttonClass("secondary", "md")}>
-              <Truck size={16} aria-hidden="true" /> Guias
-            </Link>
-            <Link href="/acervo/recolhimentos" className={buttonClass("secondary", "md")}>
-              <Archive size={16} aria-hidden="true" /> Recolhimentos
-            </Link>
-            <Link href="/acervo/eliminacao" className={buttonClass("secondary", "md")}>
-              <Trash2 size={16} aria-hidden="true" /> Eliminação
-            </Link>
-            <Link href="/acervo/emprestimos" className={buttonClass("secondary", "md")}>
-              <HandHelping size={16} aria-hidden="true" /> Empréstimos
-            </Link>
-            <Link href="/acervo/digitais" className={buttonClass("secondary", "md")}>
-              <ScanLine size={16} aria-hidden="true" /> Digitalização
-            </Link>
-            <Link href="/acervo/normas" className={buttonClass("secondary", "md")}>
-              <BookOpen size={16} aria-hidden="true" /> Normas
-            </Link>
-            {canGlobal("acervo:central") && (
-              <>
-                <Link href="/acervo/privados" className={buttonClass("secondary", "md")}>
-                  <Landmark size={16} aria-hidden="true" /> Arquivos privados
-                </Link>
-                <Link href="/acervo/exposicoes" className={buttonClass("secondary", "md")}>
-                  <GalleryHorizontal size={16} aria-hidden="true" /> Exposições
-                </Link>
-              </>
-            )}
-
-            <Link href="/acervo/locais" className={buttonClass("secondary", "md")}>
-              <MapPin size={16} aria-hidden="true" /> Locais
-            </Link>
-            {can("acervo:manage") && (
-              <>
-                <Link href="/acervo/importar" className={buttonClass("secondary", "md")}>
-                  <FileUp size={16} aria-hidden="true" /> Importar
-                </Link>
-                <Link href="/acervo/novo" className={buttonClass("primary", "md")}>
-                  <Plus size={16} aria-hidden="true" /> Nova unidade
-                </Link>
-              </>
-            )}
-          </>
+          can("acervo:manage") ? (
+            <>
+              <Link href="/acervo/importar" className={buttonClass("secondary", "md")}>
+                <FileUp size={16} aria-hidden="true" /> Importar
+              </Link>
+              <Link href="/acervo/novo" className={buttonClass("primary", "md")}>
+                <Plus size={16} aria-hidden="true" /> Nova unidade
+              </Link>
+            </>
+          ) : undefined
         }
       />
 

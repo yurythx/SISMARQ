@@ -754,6 +754,9 @@
           "original_sha256": {
             "type": "string"
           },
+          "origem": {
+            "type": "string"
+          },
           "pades": {
             "type": "string"
           },
@@ -834,6 +837,7 @@
           "numero",
           "original_bytes",
           "original_sha256",
+          "origem",
           "pades",
           "paginas",
           "pdfa_bytes",
@@ -913,6 +917,9 @@
           "original_sha256": {
             "type": "string"
           },
+          "origem": {
+            "type": "string"
+          },
           "pades": {
             "type": "string"
           },
@@ -984,6 +991,7 @@
           "numero",
           "original_bytes",
           "original_sha256",
+          "origem",
           "pades",
           "paginas",
           "pdfa_bytes",
@@ -1129,6 +1137,10 @@
             "maxLength": 300,
             "type": "string"
           },
+          "origem": {
+            "maxLength": 20,
+            "type": "string"
+          },
           "responsavel_cpf": {
             "maxLength": 20,
             "type": "string"
@@ -1139,7 +1151,6 @@
           }
         },
         "required": [
-          "dpi_declarado",
           "equipamento",
           "object_key",
           "tipo_documento"

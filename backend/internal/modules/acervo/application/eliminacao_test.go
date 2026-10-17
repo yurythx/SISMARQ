@@ -218,8 +218,19 @@ func TestRitoDaEliminacao(t *testing.T) {
 	if _, err := s.Listagem(ctx, avaliador(e.outra), l.ID); codigoDe(err) != apperrors.CodeNotFound {
 		t.Fatalf("relação fora do escopo: %v", err)
 	}
-	if items, total, err := s.Listagens(ctx, cspad, pagination.New(1, 10, 100)); err != nil || total < 1 || items[0].ID != l.ID {
+	if items, total, err := s.Listagens(ctx, cspad, pagination.New(1, 10, 100)); err != nil || total < 1 {
 		t.Fatalf("relações: %+v %v", items, err)
+	} else {
+		achou := false
+		for _, it := range items {
+			if it.ID == l.ID {
+				achou = true
+				break
+			}
+		}
+		if !achou {
+			t.Fatalf("relações sem a listagem %s: %+v", l.ID, items)
+		}
 	}
 	if _, total, _ := s.Listagens(ctx, avaliador(e.outra), pagination.New(1, 10, 100)); total != 0 {
 		t.Fatal("outra unidade não vê")
@@ -433,6 +444,9 @@ func TestRitosEspeciais(t *testing.T) {
 	if _, err := s.AutorizarCCPAD(ctx, cspad, l.ID); codigoDe(err) != apperrors.CodeForbidden {
 		t.Fatalf("só membro da CCPAD: %v", err)
 	}
+	if _, err := s.AutorizarCCPAD(ctx, agente(e.outra), l.ID); codigoDe(err) != apperrors.CodeNotFound {
+		t.Fatalf("outra origem não vê a relação: %v", err)
+	}
 	if l, err = s.AutorizarCCPAD(ctx, cc, l.ID); err != nil || l.CcpadAutorizadaEm == nil {
 		t.Fatalf("CCPAD: %+v %v", l, err)
 	}
@@ -463,6 +477,12 @@ func TestRitosEspeciais(t *testing.T) {
 	ata36 := application.Ata{Numero: "2", Em: e.agora, Presentes: ccpadIDs[:3]}
 	if l36, err = s.Aprovar(ctx, cspad, l36.ID, ata36); err != nil {
 		t.Fatal(err)
+	}
+	if _, err := s.AutorizarSEMAD(ctx, sem, l36.ID); codigoDe(err) != apperrors.CodeConflict {
+		t.Fatalf("SEMAD antes do Arquivo: %v", err)
+	}
+	if _, err := s.AutorizarSEMAD(ctx, sem, uuid.New()); codigoDe(err) != apperrors.CodeNotFound {
+		t.Fatalf("relação inexistente: %v", err)
 	}
 	if l36, err = s.Autorizar(ctx, admin, l36.ID); err != nil || l36.Situacao != domain.ListagemAguardandoSEMAD {
 		t.Fatalf("art. 36 aguarda SEMAD: %+v %v", l36, err)

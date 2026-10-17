@@ -94,8 +94,9 @@ pipeline (itens 4.1 e 4.3; Quadro 2, módulo SISMARQ_PIPELINE):
   — adiado até a decisão 0.6; o JSON declara `pades=AUSENTE`.
 - **Pasta monitorada (SMB/FTP)**: fica para quando houver o scanner de
   produção definido (decisão 0.6); a entrada hoje é pela tela.
-- Só PDF é aceito na entrada (os scanners de produção geram PDF); TIFF
-  multipágina pode entrar depois pelo mesmo pipeline.
+- **SCAN vs nato-digital e TIFF:** [ADR 044](044-ingresso-scan-nato-digital.md)
+  — PDF sem imagens deixa de ser reprovado quando a origem é
+  `NATO_DIGITAL`; TIFF entra no mesmo pipeline.
 - A conformidade PDF/A é a gerada pelo ocrmypdf/Ghostscript; uma validação
   formal (veraPDF) pode entrar no pipeline depois.
 - Eliminar o papel de uma série de eliminação não apaga sozinho o

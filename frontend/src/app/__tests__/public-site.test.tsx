@@ -12,7 +12,7 @@ vi.mock("@/components/layout/AccessibilityBar", () => ({ AccessibilityBar: () =>
 vi.mock("@/components/auth/LoginCard", () => ({ LoginCard: () => <p>cartão de login</p> }));
 vi.mock("@/components/contact/ContactForm", () => ({ ContactForm: ({ defaultServiceSlug }: { defaultServiceSlug?: string }) => <p>formulário ({defaultServiceSlug ?? "—"})</p> }));
 vi.mock("next/server", () => ({ connection: async () => {} }));
-vi.mock("next/headers", () => ({ cookies: async () => ({ get: (n: string) => (n === "nexus-theme" ? { value: "dark" } : undefined) }) }));
+vi.mock("next/headers", () => ({ cookies: async () => ({ get: (n: string) => (n === "sismarq-theme" ? { value: "dark" } : undefined) }) }));
 
 class NotFound extends Error {}
 class Redirect extends Error {}
@@ -103,6 +103,13 @@ describe("páginas institucionais estáticas", () => {
     api.routes = {}; // branding fora: cai no padrão
     const { container } = render(await AboutPage());
     expect(container.textContent).toContain("SISMARQ");
+  });
+
+  it("início explica o fluxo de digitalização", async () => {
+    render(await LandingPage());
+    expect(screen.getByRole("heading", { name: "Como o documento digital entra no SISMARQ" })).toBeInTheDocument();
+    expect(screen.getByText("1. Escolha a origem")).toBeInTheDocument();
+    expect(screen.getAllByText(/nato-digital/i).length).toBeGreaterThan(0);
   });
 
   it("login mostra a marca e o cartão", async () => {

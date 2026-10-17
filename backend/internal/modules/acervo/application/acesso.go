@@ -188,7 +188,7 @@ func (s *Service) Recarregar(ctx context.Context) (int, error) {
 // carga completa a cada recarga. Sem índice configurado, só espera.
 func (s *Service) RunIndice(intervalo, recarga time.Duration) func(ctx context.Context) error {
 	return func(ctx context.Context) error {
-		if s.busca.Indice == nil {
+		if s.busca.Indice == nil || intervalo <= 0 {
 			<-ctx.Done()
 			return nil
 		}

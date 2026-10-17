@@ -1,5 +1,6 @@
-// Package files é o plugin Arquivos: pastas e arquivos sobre o MinIO com
-// permissões por grupo do AD, perfil, lotação ou usuário.
+// Package files é o plugin Arquivos: pastas de trabalho sobre o MinIO com
+// permissões por grupo do AD, perfil, lotação ou usuário. Não é o acervo
+// digital (plug-in Acervo). Permanece plugável.
 package files
 
 import (
@@ -35,7 +36,7 @@ func (m *Module) Manifest() kernel.Manifest {
 	return kernel.Manifest{
 		Key:            Key,
 		Name:           "Arquivos",
-		Description:    "Gestão de pastas e arquivos sobre MinIO com permissões por grupo/perfil.",
+		Description:    "Pastas de trabalho da Superintendência no MinIO (ACL por perfil, grupo AD ou unidade). Distinto do acervo digital.",
 		DefaultEnabled: true,
 		Icon:           "folder",
 		Route:          "/arquivos",

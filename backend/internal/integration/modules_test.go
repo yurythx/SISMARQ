@@ -517,7 +517,7 @@ func TestPluginsEndToEnd(t *testing.T) {
 			sig, event string
 		}
 		srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			received.sig, received.event = r.Header.Get("X-Nexus-Signature"), r.Header.Get("X-Nexus-Event")
+			received.sig, received.event = r.Header.Get("X-SISMARQ-Signature"), r.Header.Get("X-SISMARQ-Event")
 			w.WriteHeader(http.StatusNoContent)
 		}))
 		defer srv.Close()

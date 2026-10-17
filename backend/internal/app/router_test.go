@@ -58,7 +58,7 @@ func testDeps(t *testing.T) *Dependencies {
 	key, _ := rsa.GenerateKey(rand.Reader, 2048)
 	pemKey := string(pem.EncodeToMemory(&pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(key)}))
 	cfg := &config.Config{
-		App:         config.AppConfig{Env: "test", Name: "nexus-test"},
+		App:         config.AppConfig{Env: "test", Name: "sismarq-test"},
 		LocalAuth:   config.LocalAuthConfig{Enabled: true, PrivateKeyPEM: pemKey, TokenTTL: time.Hour},
 		MinIO:       config.MinIOConfig{Bucket: "nexus-test"},
 		Upload:      config.UploadConfig{MaxFileBytes: 10 << 20, URLExpiry: time.Minute},

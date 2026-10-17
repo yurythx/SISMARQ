@@ -127,7 +127,9 @@ func ptr(t time.Time) *time.Time { return &t }
 // CalcularPrazos aplica a TTDD à unidade (arts. 29 e 30). A contagem da fase
 // corrente parte da data-limite final da unidade; a intermediária, do fim da
 // corrente. (Critério registrado no ADR 032, a validar pela Divisão de
-// Arquivo — ROADMAP_SISMARQ.md, seção 6, item 5.)
+// Arquivo — ROADMAP_SISMARQ.md, seção 6, item 5; ADR 043). Sem data do
+// evento, a situação é AGUARDA_EVENTO. A TTDD pode ser republicada: a
+// unidade classificada não some (ADR 019).
 func CalcularPrazos(u Unidade, s Serie, bloqueada bool, hoje time.Time) Prazos {
 	p := Prazos{}
 	p.FimCorrente, p.RegraCorrente = fimDaFase(u.DataFinal, s.CorrenteAnos, s.CorrenteCondicao, u.DataEvento)

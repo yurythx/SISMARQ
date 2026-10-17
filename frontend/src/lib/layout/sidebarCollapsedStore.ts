@@ -1,6 +1,6 @@
 "use client";
 
-import { deleteCookie, readCookie, writeCookie } from "@/lib/prefs/cookies";
+import { deleteCookie, readCookiePrefer, SIDEBAR_COOKIE, SIDEBAR_COOKIE_LEGACY, writeCookie } from "@/lib/prefs/cookies";
 
 // "External store" (useSyncExternalStore) do estado "Sidebar recolhida",
 // uma preferência puramente deste dispositivo/navegador (DashboardShell.tsx).
@@ -16,12 +16,11 @@ import { deleteCookie, readCookie, writeCookie } from "@/lib/prefs/cookies";
 // desencoraja; useSyncExternalStore é a primitiva certa para "estado fora
 // do React que precisa re-renderizar quando muda".
 //
-// Migração: versões anteriores gravavam em localStorage
-// ("nexus-sidebar-collapsed"). Na 1ª leitura sem cookie, um valor legado no
-// localStorage é promovido para cookie e o antigo apagado.
+// Migração: cookie e localStorage "nexus-sidebar-collapsed" viram
+// sismarq-sidebar-collapsed na 1ª leitura.
 
-export const SIDEBAR_COLLAPSED_COOKIE = "nexus-sidebar-collapsed";
-const LEGACY_STORAGE_KEY = "nexus-sidebar-collapsed";
+export const SIDEBAR_COLLAPSED_COOKIE = SIDEBAR_COOKIE;
+const LEGACY_STORAGE_KEY = SIDEBAR_COOKIE_LEGACY;
 
 type Listener = () => void;
 const listeners = new Set<Listener>();
@@ -33,6 +32,7 @@ function migrateLegacyStorage(): boolean | null {
     if (raw === null) return null;
     const value = raw === "true";
     writeCookie(SIDEBAR_COLLAPSED_COOKIE, String(value));
+    deleteCookie(SIDEBAR_COOKIE_LEGACY);
     window.localStorage.removeItem(LEGACY_STORAGE_KEY);
     return value;
   } catch {
@@ -42,7 +42,7 @@ function migrateLegacyStorage(): boolean | null {
 
 function read(): boolean {
   if (cached !== null) return cached;
-  const fromCookie = readCookie(SIDEBAR_COLLAPSED_COOKIE);
+  const fromCookie = readCookiePrefer(SIDEBAR_COLLAPSED_COOKIE, SIDEBAR_COOKIE_LEGACY);
   if (fromCookie !== null) {
     cached = fromCookie === "true";
   } else {
@@ -68,8 +68,10 @@ export function setSidebarCollapsed(next: boolean): void {
     // Estado padrão: não deixa cookie sobrando (o layout já assume
     // "expandida" sem cookie).
     deleteCookie(SIDEBAR_COLLAPSED_COOKIE);
+    deleteCookie(SIDEBAR_COOKIE_LEGACY);
   } else {
     writeCookie(SIDEBAR_COLLAPSED_COOKIE, "true");
+    deleteCookie(SIDEBAR_COOKIE_LEGACY);
   }
   listeners.forEach((listener) => listener());
 }

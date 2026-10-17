@@ -5,6 +5,7 @@ import (
 	"strings"
 	"testing"
 	"time"
+	"unicode/utf8"
 
 	"github.com/google/uuid"
 )
@@ -20,6 +21,13 @@ func TestUnidadeDoSEI(t *testing.T) {
 	}
 	if _, err := UnidadeDoSEI(ProcessoSEI{UnidadeOrigemID: origem, NumeroSEI: strings.Repeat("x", 81)}); err == nil {
 		t.Fatal("número longo")
+	}
+	if _, err := UnidadeDoSEI(ProcessoSEI{UnidadeOrigemID: origem}); err == nil {
+		t.Fatal("sem número SEI nem protocolo")
+	}
+	_, err = UnidadeDoSEI(ProcessoSEI{UnidadeOrigemID: origem, Protocolo: "P-1"})
+	if !errors.Is(err, ErrSEIAdiado) {
+		t.Fatalf("protocolo sem SEI ainda é adiado: %v", err)
 	}
 }
 
@@ -60,6 +68,37 @@ func TestUnidadeDoTramite(t *testing.T) {
 		if _, err := UnidadeDoTramite(p); err == nil {
 			t.Errorf("deveria recusar %+v", p)
 		}
+	}
+
+	soFim, err := UnidadeDoTramite(ProcessoEncerrado{
+		ID: id, Numero: "n", CodigoTTDD: "9.9.01.00.01", UnidadeOrigemID: origem, ConcluidoAt: fim,
+	})
+	if err != nil || !soFim.DataInicial.Equal(fim) || !soFim.DataFinal.Equal(fim) {
+		t.Fatalf("só conclusão: %+v %v", soFim, err)
+	}
+	soIni, err := UnidadeDoTramite(ProcessoEncerrado{
+		ID: id, Numero: "n", CodigoTTDD: "9.9.01.00.01", UnidadeOrigemID: origem, CreatedAt: ini,
+	})
+	if err != nil || !soIni.DataInicial.Equal(ini) || !soIni.DataFinal.Equal(ini) {
+		t.Fatalf("só abertura: %+v %v", soIni, err)
+	}
+	invertido, err := UnidadeDoTramite(ProcessoEncerrado{
+		ID: id, Numero: "n", CodigoTTDD: "9.9.01.00.01", UnidadeOrigemID: origem, CreatedAt: fim, ConcluidoAt: ini,
+	})
+	if err != nil || invertido.DataFinal.Before(invertido.DataInicial) {
+		t.Fatalf("datas invertidas: %+v %v", invertido, err)
+	}
+	longo := strings.Repeat("ã", 520)
+	trunc, err := UnidadeDoTramite(ProcessoEncerrado{
+		ID: id, Numero: "n", Assunto: longo, CodigoTTDD: "9.9.01.00.01", UnidadeOrigemID: origem, CreatedAt: ini, ConcluidoAt: fim,
+	})
+	if err != nil || utf8.RuneCountInString(trunc.Assunto) != 500 {
+		t.Fatalf("assunto truncado: %d %v", utf8.RuneCountInString(trunc.Assunto), err)
+	}
+	if _, err := UnidadeDoTramite(ProcessoEncerrado{
+		ID: id, Numero: "n", CodigoTTDD: "9.9.01.00.01", UnidadeOrigemID: origem,
+	}); err == nil {
+		t.Fatal("sem datas")
 	}
 }
 

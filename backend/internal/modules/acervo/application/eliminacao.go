@@ -34,7 +34,7 @@ const (
 	EventPedidoDecidido     = "acervo.listagem.pedido_decidido"
 	EventAmostragem         = "acervo.listagem.amostragem"
 	// EventEliminacao: o Termo de Eliminação (Anexo II). Uma cópia vai à
-	// Divisão de Arquivo Público e à SEMAD (art. 38, parágrafo único).
+	// Superintendência de Arquivo Público e à SEMAD (art. 38, parágrafo único).
 	EventEliminacao        = "acervo.listagem.eliminada"
 	EventListagemCancelada = "acervo.listagem.cancelada"
 )
@@ -375,7 +375,7 @@ func (s *Service) reconferir(ctx context.Context, tx pgx.Tx, l domain.Listagem) 
 	return nil
 }
 
-// Autorizar é o "Autorizo" do titular da Divisão de Arquivo Público (Anexo
+// Autorizar é o "Autorizo" do titular da Superintendência de Arquivo Público (Anexo
 // I; arts. 19 e 65). Só com acervo:central.
 func (s *Service) Autorizar(ctx context.Context, identity auth.Identity, id uuid.UUID) (domain.Listagem, error) {
 	return s.etapa(ctx, identity, id, true, func(ctx context.Context, tx pgx.Tx, l *domain.Listagem) error {
@@ -455,9 +455,6 @@ func (s *Service) AutorizarSEMAD(ctx context.Context, identity auth.Identity, id
 		l, err := s.repo.GetListagem(ctx, tx, id, true)
 		if err != nil {
 			return err
-		}
-		if !podeLerListagem(identity, l) {
-			return domain.ErrListagemNaoExiste
 		}
 		if err := domain.PodeAutorizarSEMAD(l); err != nil {
 			return err
@@ -746,7 +743,7 @@ func (s *Service) RegistrarTermo(ctx context.Context, identity auth.Identity, id
 	return s.Listagem(ctx, identity, id)
 }
 
-// avisarCopiaTermo entrega a cópia do Termo à Divisão de Arquivo e à SEMAD
+// avisarCopiaTermo entrega a cópia do Termo à Superintendência de Arquivo e à SEMAD
 // (art. 38, parágrafo único) na caixa de quem tem acervo:central e
 // acervo:semad globais. Sem destinatário SEMAD, o ato fica registrado com
 // zero cópias — a permissão ainda não foi concedida (Fase 0).

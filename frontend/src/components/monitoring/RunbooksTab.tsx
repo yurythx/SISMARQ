@@ -28,52 +28,36 @@ export function RunbooksTab() {
 
   const personas = [
     {
-      username: "carlos.diretoria",
-      name: "Carlos Mendes",
-      role: "Diretor Executivo & Relações Institucionais",
-      unit: "Sede Centro (SEDE-CENTRO)",
-      profiles: "Administrador da Plataforma, Gestor de Identidade",
-      permissions: "Total (*), users:manage, iam:manage, catalog:manage, blog:manage",
+      username: "arquivo.central",
+      name: "Equipe da Superintendência",
+      role: "Arquivo Público Municipal",
+      unit: "Superintendência de Arquivo Público",
+      profiles: "Arquivo central",
+      permissions: "acervo:central, atlas:manage, auditoria (recolhimento, eliminação, locais)",
     },
     {
-      username: "ana.protocolo",
-      name: "Ana Paula Ferreira",
-      role: "Analista de Protocolo Central & Atendimento",
-      unit: "CIA Sagrada Família (UNID-POGUBA)",
-      profiles: "Protocolo, Servidor",
-      permissions: "tramite:create, tramite:route (abertura e tramitação no CIA)",
+      username: "semad.avaliacao",
+      name: "CSPAD da SEMAD",
+      role: "Comissão setorial de avaliação (piloto)",
+      unit: "SEMAD",
+      profiles: "Avaliação documental",
+      permissions: "acervo:avaliacao no órgão (Relação, edital, Ata — arts. 31 e 35 a 37)",
     },
     {
-      username: "marcos.ops",
-      name: "Marcos Roberto Souza",
-      role: "Supervisor de Operações & Logística Regional",
-      unit: "Complexo Operacional (POLO-IND)",
-      profiles: "Protocolo, Servidor",
-      permissions: "tramite:create, tramite:route (recebimento, parecer e conclusão)",
+      username: "semad.aprovacao",
+      name: "Autoridade da SEMAD",
+      role: "Aprovação dos arts. 35 e 36 e cópia do Termo (art. 38)",
+      unit: "SEMAD",
+      profiles: "SEMAD",
+      permissions: "acervo:semad (global)",
     },
     {
-      username: "mariana.mkt",
-      name: "Mariana Silva",
-      role: "Coordenadora de Comunicação & Marketing",
-      unit: "Sede Centro (SEDE-CENTRO)",
-      profiles: "Gestor de Conteúdo, Servidor",
-      permissions: "blog:manage, catalog:manage (edição do blog e catálogo)",
-    },
-    {
-      username: "lucas.tech",
-      name: "Lucas Albuquerque",
-      role: "Tech Lead & Engenheiro de Software P&D",
-      unit: "Hub de Inovação (HUB-AURORA)",
-      profiles: "Gestor de Conteúdo, Servidor",
-      permissions: "blog:manage, catalog:manage, wiki:manage",
-    },
-    {
-      username: "rodrigo.agro",
-      name: "Rodrigo Camargo",
-      role: "Supervisor Operacional Intermodal",
-      unit: "Terminal Intermodal (TERM-AGRO)",
+      username: "unidade.produtora",
+      name: "Servidor da unidade produtora",
+      role: "Cadastro e transferência de unidades de arquivamento",
+      unit: "Unidade da SEMAD (piloto)",
       profiles: "Servidor",
-      permissions: "Acesso a colaboração interna e serviços corporativos",
+      permissions: "acervo:write no órgão (ingresso, localização, empréstimo)",
     },
   ];
 
@@ -206,7 +190,7 @@ export function RunbooksTab() {
             <div>
               <CardTitle className="text-xl">Matriz de Identidade & Acessos Homologados (IAM)</CardTitle>
               <CardDescription>
-                Mapeamento das personas corporativas com escopos por unidade e papéis de permissão granulares (ADR 013).
+                Perfis típicos do Arquivo Público e da secretaria piloto (SEMAD), com escopo por órgão (ADR 013 e 043).
               </CardDescription>
             </div>
           </div>

@@ -11,6 +11,23 @@
 
 const ONE_YEAR_SECONDS = 60 * 60 * 24 * 365;
 
+export const THEME_COOKIE = "sismarq-theme";
+export const THEME_COOKIE_LEGACY = "nexus-theme";
+export const SIDEBAR_COOKIE = "sismarq-sidebar-collapsed";
+export const SIDEBAR_COOKIE_LEGACY = "nexus-sidebar-collapsed";
+export const BRANDING_PREFS_COOKIE = "sismarq-branding";
+export const BRANDING_PREFS_COOKIE_LEGACY = "nexus-branding";
+
+type CookieBag = { get(name: string): { value: string } | undefined };
+
+export function pickCookie(store: CookieBag, name: string, legacy: string): string | undefined {
+  return store.get(name)?.value ?? store.get(legacy)?.value;
+}
+
+export function readCookiePrefer(name: string, legacy: string): string | null {
+  return readCookie(name) ?? readCookie(legacy);
+}
+
 export function readCookie(name: string): string | null {
   if (typeof document === "undefined") return null;
   const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));

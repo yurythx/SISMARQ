@@ -160,6 +160,7 @@ acha "vacinação") e mantém a sintaxe de operadores (aspas, `-termo`, `or`).
 | `make dev` | Sobe toda a stack (Postgres, RabbitMQ, MinIO, Go API, Frontend) em modo desenvolvimento |
 | `make build` | Compila o backend Go e gera o bundle de produção do Next.js |
 | `make test` | Executa 100% das suítes de teste unitário do backend e frontend |
+| `make test-db-reset` | Recria `nexus_test` vazio (`TEMPLATE template0`) e aplica as migrations |
 | `make lint` | Executa auditoria estática de código e acessibilidade (`jsx-a11y`) |
 | `make backend-sec` | SAST do backend: `govulncheck` + `staticcheck` + `gosec` (mesmo do CI) |
 | `make migrate-up` | Executa as migrations de banco pendentes via Goose |
@@ -181,7 +182,7 @@ A suíte cobre três níveis, todos rodando no CI (job de backend com Postgres 1
 | Matriz de falhas | `internal/modules/<m>/application/faults_test.go` | Cada chamada ao repositório de cada caso de uso falha, ou envenena a transação logo depois, e o erro chega a quem chamou: nada é engolido, nada fica gravado pela metade |
 | Repositório | `internal/modules/<m>/infrastructure/*_test.go` | Toda falha do banco (consulta, leitura de linha, `rows.Err`) é propagada, usando os fakes de `database/dbtest` |
 
-**Meta: 100% de cobertura por pacote.** O CI roda `scripts/coverage-gate.sh` sobre o perfil do `go test`. Precisam estar em 100%: cada plug-in de `internal/modules/*`, cada pacote de `internal/platform/*` (menos os dublês `dbtest` e `storagetest`), `internal/app` e `pkg/*`. Quando algum não está, o script lista as linhas descobertas (ver ADRs 009 e 010).
+**Meta: 100% de cobertura por pacote.** O CI roda `scripts/coverage-gate.sh` sobre o perfil do `go test`. Precisam estar em 100%: cada plug-in de `internal/modules/*`, cada pacote de `internal/platform/*` (menos os dublês `dbtest` e `storagetest`), `internal/app` e `pkg/*`. Quando algum não está, o script lista as linhas descobertas (ver ADRs 009 e 010). Recorte da digitalização (SCAN, nato-digital, TIFF, seed): [docs/acervo/DIGITALIZACAO.md](acervo/DIGITALIZACAO.md).
 
 Os testes de mensageria, armazenamento e composição rodam contra RabbitMQ e MinIO reais quando `TEST_RABBITMQ_URL` e `TEST_MINIO_ENDPOINT`/`TEST_MINIO_ACCESS_KEY`/`TEST_MINIO_SECRET_KEY` estão definidas; sem elas, são pulados. Para subir os dois localmente:
 
@@ -197,7 +198,11 @@ export TEST_RABBITMQ_URL=amqp://nexus:nexus@localhost:5672/nexus \
 Rodando localmente (os testes de integração pulam sem banco):
 
 ```bash
-# Postgres de teste com as migrations
+# Banco de teste vazio (obrigatório se o Postgres for reutilizado: listas globais
+# acumulam unidades). Docker: container sismarq-test-pg; senão, psql local.
+make test-db-reset
+
+# Ou à mão:
 createdb nexus_test
 DB_HOST=localhost DB_PORT=5432 DB_NAME=nexus_test DB_USER=nexus DB_PASSWORD=... go run ./cmd/migrate up
 

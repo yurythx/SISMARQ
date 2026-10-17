@@ -7,7 +7,7 @@ import { PublicApiError, publicGet } from "@/lib/api/publicServer";
 import { APP_URL } from "@/lib/env";
 import type { CalendarEvent } from "@/lib/sismarq/types";
 
-const description = "Agenda pública de eventos institucionais.";
+const description = "Agenda pública de eventos do Arquivo Público Municipal.";
 
 export const metadata: Metadata = { title: "Agenda", description, alternates: { canonical: `${APP_URL}/eventos` } };
 

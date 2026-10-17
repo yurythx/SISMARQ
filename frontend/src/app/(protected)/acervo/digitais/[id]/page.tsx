@@ -4,7 +4,7 @@ import { ArrowLeft, Download, Globe } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
-import { fmtBytes, fmtDia, situacaoDigital } from "@/components/acervo/labels";
+import { fmtBytes, fmtDia, origemDigital, situacaoDigital } from "@/components/acervo/labels";
 import { VisualizadorPDF } from "@/components/acervo/VisualizadorPDF";
 import { DataState } from "@/components/sismarq/DataState";
 import { PageHeader } from "@/components/sismarq/PageHeader";
@@ -117,14 +117,18 @@ export default function DigitalPage() {
               <Campo nome="Classificação (TTDD)">{d.codigo_classificacao}</Campo>
               <Campo nome="Digitalizado em (UTC)">{fmtDateTime(d.digitalizado_em)}</Campo>
               <Campo nome="Responsável">{[d.responsavel_nome, d.responsavel_cpf].filter(Boolean).join(" · ")}</Campo>
+              <Campo nome="Origem">{origemDigital(d.origem)}</Campo>
               <Campo nome="Equipamento">{d.equipamento}</Campo>
               <Campo nome="Resolução">
-                {d.dpi_medido ? `${d.dpi_medido} DPI medidos` : "—"} (declarado {d.dpi_declarado} DPI, {d.tipo_documento.toLowerCase()})
+                {d.dpi_medido ? `${d.dpi_medido} DPI medidos` : "—"}
+                {d.origem === "NATO_DIGITAL"
+                  ? " (nato-digital: sem DPI de scanner)"
+                  : ` (declarado ${d.dpi_declarado} DPI, ${d.tipo_documento.toLowerCase()})`}
               </Campo>
               <Campo nome="Formato">{d.conformidade && `${d.conformidade} · ${d.paginas} página(s) · ${fmtBytes(d.pdfa_bytes)}`}</Campo>
               <Campo nome="Assinatura ICP-Brasil (PAdES)">
                 {d.pades === "AUSENTE" || !d.pades
-                  ? "Não aplicada — aguarda a política municipal de certificado (decisão 0.6)"
+                  ? "Não aplicada — sem certificado ICP-Brasil municipal (Decreto 10.278/2020; pades=AUSENTE)"
                   : d.pades}
               </Campo>
               <Campo nome="Guarda imutável até">{fmtDia(d.retencao_ate)}</Campo>

@@ -463,6 +463,7 @@ describe("Atlas — TTDD", () => {
     renderAtlas(<TTDDPage />);
 
     expect(await screen.findByText("Organogramas")).toBeInTheDocument();
+    expect(screen.getByRole("note")).toHaveTextContent(/art\. 26/);
     expect(screen.getByRole("link", { name: /Organogramas/ })).toHaveAttribute(
       "href",
       "/atlas/ttdd/2.0.01.00.01",

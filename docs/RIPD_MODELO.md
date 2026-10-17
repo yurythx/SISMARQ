@@ -11,6 +11,8 @@
 - **Operadores:** provedores de hospedagem contratados; Login Único Gov.br / Keycloak (autenticação)
 - **Versão dos termos vigente:** `v1.0.0-2026`
 - **Data desta minuta:** 2026-09-09
+- **Acervo (Fase 0, item 0.9):** o DPO ainda não começou o RIPD específico
+  do acervo (ADR 043). Esta minuta permanece o insumo técnico até lá.
 
 ---
 

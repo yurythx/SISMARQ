@@ -64,9 +64,42 @@ variable "vm_template_id" {
   default     = 9000
 }
 
+variable "vm_id" {
+  description = "VMID exclusivo desta instância SISMARQ (não reutilize 201 nem o LXC de teste)"
+  type        = number
+  default     = 220
+}
+
+variable "vm_name" {
+  description = "Nome da VM de aplicação"
+  type        = string
+  default     = "sismarq-prod-app"
+}
+
+variable "app_ipv4" {
+  description = "IPv4 da VM de aplicação (CIDR). Não use o IP do Proxmox (192.168.1.13)."
+  type        = string
+  default     = "192.168.1.52/24"
+}
+
+variable "vm_cores" {
+  type    = number
+  default = 4
+}
+
+variable "vm_memory" {
+  description = "RAM em MB da VM de aplicação"
+  type        = number
+  default     = 4096
+}
+
+variable "vm_disk_size" {
+  type    = number
+  default = 60
+}
+
 variable "vm_admin_password" {
   description = "Senha administrativa da VM para acesso via console NoVNC"
   type        = string
-  default     = "Nexus@Rondonopolis2026!"
   sensitive   = true
 }

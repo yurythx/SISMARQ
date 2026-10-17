@@ -1,5 +1,5 @@
-// Package catalog é o plugin Catálogo: central pública de serviços
-// institucionais (leitura anônima, edição com catalog:manage).
+// Package catalog é o plugin Catálogo: carta de serviços do Arquivo Público
+// (leitura anônima, edição com catalog:manage). Permanece plugável.
 package catalog
 
 import (
@@ -38,7 +38,7 @@ func (m *Module) Manifest() kernel.Manifest {
 	return kernel.Manifest{
 		Key:            Key,
 		Name:           "Catálogo de Serviços",
-		Description:    "Central pública de serviços institucionais.",
+		Description:    "Carta de serviços do Arquivo Público no site institucional (/servicos).",
 		DefaultEnabled: true,
 		Public:         true,
 		Icon:           "layout-grid",

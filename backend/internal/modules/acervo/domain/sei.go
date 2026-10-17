@@ -7,14 +7,13 @@ import (
 	"github.com/google/uuid"
 )
 
-// Fase 7 (ADR 042): ingresso do SEI. A decisão 0.7 (versão, API, quem
-// autoriza) ainda não existe. O tipo descreve o envelope que um processo
-// concluído precisaria para virar unidade de arquivamento; a função
-// recusa o ingresso até essa decisão — não há cliente HTTP nem evento.
+// Fase 7 (ADR 042): ingresso do SEI. A decisão 0.7 registrou o envelope
+// e adiou a integração (sem versão, API, URL nem autorização — ADR 043).
+// A função recusa o ingresso: não há cliente HTTP nem evento.
 
-// ErrSEIAdiado: o município ainda não fechou a 0.7; inventar um cliente
-// seria uma API de mentira.
-var ErrSEIAdiado = errors.New("acervo: ingresso do SEI adiado até a decisão 0.7 (versão, API e autorização)")
+// ErrSEIAdiado: o município ainda não autorizou a integração; inventar um
+// cliente seria uma API de mentira.
+var ErrSEIAdiado = errors.New("acervo: ingresso do SEI adiado até autorização, API e ambiente de homologação (decisão 0.7)")
 
 // ProcessoSEI é o que um pacote AIP do SEI precisaria para o ingresso
 // (metadados mínimos; documentos e hashes ficam para o ADR da 0.7).

@@ -93,4 +93,12 @@ func TestEliminacaoPropagatesDatabaseErrors(t *testing.T) {
 			t.Error("página de relações ilegível")
 		}
 	}
+
+	if _, err := r.ComissaoCentral(ctx, &dbtest.Seq{Row: emptyRow{}}); !errors.Is(err, domain.ErrSemComissao) {
+		t.Errorf("CCPAD ausente: %v", err)
+	}
 }
+
+type emptyRow struct{}
+
+func (emptyRow) Scan(...any) error { return pgx.ErrNoRows }

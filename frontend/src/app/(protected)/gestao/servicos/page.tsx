@@ -150,7 +150,7 @@ export default function GestaoServicosPage() {
       <PageHeader
         eyebrow="Catálogo de serviços"
         title="Gerenciar serviços"
-        description="Carta de serviços publicada no site institucional (/servicos)."
+        description="Carta de serviços do Arquivo Público no site institucional (/servicos)."
         actions={
           <>
             <Link href="/servicos" target="_blank" className="inline-flex items-center gap-1 text-sm text-primary hover:underline">

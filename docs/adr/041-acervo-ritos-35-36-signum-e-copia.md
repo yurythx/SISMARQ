@@ -12,13 +12,14 @@ O rito ordinário (Anexos I a IV) não cobre:
   Divisão + SEMAD;
 - órgão **sem TTDD de atividades-fim** oficializada (art. 36): a Relação
   vai à CCPAD e ao Gerente, depois à SEMAD;
-- a **cópia do Termo** à Divisão de Arquivo e à SEMAD (art. 38, parágrafo
-  único);
+- a **cópia do Termo** à Superintendência de Arquivo Público e à SEMAD
+  (art. 38, parágrafo único);
 - a **assinatura da ata e do termo no Signum** (artigo, item 4.6).
 
 Fingir ICP-Brasil ou um Signum “já assinado” seria o mesmo erro do ADR
-040. A permissão `acervo:semad` não inventa a lotação da SEMAD: o IAM
-concede a quem a Prefeitura indicar (Fase 0).
+040. A permissão `acervo:semad` não inventa a lotação: o IAM (Keycloak /
+LDAP) mapeia o grupo da SEMAD para um perfil com essa permissão **global**
+(ADR 043). Sem destinatário, `termo_copia_semad` fica 0.
 
 ## Decisão
 

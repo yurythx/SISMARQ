@@ -20,6 +20,10 @@ describe("FaqPage", () => {
     // Toda resposta cita a base legal (docs/SISMARQ).
     expect(screen.getAllByText(/^Base: /).length).toBeGreaterThan(10);
     expect(screen.getByRole("link", { name: /consultar a temporalidade/i })).toHaveAttribute("href", "/temporalidade");
+    expect(screen.getByText("Como entra um documento digital no SISMARQ?")).toBeInTheDocument();
+    expect(screen.getByText(/PDF nato-digital/)).toBeInTheDocument();
+    expect(screen.getByText("Depois de digitalizar, o papel permanente pode ir embora?")).toBeInTheDocument();
+    expect(screen.getByText(/veda a eliminação de documento de guarda permanente/)).toBeInTheDocument();
     expect(screen.getByText("Ainda tem dúvidas?")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /fale conosco/i })).toBeInTheDocument();
   });

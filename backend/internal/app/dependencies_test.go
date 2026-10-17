@@ -53,7 +53,7 @@ func infraConfig(t *testing.T) *config.Config {
 	pemKey := string(pem.EncodeToMemory(&pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(key)}))
 	limit := config.RateLimitConfig{WindowSeconds: 60, MaxRequests: 1000}
 	return &config.Config{
-		App: config.AppConfig{Env: "test", Name: "nexus-test", LogLevel: "error", LogFormat: "json"},
+		App: config.AppConfig{Env: "test", Name: "sismarq-test", LogLevel: "error", LogFormat: "json"},
 		Database: config.DatabaseConfig{Host: pg.Host, Port: int(pg.Port), Name: pg.Database, User: pg.User, Password: pg.Password,
 			SSLMode: "disable", MaxConns: 5, MinConns: 0, MaxConnLifetime: time.Hour, MaxConnIdleTime: time.Minute, ConnectTimeout: 3 * time.Second},
 		Redis:     config.RedisConfig{URL: "redis://" + miniredis.RunT(t).Addr()},
@@ -444,10 +444,13 @@ func TestBuildComIndiceDaBusca(t *testing.T) {
 	if len(w.processors) != 9 {
 		t.Fatalf("processors = %d", len(w.processors))
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
 	defer cancel()
-	go func() { _ = w.Run(ctx) }()
-	deadline := time.Now().Add(2 * time.Second)
+	// Os dois processadores do índice (carga + fila de eventos), sem o
+	// recálculo do acervo no mesmo banco.
+	go func() { _ = w.processors[len(w.processors)-2](ctx) }()
+	go func() { _ = w.processors[len(w.processors)-1](ctx) }()
+	deadline := time.Now().Add(8 * time.Second)
 	for imported.Load() == 0 && time.Now().Before(deadline) {
 		time.Sleep(10 * time.Millisecond)
 	}

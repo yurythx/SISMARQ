@@ -114,7 +114,7 @@ export const RITO_ELIMINACAO: Etapa[] = [
   {
     titulo: "Eliminação e Termo (Anexo II)",
     descricao:
-      "A eliminação é feita por fragmentação, e o papel é doado (Decreto Federal nº 5.940/2006). O Termo de Eliminação registra o ato, e uma cópia vai à Divisão de Arquivo Público e à Secretaria de Administração.",
+      "A eliminação é feita por fragmentação, e o papel é doado (Decreto Federal nº 5.940/2006). O Termo de Eliminação registra o ato, e uma cópia vai à Superintendência de Arquivo Público e à Secretaria de Administração.",
     fonte: "Lei 10.301/2019, arts. 38 e 40 e Anexo II",
   },
 ];
@@ -129,6 +129,34 @@ export interface SecaoFAQ {
   categoria: string;
   itens: Pergunta[];
 }
+
+/** Como o SISMARQ recebe o documento digital (página inicial; ADR 037 e 044). */
+export const DIGITALIZACAO_FLUXO: Etapa[] = [
+  {
+    titulo: "1. Escolha a origem",
+    descricao:
+      "Papel digitalizado (scanner em PDF ou TIFF) segue o Decreto Federal 10.278/2020: imagens, 300 DPI para texto ou 600 DPI para planta. PDF já eletrônico (nato-digital) não é scan: não se exige DPI de scanner.",
+    fonte: "Decreto 10.278/2020; Lei 10.301/2019, art. 48; ADR 044",
+  },
+  {
+    titulo: "2. Envie pela unidade de arquivamento",
+    descricao:
+      "O arquivo vai do navegador direto ao armazenamento. Registram-se equipamento ou sistema de origem, responsável (CPF só mascarado) e classificação da TTDD. Unidade eliminada não se digitaliza.",
+    fonte: "Decreto 10.278/2020, art. 9º; ADR 037",
+  },
+  {
+    titulo: "3. Pipeline: PDF/A, OCR e hash",
+    descricao:
+      "O worker gera PDF/A-2b com OCR em português, grava os metadados do Decreto no arquivo, calcula SHA-256 e guarda com retenção imutável. Scan abaixo do DPI mínimo é reprovado para digitalizar de novo.",
+    fonte: "Decreto 10.278/2020; artigo técnico do SISMARQ, itens 4.1 e 4.3",
+  },
+  {
+    titulo: "4. Consulta e o papel permanente",
+    descricao:
+      "O PDF/A fica para conferência de integridade e, se ostensivo, para a consulta pública. Digitalizar não autoriza eliminar documento permanente (arts. 20 e 42). Assinatura ICP-Brasil ainda não é aplicada (pades=AUSENTE).",
+    fonte: "Lei 10.301/2019, arts. 20, 42 e 48; ADR 038 e 040",
+  },
+];
 
 export const FAQ: SecaoFAQ[] = [
   {
@@ -153,6 +181,16 @@ export const FAQ: SecaoFAQ[] = [
         q: "Qual a relação do SISMARQ com o SEI?",
         a: "São complementares. O SEI tramita os processos em curso (fase corrente). O SISMARQ cuida da guarda intermediária e permanente, do passivo físico e digitalizado e do rito de eliminação com os modelos da lei municipal.",
         fonte: "Artigo técnico do SISMARQ, Quadro 1; Lei 10.301/2019, art. 18",
+      },
+      {
+        q: "Como entra um documento digital no SISMARQ?",
+        a: "Pela unidade de arquivamento, em dois caminhos: digitalização do papel (PDF ou TIFF do scanner, com DPI do Decreto 10.278) ou PDF nato-digital. O sistema gera PDF/A com OCR, metadados e hash. Pasta de rede (SMB) ainda não está habilitada.",
+        fonte: "Decreto 10.278/2020; Lei 10.301/2019, art. 48; ADR 037 e 044",
+      },
+      {
+        q: "Depois de digitalizar, o papel permanente pode ir embora?",
+        a: "Não. A lei veda a eliminação de documento de guarda permanente após microfilmagem, digitalização ou qualquer outra reprodução.",
+        fonte: "Lei 10.301/2019, arts. 20 e 42",
       },
     ],
   },

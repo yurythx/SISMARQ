@@ -80,7 +80,7 @@ export default function ComissoesPage() {
       <PageHeader
         eyebrow="Acervo"
         title="Comissões de avaliação"
-        description="A Comissão Setorial Permanente de Avaliação de Documentos (CSPAD) de cada órgão aprova as relações de eliminação; a Comissão Central (CCPAD) coordena o sistema. Composição mínima: arquivologia ou história, área jurídica, administração ou finanças e a unidade produtora — na CCPAD, também o Arquivo Público (art. 31, §§ 6º e 7º)."
+        description="A Comissão Setorial Permanente de Avaliação de Documentos (CSPAD) de cada órgão aprova as relações de eliminação; a Comissão Central (CCPAD) coordena o sistema. Composição mínima: arquivologia ou história, área jurídica, administração ou finanças e a unidade produtora — na CCPAD, também o Arquivo Público (art. 31, §§ 6º e 7º). A permissão acervo:avaliacao fica no perfil (IAM); os membros são usuários nomeados na portaria — sem portaria não se inventa composição."
         actions={
           central &&
           !aberto && (

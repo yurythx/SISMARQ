@@ -20,14 +20,19 @@ func TestMascararCPF(t *testing.T) {
 
 func TestNovoDigital(t *testing.T) {
 	d, err := NovoDigital(Digital{TipoDoc: " texto ", Equipamento: " Fujitsu fi-7160 ", DPIDeclarado: 300})
-	if err != nil || d.TipoDoc != DocTexto || d.Situacao != DigitalEnviado || d.Equipamento != "Fujitsu fi-7160" || d.ID.String() == "" {
+	if err != nil || d.TipoDoc != DocTexto || d.Origem != OrigemScan || d.Situacao != DigitalEnviado || d.Equipamento != "Fujitsu fi-7160" || d.ID.String() == "" {
 		t.Fatalf("válido: %+v %v", d, err)
+	}
+	nato, err := NovoDigital(Digital{TipoDoc: DocTexto, Origem: "nato_digital", Equipamento: "SEI / PDF nato-digital", DPIDeclarado: 300})
+	if err != nil || nato.Origem != OrigemNatoDigital || nato.DPIDeclarado != 0 || ExigeDPIScan(nato.Origem) {
+		t.Fatalf("nato-digital: %+v %v", nato, err)
 	}
 	for nome, x := range map[string]Digital{
 		"tipo":              {TipoDoc: "FOTO", Equipamento: "e", DPIDeclarado: 300},
 		"descrição longa":   {TipoDoc: DocTexto, Equipamento: "e", DPIDeclarado: 300, Descricao: strings.Repeat("x", 501)},
 		"sem equipamento":   {TipoDoc: DocTexto, DPIDeclarado: 300},
 		"DPI fora da faixa": {TipoDoc: DocPlanta, Equipamento: "e", DPIDeclarado: 50},
+		"origem":            {TipoDoc: DocTexto, Origem: "FOTO", Equipamento: "e", DPIDeclarado: 300},
 	} {
 		var v *ErrValidacao
 		if _, err := NovoDigital(x); !errors.As(err, &v) {

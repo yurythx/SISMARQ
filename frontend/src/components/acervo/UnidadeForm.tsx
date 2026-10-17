@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 
-import { NIVEIS, TIPOS } from "@/components/acervo/labels";
+import { NIVEIS, TIPOS, ajudaEvento } from "@/components/acervo/labels";
 import { UnidadeDonaSelect } from "@/components/iam/UnidadeDonaSelect";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -62,6 +62,8 @@ export function UnidadeForm({
 }) {
   const [codigo, setCodigo] = useState(inicial?.codigo_classificacao ?? "");
   const [nivel, setNivel] = useState<string>(inicial?.nivel_acesso ?? "PUBLICO");
+  const serieOk = /^\d+(\.\d+){2,4}$/.test(codigo);
+  const serie = useApiQuery<ClassificacaoTTDD>(serieOk ? `v1/atlas/ttdd/${encodeURIComponent(codigo)}` : null);
 
   function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -141,7 +143,7 @@ export function UnidadeForm({
         <div className="flex flex-col gap-1">
           <Input id="data_evento" name="data_evento" type="date" label="Data do evento" defaultValue={dia(inicial?.data_evento)} aria-describedby="evento-ajuda" />
           <p id="evento-ajuda" className="text-xs text-muted">
-            Para séries com prazo por condição (ex.: &ldquo;Enquanto estiver vigorando&rdquo;): a data em que a condição terminou.
+            {ajudaEvento(serie.data?.fase_corrente_condicao || serie.data?.fase_interm_condicao, serie.data?.descritor)}
           </p>
         </div>
         <div className="flex flex-col gap-1">
@@ -153,7 +155,10 @@ export function UnidadeForm({
             defaultValue={dia(inicial?.contas_aprovadas_em)}
             aria-describedby="contas-ajuda"
           />
-          <p id="contas-ajuda" className="text-xs text-muted">Quando a eliminação exigir a aprovação das contas (quadro do Anexo I).</p>
+          <p id="contas-ajuda" className="text-xs text-muted">
+            Séries financeiras: data em que o Tribunal de Contas aprovou as contas do exercício (quadro do Anexo I). Sem essa data a
+            eliminação não se confunde com o fim da fase por anos. A TTDD pode ser republicada; a unidade já cadastrada não some.
+          </p>
         </div>
       </fieldset>
 

@@ -1,148 +1,105 @@
-# Guia de Automação de Infraestrutura: Proxmox VE + Terraform + Ansible + Cloudflare Tunnel
+# SISMARQ no Proxmox: Terraform + Ansible
 
-Este guia documenta o padrão corporativo de **Infraestrutura como Código (IaC)**, **Gerenciamento de Configuração** e **Borda Zero Trust** do SISMARQ no Proxmox VE 8/9.
+Hypervisor: **`192.168.1.13:8006`**. Esse IP é a API do Proxmox, **não** a URL do SISMARQ. A aplicação sobe numa **VM KVM nova** (VMID **220**, `sismarq-prod-app`, `192.168.1.52`, **4 GB**), clonada do template **9000** (`ubuntu-2404-cloud`). Não reutiliza a 201 (`nexus-prod-app`) nem a 210 (`projeto-assistencia`).
 
----
-
-## 1. Visão Geral da Arquitetura (Single VM + Cloudflare Zero Trust)
-
-A arquitetura elimina proxies reversos locais expostos (como containers LXC de borda ou portas abertas no roteador). A entrega de tráfego ocorre via **Cloudflare Tunnel (conexão outbound criptografada)** diretamente para a VM de aplicação:
+SSO: **`https://sso.rondonopolis.mt.gov.br/realms/rondonopolis`** (client `sismarq`). O Keycloak de teste (`docker-compose.keycloak.yml`) **não** sobe neste fluxo.
 
 ```
-      INTERNET / USUÁRIOS
-               │
-      [ Cloudflare Edge ] (WAF, Proteção DDoS, SSL/TLS, Políticas Zero Trust)
-               │
-        (Túnel Seguro Outbound / Sem Portas Abertas no Firewall)
-               │
-   Proxmox VE Host (pve1)
-               └── VM 201: nexus-prod-app (KVM Dedicada - IP 192.168.1.46)
-                    ├── Cloud-Init + QEMU Guest Agent
-                    ├── Docker Engine CE + Compose Plugin v2
-                    │    ├── cloudflared (conector de túnel)
-                    │    ├── frontend (Next.js 16 - :3010)
-                    │    ├── backend-api (Go Microkernel - :8010)
-                    │    └── postgres, rabbitmq, redis, minio
+Internet / rede municipal
+        │
+sso.rondonopolis.mt.gov.br     (Keycloak já existente)
+        │
+Proxmox 192.168.1.13
+        └── VM 220 sismarq-prod-app  (192.168.1.52)
+             ├── Docker: frontend :3010, API :8010, postgres, redis,
+             │           rabbitmq, minio, typesense, worker
+             └── .env com KEYCLOAK_ISSUER_URL = issuer público HTTPS
 ```
 
-### Por que esta arquitetura é superior?
+## 1. No Proxmox (`pve1`, 192.168.1.13)
 
-1. **Zero Portas Abertas (Zero Trust Ingress):** Não há NAT, DMZ nem Port Forwarding (80/443) no roteador corporativo. Todo tráfego vem da Cloudflare através de túnel seguro.
-2. **Eliminação do LXC 200 (Edge Proxy):** Sem proxy intermediário consumindo memória e CPU desnecessariamente. A borda da Cloudflare já faz terminação TLS, cache estático e proteção contra ataques.
-3. **Isolamento de Kernel & Estabilidade de Storage:** A VM KVM 201 opera com kernel próprio e sistema de arquivos virtualizado `ext4`, garantindo que o driver `overlay2` do Docker funcione com desempenho nativo, sem conflitos com o pool ZFS do Proxmox host.
+Token de API:
 
----
-
-## 2. Estrutura de Arquivos
-
-```
-deploy/infra/
-├── terraform/
-│   ├── versions.tf                  # Provider bpg/proxmox
-│   ├── provider.tf                  # Autenticação via API Token
-│   ├── variables.tf                 # Declaração de variáveis e template ID
-│   ├── terraform.tfvars             # Valores locais (protegido por .gitignore)
-│   ├── terraform.tfvars.example     # Exemplo versionado no Git
-│   ├── main.tf                      # Declaração da VM 201 + gerador de inventário
-│   ├── outputs.tf                   # IPs, IDs e inventário gerado
-│   ├── create-cloudinit-template.sh # Script para criar template Cloud-Init no Proxmox
-│   └── modules/
-│       ├── proxmox_vm/              # Módulo para criar VMs KVM com Cloud-Init
-│       └── proxmox_lxc/             # Módulo legado (mantido para serviços auxiliares)
-│
-└── ansible/
-    ├── ansible.cfg                  # Otimizações de SSH e pipelining
-    ├── inventory.ini                # Gerado dinamicamente pelo Terraform
-    ├── site.yml                     # Playbook orquestrador mestre
-    └── roles/
-        ├── common/                  # Hardening, timezone, UFW, QEMU guest agent
-        ├── docker/                  # Instalação oficial do Docker Engine + Compose
-        └── nexus_deploy/            # Deploy automatizado da stack via deploy.sh
-```
-
----
-
-## 3. Pré-Requisitos no Proxmox (`pve1`)
-
-### A. Permissão do Token de API
-O usuário de automação e o token de API:
-* **Usuário:** `terraform-prov@pve`
-* **Token ID:** `tf-token`
-* **Full Token ID:** `terraform-prov@pve!tf-token`
-
-Garanta a permissão executando no shell do Proxmox:
 ```bash
+pveum user add terraform-prov@pve
 pveum acl modify / -user terraform-prov@pve -role Administrator
+pveum user token add terraform-prov@pve tf-token
 ```
 
-### B. Template Cloud-Init (VM 9000)
-Para que o Terraform possa clonar a VM KVM com Cloud-Init instantaneamente, você precisa de um template base no Proxmox (ID 9000).
+Template Cloud-Init: a VM **9000** (`ubuntu-2404-cloud`) **já existe**. Não rode `create-cloudinit-template.sh` (e não precisa clonar o repo no Proxmox só por isso). Confira IPs das VMs atuais para não colidir:
 
-Execute o script auxiliar diretamente no terminal do Proxmox:
 ```bash
-# No shell do Proxmox Host:
-bash deploy/infra/terraform/create-cloudinit-template.sh 9000 debian-12-cloudinit zfs
+qm config 201 | grep ipconfig
+qm config 210 | grep ipconfig
 ```
-Em menos de 1 minuto o template `debian-12-cloudinit` (VM 9000) estará pronto para ser clonado pelo Terraform.
 
----
+Usuário/token `terraform-prov@pve!tf-token` **já existem**. Não rode `pveum user add` de novo. O secret do token só aparece na criação: se você não tiver salvo, recrie:
 
-## 4. Como Executar via Makefile ou Linha de Comando
-
-Você pode executar diretamente da raiz do projeto usando os atalhos do `Makefile`:
-
-### Passo 1: Inicializar e Planejar
 ```bash
+pveum user token delete terraform-prov@pve tf-token
+pveum user token add terraform-prov@pve tf-token
+```
+
+Guarde o secret no `terraform.tfvars` da máquina que roda o Terraform (não no Proxmox).
+
+O padrão do Terraform é `192.168.1.52`. Se esse IP já aparecer no `ipconfig` acima, mude `app_ipv4` no `terraform.tfvars`.
+
+## 2. Na máquina que opera o IaC (com Terraform, Ansible e SSH)
+
+```bash
+cp deploy/infra/terraform/terraform.tfvars.example deploy/infra/terraform/terraform.tfvars
+# Preencha token, senha do console, chave SSH pública e, se preciso, app_ipv4 / node_name / storage.
+
+cp deploy/infra/ansible/secrets.yml.example deploy/infra/ansible/secrets.yml
+# Cole o Client Secret do client sismarq (o mesmo da tela de Configurações).
+
 make infra-init
 make infra-plan
-```
-
-### Passo 2: Provisionar a Infraestrutura
-```bash
 make infra-apply
-```
-O Terraform irá:
-1. Clonar o template e criar a VM KVM 201 (`nexus-prod-app`) com 4 vCPUs, 8GB RAM, 60GB disco e IP `192.168.1.46`.
-2. Injetar sua chave SSH pública via Cloud-Init.
-3. Gerar automaticamente o arquivo `deploy/infra/ansible/inventory.ini`.
-
-### Passo 3: Configurar o Docker e Fazer Deploy do SISMARQ
-```bash
-make infra-deploy
-```
-O Ansible irá:
-1. Configurar hardening básico, firewall UFW e iniciar o `qemu-guest-agent`.
-2. Instalar o Docker Engine oficial e o Compose plugin na VM 201.
-3. Executar o script `scripts/deploy.sh`, que gera `.env` (segredos criptográficos aleatórios fortes), chaves RSA locais e sobe todos os containers (`backend-api`, `frontend`, `postgres`, `rabbitmq`, `redis`, `minio`, `migrate`).
-
----
-
-## 5. Conectando ao Cloudflare Tunnel
-
-Após o deploy da VM, configure o roteamento no **Cloudflare Zero Trust** (em *Access > Tunnels*):
-
-* **Frontend:** `nexus.seudominio.com` ➔ `http://192.168.1.46:3010`
-* **API / Backend:** `api.seudominio.com` ➔ `http://192.168.1.46:8010`
-
-Caso queira que o conector `cloudflared` suba junto com a stack dentro do Docker:
-1. Adicione `CLOUDFLARE_TUNNEL_TOKEN=seu_token` no arquivo `.env`.
-2. Acrescente `docker-compose.cloudflare.yml` à variável `COMPOSE_FILE` no `.env`.
-
----
-
-## 6. Manutenção e Comandos Úteis
-
-### Recriar a Máquina do Zero (Disposable Infra)
-Se precisar resetar completamente o host de aplicação:
-```bash
-cd deploy/infra/terraform
-terraform destroy -target=module.vm_nexus_app
-terraform apply
 make infra-deploy
 ```
 
-### Testar Conexão Ansible
+O Ansible instala Docker, clona o repositório, roda `scripts/deploy.sh` e grava o SSO oficial no `.env`. Sem `secrets.yml` a stack sobe, mas o botão Keycloak não autentica.
+
+No client `sismarq` do Keycloak, Valid redirect URI:
+
+`http://192.168.1.52:3010/api/auth/callback/keycloak`
+
+(ajuste o IP se `app_ipv4` for outro; com HTTPS local, use `https://…`.)
+
+## 3. Depois do deploy
+
+| URL | O quê |
+|---|---|
+| `http://192.168.1.52:3010` | SISMARQ (navegador) |
+| `http://192.168.1.52:8010/health` | API |
+| Tela Configurações → Keycloak | Deve mostrar issuer `https://sso.rondonopolis.mt.gov.br/realms/rondonopolis` (já gravado no `.env`; pode salvar de novo pela tela) |
+
+Login local (`make prod-seed-admin` na VM) funciona mesmo se o SSO falhar.
+Mapeamento AD: [IAM.md](acervo/IAM.md) — só com o CN real do grupo; não
+invente membros sem portaria.
+
+Atualizar código na VM **sem** `git pull` do GitHub `main`:
+`deploy/homolog/sincronizar-vm.sh` (ou `.ps1` no Windows).
+
+Volume (item 0.10 da Fase 0): ainda **sem** metros lineares. Na VM, conferir disco
+sem inventar número:
+
 ```bash
-cd deploy/infra/ansible
-ansible all -m ping
+docker system df
+docker volume ls
+df -h
 ```
+
+Backup da stack: `scripts/backup.sh` (dump Postgres + espelho MinIO). Copiar
+`BACKUP_DIR` para fora da máquina — o backup no mesmo disco não cobre perda da VM.
+
+Não ligue `docker-compose.keycloak.yml` nesta VM.
+
+## 4. Cloudflare Tunnel (opcional)
+
+Só se houver hostname público. Sem túnel, o acesso é pela LAN (`192.168.1.52`). Token em `CLOUDFLARE_TUNNEL_TOKEN` e `COMPOSE_FILE=docker-compose.yml:docker-compose.cloudflare.yml`.
+
+## 5. State antigo (`vm_nexus_app`)
+
+Se já existir state Terraform com o módulo `vm_nexus_app`, o `apply` vai **substituir** o recurso pelo `vm_sismarq_app`. Confira o plan antes. Para destruir só a VM antiga: `terraform destroy -target=module.vm_nexus_app` no state antigo.

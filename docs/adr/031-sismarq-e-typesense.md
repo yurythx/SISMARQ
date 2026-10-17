@@ -40,12 +40,18 @@ Typesense do Atlas, mas por defeitos da integração, não do motor:
     `nexus:` no Redis e as métricas `nexus_*`;
   - os cookies e o `localStorage`, os cabeçalhos `X-Nexus-*` e o
     User-Agent do Egress (os receptores conferem a assinatura), e a
-    origem `projeto-nexus.platform` dos eventos;
+    origem `projeto-nexus.platform` dos eventos — **exceção (2026-10-17):**
+    cookies de preferência do visitante passaram a `sismarq-*` (com
+    leitura do nome legado), o Egress envia `X-SISMARQ-*` /
+    `SISMARQ-Egress/1.0` e a origem dos eventos é `sismarq.platform`.
+    O Arquivo Público não tem receptores PaperMoon desses cabeçalhos;
   - a CA de teste do Caddy (`nexus-ca.crt`, já instalada nos aparelhos),
     o Terraform (mudar descrições e senhas mexe na infraestrutura criada),
     o caminho `/root/Projetos/Projeto-Nexus` no servidor;
-  - os dados fictícios dos seeds ("Nexus Corporation") e os ADRs 002 a
-    030, que são registro histórico.
+  - os ADRs 002 a 030, que são registro histórico. Os seeds
+    `deploy/seeds/seed_*_rondonopolis.sql` (Nexus Corporation) **não**
+    se aplicam no Arquivo Público — ver `deploy/seeds/LEIA-ME.md`.
+    Catálogo/blog PaperMoon saem na migration `000157`.
 
 ### 2. Typesense como índice da Busca Global
 

@@ -25,6 +25,9 @@ bin/
 *.out
 # Saída do go test do CI local (scripts de verificação).
 backend/test.log
+coverage/
+**/coverage/
+*.lcov
 
 # IDEs e Editores
 .vscode/
@@ -69,4 +72,9 @@ deploy/infra/terraform/terraform.tfvars
 
 # Ansible
 deploy/infra/ansible/inventory.ini
+deploy/infra/ansible/secrets.yml
 *.retry
+
+# Relat�rios de cobertura gerados localmente
+backend/coverage
+

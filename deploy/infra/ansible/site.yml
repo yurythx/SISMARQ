@@ -1,25 +1,20 @@
 ---
-# ==============================================================================
-# PLAYBOOK MESTRE DE PROVISIONAMENTO E CONFIGURAÇÃO - PROJETO NEXUS
-# ==============================================================================
+# SISMARQ no Proxmox: hardening → Docker → stack (SSO oficial, sem Keycloak de teste).
 
-# 1. Configurações de base para todas as máquinas (VMs e LXCs)
-- name: Hardening e Configuração de Base
+- name: Hardening e configuração de base
   hosts: all
-  become: yes
+  become: true
   roles:
     - common
 
-# 2. Instalação e Otimização do Docker Engine
-- name: Configuração do Daemon Docker
+- name: Docker Engine
   hosts: docker_hosts
-  become: yes
+  become: true
   roles:
     - docker
 
-# 3. Deploy Contínuo da Aplicação SISMARQ
-- name: Deploy da Stack SISMARQ
-  hosts: nexus_apps
-  become: yes
+- name: Deploy da stack SISMARQ
+  hosts: sismarq_apps
+  become: true
   roles:
     - nexus_deploy

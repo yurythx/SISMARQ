@@ -173,7 +173,7 @@ describe("PlatformMonitoringDashboard", () => {
 
     expect(await screen.findByText("Disaster Recovery (DR) & Procedimentos de Restauração")).toBeInTheDocument();
     expect(screen.getByText("Matriz de Identidade & Acessos Homologados (IAM)")).toBeInTheDocument();
-    expect(screen.getByText("Carlos Mendes")).toBeInTheDocument();
+    expect(screen.getByText("Equipe da Superintendência")).toBeInTheDocument();
 
     // 3. Retorna para a aba de Observabilidade & Telemetria
     const obsTabBtn = screen.getByRole("button", { name: /observabilidade & telemetria/i });

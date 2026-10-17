@@ -25,7 +25,7 @@ import { Input } from "@/components/ui/Input";
 //
 // Sem um Card com borda/sombra em volta (ao contrário da versão
 // anterior): o painel direito de app/login/page.tsx já é o "container"
-// visual (§ Redesenho do login, inspirado em papermoon.cloud) — outra
+// visual do login — outra
 // caixa por dentro dele ficaria redundante.
 
 // Mesma janela do rate limiter local do backend (ratelimit.NewPostgresLimiter

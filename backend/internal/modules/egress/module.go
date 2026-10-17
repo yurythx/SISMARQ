@@ -42,7 +42,7 @@ func (m *Module) Manifest() kernel.Manifest {
 	return kernel.Manifest{
 		Key:            Key,
 		Name:           "Egress",
-		Description:    "Webhooks de saída assíncronos e assinados, com proteção anti-SSRF (n8n, Zabbix, Grafana).",
+		Description:    "Webhooks de saída assinados (n8n, Zabbix, Grafana e automações do município), com proteção anti-SSRF.",
 		DefaultEnabled: true,
 		Icon:           "send",
 		Route:          "/configuracao/egress",

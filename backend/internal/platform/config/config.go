@@ -437,7 +437,7 @@ func Load() (*Config, error) {
 	cfg := &Config{
 		App: AppConfig{
 			Env:       l.str("APP_ENV", true, ""),
-			Name:      l.str("APP_NAME", false, "projeto-nexus"),
+			Name:      l.str("APP_NAME", false, "sismarq"),
 			LogLevel:  l.str("APP_LOG_LEVEL", false, "info"),
 			LogFormat: l.str("LOG_FORMAT", false, "json"),
 		},

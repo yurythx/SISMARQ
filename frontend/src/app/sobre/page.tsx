@@ -82,7 +82,8 @@ export default async function AboutPage() {
           <p className="text-sm leading-relaxed text-muted">{MISSAO}</p>
           <p className="text-xs text-muted">
             Base: Lei 10.301/2019, art. 5º. Pela lei, o Arquivo Público é subordinado ao Gabinete da Secretaria
-            Municipal de Administração, sob a responsabilidade da Divisão de Arquivo Público.
+            Municipal de Administração. O nome atual do órgão central, usado nos documentos gerados, é Superintendência
+            de Arquivo Público (a lei ainda fala em Divisão).
           </p>
         </section>
 

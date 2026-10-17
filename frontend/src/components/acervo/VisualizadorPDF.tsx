@@ -26,7 +26,7 @@ export function VisualizadorPDF({ url, titulo }: { url: string; titulo: string }
       const { EventBus, PDFViewer } = await import("pdfjs-dist/web/pdf_viewer.mjs");
       pdfjs.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url).toString();
       const tarefa = pdfjs.getDocument({ url, rangeChunkSize: TRECHO, disableAutoFetch: true, disableStream: true });
-      destruir = () => tarefa.destroy();
+      destruir = () => Promise.resolve(tarefa?.destroy?.());
       const doc = await tarefa.promise;
       if (cancelado || !container.current) return;
       const eventBus = new EventBus();

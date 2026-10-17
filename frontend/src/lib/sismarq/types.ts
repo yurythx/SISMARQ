@@ -1344,6 +1344,7 @@ export interface AcervoDigital {
   unidade_arquivamento_id: string;
   descricao: string;
   tipo_documento: "TEXTO" | "PLANTA" | string;
+  origem: "SCAN" | "NATO_DIGITAL" | string;
   equipamento: string;
   dpi_declarado: number;
   responsavel_nome: string;

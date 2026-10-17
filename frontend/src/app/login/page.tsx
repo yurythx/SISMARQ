@@ -10,6 +10,7 @@ import { AccessibilityBar } from "@/components/layout/AccessibilityBar";
 import { Logo } from "@/components/ui/Logo";
 import { Seal } from "@/components/ui/Seal";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { pickCookie, THEME_COOKIE, THEME_COOKIE_LEGACY } from "@/lib/prefs/cookies";
 
 // O painel de marca descreve exatamente o que a plataforma faz para um
 // fiscal de contrato — sem linguagem de vendedor ("enterprise", "a
@@ -27,7 +28,7 @@ export default async function LoginPage() {
   const brand = await getServerBranding();
 
   const cookieStore = await cookies();
-  const themeCookie = cookieStore.get("nexus-theme")?.value;
+  const themeCookie = pickCookie(cookieStore, THEME_COOKIE, THEME_COOKIE_LEGACY);
   const initialTheme = themeCookie === "dark" || themeCookie === "light" ? themeCookie : undefined;
 
   return (
@@ -52,9 +53,9 @@ export default async function LoginPage() {
         </div>
 
         <div className="relative flex flex-col gap-6">
-          <p className="dateline text-accent font-semibold tracking-wider text-xs uppercase">{brand.orgName || "Polo Tecnológico"}</p>
+          <p className="dateline text-accent font-semibold tracking-wider text-xs uppercase">{brand.orgName || "Superintendência de Arquivo Público"}</p>
           <h1 className="max-w-md text-3xl font-extrabold leading-tight text-white sm:text-4xl">
-            Acesso à Plataforma Institucional
+            Acesso ao Arquivo Público Municipal
           </h1>
           <p className="max-w-sm text-sm text-white/75 leading-relaxed">
             {brand.appDescription || "Entre com sua conta corporativa unificada (SSO Keycloak) ou credencial administrativa local."}

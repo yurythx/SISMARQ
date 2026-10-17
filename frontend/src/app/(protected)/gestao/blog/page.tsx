@@ -34,7 +34,7 @@ export default function BlogPage() {
       <PageHeader
         eyebrow="Comunicação"
         title="Blog & comunicados"
-        description="Notícias e comunicados internos da instituição."
+        description="Comunicados e notícias do Arquivo Público Municipal."
         actions={
           manage && (
             <Link href="/gestao/blog/novo" className={buttonClass("primary", "md")}>

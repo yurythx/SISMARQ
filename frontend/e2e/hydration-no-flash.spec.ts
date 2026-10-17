@@ -29,7 +29,7 @@ test.describe("Sem flash de hidratação (branding + Sidebar)", () => {
     await page.getByRole("button", { name: "Alto contraste" }).click();
     await expect
       .poll(async () => (await context.cookies()).map((c) => c.name))
-      .toEqual(expect.arrayContaining(["nexus-branding", "nexus-sidebar-collapsed"]));
+      .toEqual(expect.arrayContaining(["sismarq-branding", "sismarq-sidebar-collapsed"]));
 
     // HTML CRU do servidor: o que chega ANTES do React hidratar.
     const html = await (await context.request.get("/dashboard")).text();

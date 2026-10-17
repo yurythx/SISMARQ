@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 
 import { AcoesPagina } from "@/components/atlas/AcoesPagina";
+import { AvisoAtividadesMeio } from "@/components/atlas/AvisoAtividadesMeio";
 import { CalculadoraTemporalidade } from "@/components/atlas/CalculadoraTemporalidade";
 import { ModelosDaSerie } from "@/components/atlas/ModelosDaSerie";
 import { SeloVigencia } from "@/components/atlas/SeloVigencia";
@@ -161,6 +162,7 @@ export default function SeriePage() {
       >
         {c && dest && (
           <>
+            <AvisoAtividadesMeio />
             <header className="flex flex-col gap-3">
               <span className="font-mono text-sm font-bold text-primary">{c.codigo}</span>
               <h1 className="text-2xl font-bold text-foreground">{c.descritor}</h1>

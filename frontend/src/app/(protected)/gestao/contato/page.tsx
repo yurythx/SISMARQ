@@ -94,7 +94,7 @@ export default function GestaoContatoPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader eyebrow="Contato" title="Mensagens recebidas" description="Mensagens do formulário público, com protocolo e consentimento LGPD registrados." />
+      <PageHeader eyebrow="Contato" title="Mensagens recebidas" description="Mensagens do formulário público do Arquivo (SIC/contato), com protocolo e consentimento LGPD." />
       <Select
         id="ct-filter"
         label="Situação"

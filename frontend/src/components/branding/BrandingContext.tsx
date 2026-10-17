@@ -33,7 +33,7 @@ export function BrandingProvider({
   initialBranding,
 }: {
   children: React.ReactNode;
-  /** Branding lido do cookie `nexus-branding` no layout do servidor. Vira o
+  /** Branding lido do cookie `sismarq-branding` no layout do servidor. Vira o
    * server snapshot do useSyncExternalStore: como o cliente lê o MESMO
    * cookie, o snapshot de SSR e o do cliente coincidem e o nome não pisca
    * do valor antigo para o novo depois da hidratação. Ausente (fora do

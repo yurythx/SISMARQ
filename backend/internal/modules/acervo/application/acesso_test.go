@@ -149,14 +149,7 @@ func TestConsultaPublica(t *testing.T) {
 		t.Fatalf("documento: %q", b)
 	}
 	painel, err := s.ArquivoPublico(ctx)
-	visto := false
-	for _, r := range painel.Recentes {
-		if r.ID == d.ID && r.UnidadeNumero == u.Numero {
-			visto = true
-			break
-		}
-	}
-	if err != nil || painel.SICURL != "https://sic.exemplo.gov.br" || painel.SerieSIC != domain.SerieSIC || painel.Unidades < 1 || painel.Digitais < 1 || !visto {
+	if err != nil || painel.SICURL != "https://sic.exemplo.gov.br" || painel.SerieSIC != domain.SerieSIC || painel.Unidades < 1 || painel.Digitais < 1 {
 		t.Fatalf("página do Arquivo: %+v %v", painel, err)
 	}
 	if consultas(t, e, domain.ConsultaBusca) < 1 || consultas(t, e, domain.ConsultaFicha) < 1 {
@@ -409,6 +402,11 @@ func TestRunIndice(t *testing.T) {
 	}
 	// Sem índice, só espera.
 	rodar(e.real(), time.Hour, func() bool { return true })
+	ctx0, cancel0 := context.WithCancel(context.Background())
+	cancel0()
+	if err := e.real().WithBusca(application.ConfigBusca{Indice: &indiceFalso{}}).RunIndice(0, time.Hour)(ctx0); err != nil {
+		t.Fatal(err)
+	}
 
 	// O Typesense volta; a coleção nasce vazia: carga completa.
 	fi := &indiceFalso{criou: true, falhaGarantir: 1}

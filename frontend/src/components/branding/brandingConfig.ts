@@ -5,9 +5,10 @@
 //    tokens de cor) — vem do backend (GET /api/v1/branding), a mesma para
 //    todos os visitantes;
 //  - preferências de acessibilidade do visitante (Alto Contraste e escala
-//    de fonte e-MAG) — persistidas no cookie `nexus-branding` deste
-//    navegador.
+//    de fonte e-MAG) — persistidas no cookie `sismarq-branding` deste
+//    navegador (lê o legado `nexus-branding` se ainda existir).
 
+import { BRANDING_PREFS_COOKIE, BRANDING_PREFS_COOKIE_LEGACY } from "@/lib/prefs/cookies";
 import type { Branding } from "@/lib/sismarq/types";
 
 export interface SystemBrandingConfig {
@@ -29,7 +30,7 @@ export interface SystemBrandingConfig {
 export const DEFAULT_BRANDING: SystemBrandingConfig = {
   appName: "SISMARQ",
   appDescription: "Sistema Municipal de Arquivos — Arquivo Público Municipal de Rondonópolis",
-  orgName: "Organização",
+  orgName: "Superintendência de Arquivo Público",
   logoUrl: "",
   faviconUrl: "",
   supportEmail: "",
@@ -40,7 +41,8 @@ export const DEFAULT_BRANDING: SystemBrandingConfig = {
   fontSizeScale: 100,
 };
 
-export const BRANDING_COOKIE = "nexus-branding";
+export const BRANDING_COOKIE = BRANDING_PREFS_COOKIE;
+export const BRANDING_COOKIE_LEGACY = BRANDING_PREFS_COOKIE_LEGACY;
 
 /** Só as preferências do visitante vão para o cookie. */
 type Prefs = Pick<SystemBrandingConfig, "highContrast" | "fontSizeScale">;

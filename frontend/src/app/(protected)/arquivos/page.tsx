@@ -200,7 +200,7 @@ function Arquivos() {
       <PageHeader
         eyebrow="Arquivos"
         title={l?.folder?.name ?? "Pastas"}
-        description={!folderId ? "Pastas de trabalho compartilhadas, com permissões por perfil, grupo do AD ou unidade." : undefined}
+        description={!folderId ? "Pastas de trabalho da Superintendência (não é o acervo digital). Permissões por perfil, grupo do AD ou unidade." : undefined}
         actions={
           <>
             {(!folderId || l?.access.write) && (

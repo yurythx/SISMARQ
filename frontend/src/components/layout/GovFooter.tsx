@@ -89,7 +89,7 @@ export function GovFooter() {
             </li>
             <li>
               <Link href="/sobre" className="underline-offset-2 hover:underline">
-                Sobre a plataforma
+                Sobre o Arquivo Público
               </Link>
             </li>
           </ul>
@@ -100,7 +100,7 @@ export function GovFooter() {
           <p>
             © {year} {branding.orgName}
           </p>
-          <p>Plataforma construída sobre o SISMARQ · Padrão Digital de Governo (DSGov)</p>
+          <p>SISMARQ · Lei Municipal nº 10.301/2019 · Padrão Digital de Governo (DSGov)</p>
         </div>
       </div>
     </footer>

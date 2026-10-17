@@ -1,8 +1,8 @@
-# SISMARQ — Plataforma Enterprise Base Governamental
+# SISMARQ — Sistema Municipal de Arquivos de Rondonópolis
 
-O **SISMARQ** é uma plataforma corporativa modular construída segundo o padrão de **Arquitetura Microkernel (Plug-in Architecture)** em Go (Backend) e Next.js App Router (Frontend), desenvolvida para servir como **base enterprise genérica em estrita conformidade com as normas do Governo Federal Brasileiro** (SGD/MGI, e-MAG 2.0, DSGov, LGPD, Gov.br e OWASP) para o rápido desenvolvimento e desacoplamento de novos módulos de negócio municipais e estaduais.
+O **SISMARQ** é o sistema do **Arquivo Público Municipal de Rondonópolis**, criado pela [Lei Municipal nº 10.301/2019](docs/SISMARQ/). Gestão dos documentos nas três idades, TTDD, avaliação, eliminação, recolhimento e consulta pública — em Go (backend) e Next.js (frontend), em conformidade com SGD/MGI, e-MAG 2.0, DSGov, LGPD e OWASP.
 
-Ele fornece um **Core System (Kernel)** robusto com infraestrutura pronta de segurança HTTP, mensageria, outbox transacional, autenticação via **Keycloak dedicado com federação do Active Directory** (e fallback local RS256), mascaramento PII, auditoria imutável com cadeia de hash, busca full-text em PostgreSQL e um Design System governamental oficial (DSGov / e-MAG).
+A plataforma usa **arquitetura microkernel**: um núcleo (IAM, auditoria, mensageria, Keycloak/AD) e plug-ins de negócio (Acervo, Atlas, Trâmite, Signum e os demais). Não é portal de TI nem produto da PaperMoon/Nexus Corporation.
 
 ---
 

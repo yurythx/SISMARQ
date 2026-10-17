@@ -56,7 +56,7 @@ func (m *Module) Manifest() kernel.Manifest {
 	return kernel.Manifest{
 		Key:            Key,
 		Name:           "Trâmite",
-		Description:    "Processos administrativos numerados com controle de sigilo e assinatura via Signum.",
+		Description:    "Processos administrativos numerados da administração municipal, com sigilo e assinatura via Signum.",
 		DefaultEnabled: true,
 		DependsOn:      []string{"signum"},
 		Icon:           "folder-kanban",

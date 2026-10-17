@@ -1,6 +1,6 @@
 // Package mercurio é o plugin Mercúrio: chat em tempo real via WebSocket
-// com backplane Redis (canais globais, salas departamentais mapeadas via
-// AD e mensagens diretas).
+// com backplane Redis (canais da Superintendência, salas por unidade mapeadas
+// via AD e mensagens diretas). Permanece plugável (Kernel).
 package mercurio
 
 import (
@@ -32,7 +32,7 @@ func (m *Module) Manifest() kernel.Manifest {
 	return kernel.Manifest{
 		Key:            Key,
 		Name:           "Mercúrio",
-		Description:    "Chat em tempo real: canais globais, salas departamentais mapeadas via AD e mensagens diretas.",
+		Description:    "Chat em tempo real da Superintendência: canais institucionais, salas por unidade (AD) e mensagens diretas.",
 		DefaultEnabled: true,
 		Icon:           "messages-square",
 		Route:          "/mercurio",

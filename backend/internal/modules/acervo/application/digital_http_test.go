@@ -27,6 +27,9 @@ func TestHandlersDigital(t *testing.T) {
 	u := e.criar(codPerm)
 	base := "/acervo/unidades/" + u.ID.String() + "/digitais"
 
+	if rec := do(h, http.MethodPost, base+"/upload", `{"filename":"nota.docx"}`); rec.Code != http.StatusUnprocessableEntity {
+		t.Fatalf("extensão: %d %s", rec.Code, rec.Body)
+	}
 	rec := do(h, http.MethodPost, base+"/upload", `{"filename":"lote.pdf"}`)
 	if rec.Code != http.StatusOK {
 		t.Fatalf("upload: %d %s", rec.Code, rec.Body)
@@ -54,6 +57,7 @@ func TestHandlersDigital(t *testing.T) {
 		{h, http.MethodPost, "/acervo/unidades/x/digitais", `{}`, http.StatusBadRequest},
 		{h, http.MethodPost, base, `{`, http.StatusBadRequest},
 		{h, http.MethodPost, base, `{"object_key":"k","tipo_documento":"FOTO","equipamento":"e","dpi_declarado":300}`, http.StatusUnprocessableEntity},
+		{h, http.MethodPost, base, `{"object_key":"k","tipo_documento":"TEXTO","origem":"FOTO","equipamento":"e","dpi_declarado":300}`, http.StatusUnprocessableEntity},
 		{h, http.MethodGet, "/acervo/digitais?unidade_id=" + u.ID.String(), "", http.StatusOK},
 		{h, http.MethodGet, "/acervo/digitais?unidade_id=x", "", http.StatusBadRequest},
 		{arq, http.MethodGet, "/acervo/digitais?falhas=true", "", http.StatusOK},
@@ -121,5 +125,36 @@ func TestHandlersDigital(t *testing.T) {
 	down := router(e.svc(&faultRepo{inner: infrastructure.NewRepository(), failAt: 1}), quem)
 	if r := do(down, http.MethodGet, "/acervo/digitais", ""); r.Code != http.StatusInternalServerError {
 		t.Fatalf("lista com o banco fora: %d", r.Code)
+	}
+}
+
+func TestHandlersNatoDigitalETIFF(t *testing.T) {
+	e := novoEnv(t)
+	ctx := context.Background()
+	e.limparFila(t)
+	store := storagetest.New()
+	s := e.digital(t, store, &pipeFalso{paginas: 1, dpi: 0})
+	quem := digitalizador(t, e, e.unidade)
+	h := router(s, quem)
+	u := e.criar(codPerm)
+	base := "/acervo/unidades/" + u.ID.String() + "/digitais"
+	rec := do(h, http.MethodPost, base+"/upload", `{"filename":"oficio.tiff"}`)
+	if rec.Code != http.StatusOK || !strings.Contains(rec.Body.String(), ".tiff") {
+		t.Fatalf("upload tiff: %d %s", rec.Code, rec.Body)
+	}
+	chave := campo(t, rec.Body.String(), "object_key")
+	if err := store.Put(ctx, "app", chave, strings.NewReader("II*tiff"), 7, "image/tiff"); err != nil {
+		t.Fatal(err)
+	}
+	rec = do(h, http.MethodPost, base, `{"object_key":"`+chave+`","tipo_documento":"TEXTO","origem":"NATO_DIGITAL","equipamento":"SEI","dpi_declarado":0}`)
+	if rec.Code != http.StatusCreated || !strings.Contains(rec.Body.String(), `"origem":"NATO_DIGITAL"`) {
+		t.Fatalf("nato: %d %s", rec.Code, rec.Body)
+	}
+	if ok, err := s.ProcessarProximo(ctx); !ok || err != nil {
+		t.Fatal(err)
+	}
+	id := campo(t, rec.Body.String(), "id")
+	if rec := do(h, http.MethodGet, "/acervo/digitais/"+id, ""); rec.Code != http.StatusOK || !strings.Contains(rec.Body.String(), `"situacao":"PRONTO"`) {
+		t.Fatalf("pronto: %d %s", rec.Code, rec.Body)
 	}
 }

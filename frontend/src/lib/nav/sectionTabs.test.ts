@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { hasPermission } from "@/lib/sismarq/permissions";
 
-import { CONFIG_TABS, visibleTabs } from "./sectionTabs";
+import { CONFIG_TABS, MODULE_CHILDREN, isNavHrefActive, visibleTabs } from "./sectionTabs";
 
 describe("abas de Configurações", () => {
   it("cada aba só aparece com a permissão correspondente", () => {
@@ -31,3 +31,25 @@ describe("abas de Configurações", () => {
     expect(visibleTabs(CONFIG_TABS, () => false, () => true)).toEqual([]);
   });
 });
+
+describe("submenus dos módulos", () => {
+  it("Acervo: privados e importar só com a permissão (global no Arquivo)", () => {
+    const todos = visibleTabs(MODULE_CHILDREN.acervo!, (p) => hasPermission(["*"], p), () => true);
+    expect(todos.some((t) => t.href === "/acervo/privados")).toBe(true);
+    const leitura = visibleTabs(MODULE_CHILDREN.acervo!, (p) => hasPermission(["acervo:read"], p), () => true);
+    expect(leitura.some((t) => t.href === "/acervo/eliminacao")).toBe(true);
+    expect(leitura.some((t) => t.href === "/acervo/privados")).toBe(false);
+  });
+
+  it("Atlas: cobertura só para quem gere", () => {
+    const leitura = visibleTabs(MODULE_CHILDREN.atlas!, (p) => hasPermission(["atlas:read"], p), () => true);
+    expect(leitura.map((t) => t.href)).toEqual(["/atlas/ttdd", "/atlas/organograma", "/atlas/modelos"]);
+  });
+
+  it("isNavHrefActive: prefixo mais longo", () => {
+    const irmaos = [{ href: "/acervo" }, { href: "/acervo/digitais" }];
+    expect(isNavHrefActive("/acervo/digitais/d1", "/acervo", irmaos)).toBe(false);
+    expect(isNavHrefActive("/acervo/digitais/d1", "/acervo/digitais", irmaos)).toBe(true);
+  });
+});
+

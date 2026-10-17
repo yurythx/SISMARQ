@@ -3,11 +3,6 @@
 import {
   ArrowRight,
   Building2,
-  ChartPie,
-  FileClock,
-  FileText,
-  FileUp,
-  Network,
   Plus,
   Workflow as IconeFluxo,
 } from "lucide-react";
@@ -22,7 +17,7 @@ import { WorkflowList } from "@/components/atlas/WorkflowList";
 import { DataState } from "@/components/sismarq/DataState";
 import { PageHeader } from "@/components/sismarq/PageHeader";
 import { Pagination } from "@/components/sismarq/Pagination";
-import { Button, buttonClass } from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import { Dialog } from "@/components/ui/Dialog";
 import { useApiPage, useApiQuery, withQuery } from "@/lib/api/swr";
 import { useSismarq } from "@/lib/sismarq/SismarqProvider";
@@ -162,32 +157,11 @@ function Inicio() {
         title="Procedimentos e temporalidade"
         description="Como tramitar cada processo (padrão SEI) e por quanto tempo guardar cada documento, conforme a Tabela de Temporalidade e Destinação de Documentos oficial."
         actions={
-          <div className="flex flex-wrap gap-2">
-            <Link href="/atlas/ttdd" className={buttonClass("secondary")}>
-              <FileClock size={16} aria-hidden="true" /> Tabela de Temporalidade
-            </Link>
-            <Link href="/atlas/organograma" className={buttonClass("secondary")}>
-              <Network size={16} aria-hidden="true" /> Organograma
-            </Link>
-            <Link href="/atlas/modelos" className={buttonClass("secondary")}>
-              <FileText size={16} aria-hidden="true" /> Modelos de documento
-            </Link>
-            {canManage && (
-              <>
-                <Link href="/atlas/cobertura" className={buttonClass("secondary")}>
-                  <ChartPie size={16} aria-hidden="true" /> Cobertura
-                </Link>
-                <Link href="/atlas/importar" className={buttonClass("secondary")}>
-                  <FileUp size={16} aria-hidden="true" /> Importar
-                </Link>
-              </>
-            )}
-            {canManage && (
-              <Button onClick={() => setCreating(true)}>
-                <Plus size={16} aria-hidden="true" className="mr-1" /> Novo procedimento
-              </Button>
-            )}
-          </div>
+          canManage ? (
+            <Button onClick={() => setCreating(true)}>
+              <Plus size={16} aria-hidden="true" className="mr-1" /> Novo procedimento
+            </Button>
+          ) : undefined
         }
       />
 

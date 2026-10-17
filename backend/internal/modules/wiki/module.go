@@ -1,5 +1,5 @@
-// Package wiki é o plugin Wiki: base de conhecimento em árvore Markdown
-// colaborativa (wiki:manage para exclusões).
+// Package wiki é o plugin Wiki: base de conhecimento operacional do Arquivo
+// Público em árvore Markdown (wiki:manage para exclusões). Permanece plugável.
 package wiki
 
 import (
@@ -34,7 +34,7 @@ func (m *Module) Manifest() kernel.Manifest {
 	return kernel.Manifest{
 		Key:            Key,
 		Name:           "Wiki",
-		Description:    "Base de conhecimento em árvore Markdown colaborativa com histórico de revisões.",
+		Description:    "Manuais e procedimentos internos do Arquivo Público em Markdown, com histórico de revisões.",
 		DefaultEnabled: true,
 		Icon:           "book-open",
 		Route:          "/wiki",

@@ -17,6 +17,7 @@ import type { PublicModule } from "@/lib/sismarq/types";
 
 const PUBLIC_LINKS: { href: string; label: string; module?: string }[] = [
   { href: "/servicos", label: "Serviços", module: "catalog" },
+  { href: "/eventos", label: "Agenda", module: "calendar" },
   { href: "/blog", label: "Blog & Novidades", module: "blog" },
   { href: "/faq", label: "FAQ" },
   { href: "/sobre", label: "Sobre" },

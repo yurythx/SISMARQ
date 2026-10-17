@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor, within } from "@testing-library/rea
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { fmtBytes, situacaoDigital } from "@/components/acervo/labels";
+import { ajudaEvento, fmtBytes, origemDigital, situacaoDigital } from "@/components/acervo/labels";
 import { identityRoutes, mockBackend, page, renderApp } from "@/test/backend";
 import { resetNavigation } from "@/test/navigation";
 
@@ -44,6 +44,7 @@ const DIGITAL = {
   unidade_arquivamento_id: "u1",
   descricao: "Volume 1",
   tipo_documento: "TEXTO",
+  origem: "SCAN",
   equipamento: "Fujitsu fi-7160",
   dpi_declarado: 300,
   responsavel_nome: "Ana",
@@ -88,7 +89,11 @@ beforeEach(() => {
 
 describe("rótulos", () => {
   it("situação e tamanho", () => {
+    expect(ajudaEvento("Enquanto estiver vigorando", "Contratos")).toMatch(/contrato/);
     expect(situacaoDigital("X").label).toBe("X");
+    expect(origemDigital("SCAN")).toBe("Digitalização do papel");
+    expect(origemDigital("NATO_DIGITAL")).toBe("Nato-digital");
+    expect(origemDigital("")).toBe("Digitalização do papel");
     expect(fmtBytes(500)).toBe("500 B");
     expect(fmtBytes(1536)).toBe("1,5 KB");
     expect(fmtBytes(3 * 1024 * 1024 * 1024)).toBe("3 GB");
@@ -146,20 +151,20 @@ describe("DigitaisDaUnidade", () => {
     });
     renderApp(<DigitaisDaUnidade unidadeId="u1" podeGerir />);
     expect(await screen.findByRole("link", { name: "RD-2026-000001" })).toHaveAttribute("href", "/acervo/digitais/d1");
-    expect(screen.getByText(/12 página\(s\) · 300 DPI · 3 MB · PDF\/A-2b/)).toBeInTheDocument();
-    expect(screen.getByText("200 DPI abaixo do mínimo")).toBeInTheDocument();
-    expect(screen.getByText("2 KB enviados")).toBeInTheDocument();
+    expect(screen.getByText(/Digitalização do papel · 12 página\(s\) · 300 DPI · 3 MB · PDF\/A-2b/)).toBeInTheDocument();
+    expect(screen.getByText(/200 DPI abaixo do mínimo/)).toBeInTheDocument();
+    expect(screen.getByText(/2 KB enviados/)).toBeInTheDocument();
     expect(screen.getByText("Integridade falhou")).toBeInTheDocument();
 
     const form = screen.getByRole("form", { name: "Enviar digitalização" });
     const enviar = within(form).getByRole("button", { name: "Enviar para processamento" });
     expect(enviar).toBeDisabled();
     const arquivo = new File(["%PDF"], "lote.pdf", { type: "application/pdf" });
-    await userEvent.upload(within(form).getByLabelText("PDF do scanner *"), arquivo);
+    await userEvent.upload(within(form).getByLabelText("Arquivo do scanner (PDF ou TIFF) *"), arquivo);
     fireEvent.change(within(form).getByLabelText("Scanner (modelo e nº de série) *"), { target: { value: "Fujitsu fi-7160" } });
     fireEvent.change(within(form).getByLabelText("Tipo *"), { target: { value: "PLANTA" } });
     fireEvent.change(within(form).getByLabelText("Resolução (DPI) *"), { target: { value: "600" } });
-    fireEvent.change(within(form).getByLabelText("CPF de quem digitalizou"), { target: { value: "123.456.789-01" } });
+    fireEvent.change(within(form).getByLabelText("CPF de quem enviou"), { target: { value: "123.456.789-01" } });
     fireEvent.submit(form);
     await waitFor(() => expect(backend.calls.some((c) => c.method === "POST" && c.path === "v1/acervo/unidades/u1/digitais")).toBe(true));
     expect(upload.putToTicket).toHaveBeenCalledWith(expect.objectContaining({ object_key: "acervo/digitalizacao/u1/x.pdf" }), arquivo);
@@ -168,6 +173,7 @@ describe("DigitaisDaUnidade", () => {
       object_key: "acervo/digitalizacao/u1/x.pdf",
       descricao: "",
       tipo_documento: "PLANTA",
+      origem: "SCAN",
       equipamento: "Fujitsu fi-7160",
       dpi_declarado: 600,
       responsavel_cpf: "123.456.789-01",
@@ -180,6 +186,48 @@ describe("DigitaisDaUnidade", () => {
     renderApp(<DigitaisDaUnidade unidadeId="u1" podeGerir={false} />);
     expect(await screen.findByText("Nenhuma digitalização.")).toBeInTheDocument();
     expect(screen.queryByRole("form", { name: "Enviar digitalização" })).not.toBeInTheDocument();
+  });
+
+  it("nato-digital: PDF eletrônico sem DPI de scanner", async () => {
+    const backend = mockBackend({
+      ...identityRoutes(),
+      "GET v1/acervo/digitais": page([]),
+      "POST v1/acervo/unidades/u1/digitais/upload": { data: { object_key: "acervo/digitalizacao/u1/n.pdf", upload_url: "https://minio/n", method: "PUT", headers: {}, expires_at: "" } },
+      "POST v1/acervo/unidades/u1/digitais": { data: { ...DETALHE, origem: "NATO_DIGITAL", dpi_declarado: 0 } },
+    });
+    renderApp(<DigitaisDaUnidade unidadeId="u1" podeGerir />);
+    const form = await screen.findByRole("form", { name: "Enviar digitalização" });
+    await userEvent.selectOptions(within(form).getByLabelText("Origem do arquivo *"), "NATO_DIGITAL");
+    const arquivo = new File(["%PDF"], "oficio.pdf", { type: "application/pdf" });
+    await userEvent.upload(within(form).getByLabelText("PDF nato-digital *"), arquivo);
+    fireEvent.change(within(form).getByLabelText("Sistema de origem *"), { target: { value: "SEI" } });
+    expect(within(form).queryByLabelText("Resolução (DPI) *")).not.toBeInTheDocument();
+    fireEvent.submit(form);
+    await waitFor(() => expect(backend.calls.find((c) => c.path === "v1/acervo/unidades/u1/digitais")?.body).toMatchObject({
+      origem: "NATO_DIGITAL",
+      dpi_declarado: 0,
+      equipamento: "SEI",
+    }));
+  });
+
+  it("SCAN: TIFF do scanner com DPI", async () => {
+    const backend = mockBackend({
+      ...identityRoutes(),
+      "GET v1/acervo/digitais": page([]),
+      "POST v1/acervo/unidades/u1/digitais/upload": { data: { object_key: "acervo/digitalizacao/u1/lote.tiff", upload_url: "https://minio/t", method: "PUT", headers: {}, expires_at: "" } },
+      "POST v1/acervo/unidades/u1/digitais": { data: { ...DETALHE, original_bytes: 4096 } },
+    });
+    renderApp(<DigitaisDaUnidade unidadeId="u1" podeGerir />);
+    const form = await screen.findByRole("form", { name: "Enviar digitalização" });
+    const arquivo = new File(["II*\0"], "lote.tiff", { type: "image/tiff" });
+    await userEvent.upload(within(form).getByLabelText("Arquivo do scanner (PDF ou TIFF) *"), arquivo);
+    fireEvent.change(within(form).getByLabelText("Scanner (modelo e nº de série) *"), { target: { value: "Fujitsu" } });
+    fireEvent.submit(form);
+    await waitFor(() => expect(backend.calls.find((c) => c.path === "v1/acervo/unidades/u1/digitais")?.body).toMatchObject({
+      origem: "SCAN",
+      equipamento: "Fujitsu",
+    }));
+    expect(backend.calls.find((c) => c.path === "v1/acervo/unidades/u1/digitais/upload")?.body).toEqual({ filename: "lote.tiff" });
   });
 
   it("envio sem arquivo não faz nada", async () => {
@@ -201,6 +249,7 @@ describe("Representante digital", () => {
     renderApp(<DigitalPage />);
     expect(await screen.findByRole("heading", { name: "RD-2026-000001" })).toBeInTheDocument();
     expect(screen.getByText("Íntegro na última verificação")).toBeInTheDocument();
+    expect(screen.getByText("Digitalização do papel")).toBeInTheDocument();
     expect(screen.getByText(/300 DPI medidos \(declarado 300 DPI, texto\)/)).toBeInTheDocument();
     expect(screen.getByText("Ana · ***.456.789-**")).toBeInTheDocument();
     expect(screen.getByText(SHA)).toBeInTheDocument();
@@ -230,6 +279,19 @@ describe("Representante digital", () => {
     await userEvent.click(screen.getByRole("button", { name: "Reprocessar" }));
     await waitFor(() => expect(backend.calls.some((c) => c.path.endsWith("/reprocessar"))).toBe(true));
     expect(await screen.findByText("Na fila do processamento")).toBeInTheDocument();
+  });
+
+  it("nato-digital: resolução sem DPI de scanner", async () => {
+    pdf.getDocument.mockReturnValue({ promise: Promise.resolve({ numPages: 1 }), destroy: pdf.destroy });
+    mockBackend({
+      ...identityRoutes(),
+      "GET v1/acervo/digitais/d1": {
+        data: { ...DETALHE, origem: "NATO_DIGITAL", dpi_declarado: 0, dpi_medido: 0, equipamento: "SEI" },
+      },
+    });
+    renderApp(<DigitalPage />);
+    expect(await screen.findByText("Nato-digital")).toBeInTheDocument();
+    expect(screen.getByText(/nato-digital: sem DPI de scanner/)).toBeInTheDocument();
   });
 
   it("sem acervo:central não há ações", async () => {

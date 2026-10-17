@@ -283,7 +283,7 @@ export default function DiretorioPage() {
   const [tab, setTab] = useState<"pessoas" | "setores">("pessoas");
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader eyebrow="Diretório" title="Pessoas e setores" description="Consulta interna com base nos dados sincronizados do Active Directory." />
+      <PageHeader eyebrow="Diretório" title="Pessoas e setores" description="Servidores e setores da Superintendência e das unidades, a partir do Active Directory." />
       <SectionTabsInline
         label="Visões do diretório"
         value={tab}

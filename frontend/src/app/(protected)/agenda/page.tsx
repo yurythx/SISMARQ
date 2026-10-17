@@ -228,6 +228,7 @@ export default function AgendaPage() {
       <PageHeader
         eyebrow="Agenda"
         title="Eventos e reservas de salas"
+        description="Agenda da Superintendência e das unidades; a programação pública aparece em /eventos."
         actions={
           <>
             {can("calendar:manage") && (

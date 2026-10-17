@@ -108,15 +108,25 @@ func (m *Module) RegisterRoutes(r kernel.Routes) {
 // Workers implementa kernel.WorkerProvider.
 func (m *Module) Workers() []kernel.Worker {
 	cfg := m.deps.Config.AcervoDigital
-	return []kernel.Worker{
+	ws := []kernel.Worker{
 		{Name: "prazos", Process: kernel.ProcessWorker, Run: m.svc.RunRecalculo(IntervaloRecalculo)},
-		// Fase 5 (ADR 037): o pipeline da digitalização e a verificação
-		// periódica de integridade (fixity) dos PDF/A guardados.
-		{Name: "digitalizacao", Process: kernel.ProcessWorker, Run: m.svc.RunDigitalizacao(cfg.Intervalo)},
-		{Name: "integridade", Process: kernel.ProcessWorker, Run: m.svc.RunIntegridade(min(cfg.Fixity, time.Hour))},
-		// Fase 6 (ADR 038): o índice da busca do acervo.
-		{Name: "indice", Process: kernel.ProcessWorker, Run: m.svc.RunIndice(m.deps.Config.AcervoBusca.Intervalo, m.deps.Config.AcervoBusca.Recarga)},
 	}
+	// Sem intervalo, o worker não entra — time.NewTicker(0) entra em pânico
+	// e o default zerado nos testes do app não deve competir pelo banco.
+	if cfg.Intervalo > 0 {
+		ws = append(ws, kernel.Worker{Name: "digitalizacao", Process: kernel.ProcessWorker, Run: m.svc.RunDigitalizacao(cfg.Intervalo)})
+	}
+	if cfg.Fixity > 0 {
+		ws = append(ws, kernel.Worker{Name: "integridade", Process: kernel.ProcessWorker, Run: m.svc.RunIntegridade(min(cfg.Fixity, time.Hour))})
+	}
+	if busca := m.deps.Config.AcervoBusca; busca.Intervalo > 0 {
+		recarga := busca.Recarga
+		if recarga <= 0 {
+			recarga = 24 * time.Hour
+		}
+		ws = append(ws, kernel.Worker{Name: "indice", Process: kernel.ProcessWorker, Run: m.svc.RunIndice(busca.Intervalo, recarga)})
+	}
+	return ws
 }
 
 // Consumers implementa kernel.ConsumerProvider.
