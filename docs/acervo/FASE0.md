@@ -4,6 +4,8 @@ Quadro fechado em 16/10/2026 com as respostas da Prefeitura. **Não há**
 decreto, portaria, certificado nem URL do SEI inventados. O que ainda não
 existe opera com o fallback da lei (municipal + federal) e do código.
 Detalhe normativo: [ADR 043](../adr/043-fase0-decisoes-institucionais.md).
+Domínio e espelho federal (para implementar depois): [DOMINIO.md](DOMINIO.md),
+[EARQ_RDC.md](EARQ_RDC.md), [ADR 045](../adr/045-linha-de-base-arquivistica.md).
 
 ## A. Quem e onde (IAM / Keycloak + LDAP)
 

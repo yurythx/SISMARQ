@@ -48,3 +48,4 @@ Toda mudança de contrato de API, RBAC, auditoria ou middleware exige um ADR
 | [042](042-ingresso-sei-adiado.md) | Ingresso do SEI: envelope no domínio, sem cliente HTTP até autorização e ambiente | Aceito (adiado; 0.7 registrada no ADR 043) |
 | [043](043-fase0-decisoes-institucionais.md) | Fase 0: SEMAD piloto; IAM Keycloak/LDAP; lei municipal + federal sem decreto regulamentador; CONARQ meio (art. 26); Superintendência e DIORONDON-e | Aceito |
 | [044](044-ingresso-scan-nato-digital.md) | Ingresso SCAN (papel, Decreto 10.278, PDF/TIFF e DPI) versus NATO_DIGITAL (PDF já eletrônico, sem DPI de scanner); mesma guarda PDF/A | Aceito e implementado |
+| [045](045-linha-de-base-arquivistica.md) | Linha de base do domínio (Acervo, TTDD, procedimentos) e mapa e-ARQ/RDC-Arq para PRs futuros; SIGAD antes de RDC certificado | Aceito |

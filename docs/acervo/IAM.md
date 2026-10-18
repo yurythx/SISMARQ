@@ -1,5 +1,7 @@
 # IAM do Acervo (Keycloak / LDAP)
 
+Domínio e travas da lei: [DOMINIO.md](DOMINIO.md). Índice: [README.md](README.md).
+
 Logins **não** entram no git. A tela **Configurações → Mapeamento AD**
 liga o **CN do grupo** que já existe no AD ao perfil + escopo. Sem o CN
 real, não se cadastra mapeamento de exemplo (LGPD; ADR 043).

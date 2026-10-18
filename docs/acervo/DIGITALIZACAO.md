@@ -3,8 +3,9 @@
 Como o documento digital entra no repositório. Base: Decreto Federal
 10.278/2020, Lei Municipal 10.301/2019 arts. 20, 42 e 48, ADRs
 [037](../adr/037-acervo-digitalizacao.md) e
-[044](../adr/044-ingresso-scan-nato-digital.md). O cidadão vê o mesmo
-fluxo na página inicial (`/#digitalizacao`).
+[044](../adr/044-ingresso-scan-nato-digital.md). Contexto no domínio:
+[DOMINIO.md](DOMINIO.md) §4. O cidadão vê o mesmo fluxo na página inicial
+(`/#digitalizacao`).
 
 ## Dois caminhos (não misturar)
 
@@ -100,5 +101,6 @@ Pipeline com `ocrmypdf` e `tiffinfo` de verdade: `make pipeline-real`.
 ## O que não fazer
 
 - Enviar PDF nato-digital como `SCAN` (será reprovado sem imagens).
-- Inventar PAdES, pasta SMB ou validação veraPDF neste repositório.
+- Inventar PAdES, pasta SMB ou validação veraPDF neste repositório (ADR 040;
+  veraPDF entra por ADR próprio — [EARQ_RDC.md](EARQ_RDC.md) §3).
 - Tratar digitalização como autorização para descartar permanente.

@@ -39,5 +39,9 @@ esquema de audit_logs ou a pilha de middleware exigem um ADR em docs/adr/.
 ### ADR
 - [ ] Este PR **não** toca contrato de API / RBAC / esquema de auditoria / middleware — OU há um ADR em `docs/adr/` referenciado aqui: `docs/adr/00X-...md`
 
+### Acervo / TTDD / procedimentos (ADR 045)
+- [ ] Este PR **não** altera regra de negócio do Arquivo Público — OU `docs/acervo/DOMINIO.md` (e, se couber, `EARQ_RDC.md`) foi atualizado no mesmo commit
+- [ ] Não afirma PAdES, integração SEI, códigos CONARQ 01–07 inventados nem homologação C1–C4 “bateu”
+
 ## Como testar
 

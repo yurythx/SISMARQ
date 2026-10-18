@@ -133,6 +133,9 @@ make seed-admin
 ### Roadmap do SISMARQ
 O caminho até o sistema oficial do Arquivo Público Municipal (Lei 10.301/2019, TTDD oficial e o artigo em `docs/SISMARQ/`), com fases, base legal e matriz de rastreabilidade: [`docs/ROADMAP_SISMARQ.md`](docs/ROADMAP_SISMARQ.md).
 
+### Domínio do Arquivo Público
+Unidade de arquivamento, prazos, digitais, busca, TTDD, procedimentos e o que o e-ARQ/RDC-Arq ainda pedem — para a próxima implementação ou alteração: [`docs/acervo/`](docs/acervo/README.md) ([domínio](docs/acervo/DOMINIO.md), [e-ARQ e RDC](docs/acervo/EARQ_RDC.md), [ADR 045](docs/adr/045-linha-de-base-arquivistica.md)).
+
 ### Regras de negócio
 Estrutura organizacional (entidades, unidades, departamentos), perfis, lotações, onde o escopo vale, o público-alvo e as regras de cada módulo: [`docs/REGRAS_DE_NEGOCIO.md`](docs/REGRAS_DE_NEGOCIO.md). As decisões estão nos ADRs ([`docs/adr/`](docs/adr/README.md)) — em especial o [013](docs/adr/013-permissao-com-escopo-e-heranca.md) (escopo) e o [014](docs/adr/014-publico-alvo.md) (público-alvo).
 

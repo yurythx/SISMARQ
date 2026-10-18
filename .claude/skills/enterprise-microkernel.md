@@ -128,3 +128,4 @@ Ativação em Configurações. **Não remover** para “simplificar” o produto
 4. Copiar de outro órgão: só tokens, branding e Manifest Description — não fundir plug-ins no núcleo.
 5. Não inventar decreto, portaria, PAdES ou integração SEI além do que os ADRs autorizam.
 6. Cobertura: gate por plug-in no backend; limiares Vitest no frontend (CI).
+7. Acervo / TTDD / procedimentos: ler `docs/acervo/DOMINIO.md` e `docs/acervo/EARQ_RDC.md` (ADR 045) antes de implementar ou alterar; atualizar esses textos no mesmo commit se a regra mudar. SIGAD municipal com guarda reforçada; não afirmar RDC certificado.

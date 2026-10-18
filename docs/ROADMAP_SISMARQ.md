@@ -14,7 +14,7 @@ e a divergência é registrada na seção 6.
 | **Tabela de Temporalidade (TTDD)** | As TTDDs aprovadas pela CCPAD e publicadas no DIORONDON-e, de ago/2025 a set/2026: 13 tabelas, por secretaria. É o mesmo arquivo de `docs/ttdd.pdf`, já carregado no Atlas com 1.686 séries. |
 | **Artigo científico (SISMARQ e RDC-Arq)** | A solução técnica. O SEI cuida da fase corrente e o SISMARQ das fases intermediária e permanente. O artigo descreve três módulos (pipeline, taxonomia e descarte), as exigências do Decreto 10.278/2020 e a busca no Typesense. |
 
-Registrado em 2026-10-15; **Fases 1 a 6 entregues** em 15 e 16/10/2026 (ADRs 032 a 042). **Fase 0 registrada** em 16/10/2026 ([ADR 043](adr/043-fase0-decisoes-institucionais.md); quadro em [`docs/acervo/FASE0.md`](acervo/FASE0.md)): piloto SEMAD, IAM Keycloak/LDAP, lei municipal + federal sem decreto regulamentador. Falta a homologação com a Superintendência de Arquivo Público ([`docs/acervo/HOMOLOGACAO.md`](acervo/HOMOLOGACAO.md)). Os artigos citados são da Lei 10.301/2019, salvo
+Registrado em 2026-10-15; **Fases 1 a 6 entregues** em 15 e 16/10/2026 (ADRs 032 a 042). **Fase 0 registrada** em 16/10/2026 ([ADR 043](adr/043-fase0-decisoes-institucionais.md); quadro em [`docs/acervo/FASE0.md`](acervo/FASE0.md)): piloto SEMAD, IAM Keycloak/LDAP, lei municipal + federal sem decreto regulamentador. Falta a homologação com a Superintendência de Arquivo Público ([`docs/acervo/HOMOLOGACAO.md`](acervo/HOMOLOGACAO.md)). Linha de base do domínio e mapa e-ARQ/RDC-Arq (18/10/2026): [`docs/acervo/`](acervo/README.md) e [ADR 045](adr/045-linha-de-base-arquivistica.md). Os artigos citados são da Lei 10.301/2019, salvo
 indicação em contrário.
 
 ---
@@ -438,7 +438,7 @@ Fase 0 ──► Fase 1 ──► Fase 2 ──► Fase 3 ──► Fase 4 ─�
 |---|---|---|---|
 | Acesso pleno, com sigilo como exceção | Arts. 2º e 7º, I | 6 | **Pronto** (consulta pública ostensiva, busca e SIC — ADR 038) |
 | Órgão central e órgãos setoriais | Arts. 8º a 12 | 1 | **Pronto** (escopo do Acervo e `acervo:central` — ADR 032) |
-| Sistema informatizado que atenda ao e-ARQ Brasil | Art. 13 | 8 | Falta |
+| Sistema informatizado que atenda ao e-ARQ Brasil | Art. 13 | 8 | **Mapa** em [`acervo/EARQ_RDC.md`](acervo/EARQ_RDC.md) (ADR 045); checklist formal com a Divisão ainda falta |
 | Três idades (corrente, intermediária, permanente) | Art. 18 | 1 | **Pronto** (ADR 032) |
 | Eliminação só prevista na TTDD e autorizada | Arts. 19 e 65 | 1 e 3 | **Pronto** (travas — ADR 032; rito com autorização — ADR 034) |
 | Permanente inalienável | Arts. 20 e 42 | 1 | **Pronto** (domínio e banco — ADR 032) |
@@ -452,7 +452,7 @@ Fase 0 ──► Fase 1 ──► Fase 2 ──► Fase 3 ──► Fase 4 ─�
 | Amostragem | Art. 39 | 3 | **Pronto** (sorteio; a amostra vira permanente — ADR 034) |
 | Fragmentação e doação | Art. 40 | 3 | **Pronto** (registrada no termo — ADR 034) |
 | Bloqueio por ação judicial | Arts. 32, II e 44 | 1 | **Pronto** (ADR 032) |
-| TTDD nos sistemas informatizados | Art. 45 | 7 | Parcial (API pública) |
+| TTDD nos sistemas informatizados | Art. 45 | 7 | **Contrato** em [`acervo/TTDD_API.md`](acervo/TTDD_API.md); falta o cliente SEI (0.7) |
 | Documentos digitais e híbridos | Art. 48 | 5 | **Pronto** (digitalização — ADR 037 e 044; PAdES adiado — ADR 040) |
 | Recolhimento com registro de entrada | Arts. 5º, VII e 53 | 4 | **Pronto** (preparo, instrumento descritivo, registro e cópia à origem — ADR 035) |
 | Arquivos privados de interesse público | Arts. 55 a 58 | 4 | **Pronto** (parecer, decreto, guarda e preferência — ADR 036) |
@@ -498,3 +498,6 @@ Resolver na Fase 0. Até lá, o sistema adota o que está entre parênteses.
 - Toda decisão das seções 3 (Fase 0) e 6 vira ADR em [`adr/`](adr/README.md).
 - Mudou a lei, um decreto ou a TTDD? Primeiro coloque o documento novo em
   `docs/SISMARQ/`, depois revise este roadmap.
+- Mudou regra de negócio do Acervo, da TTDD ou dos procedimentos? Atualize
+  [`acervo/DOMINIO.md`](acervo/DOMINIO.md) no mesmo commit (ADR 045). Mudou
+  cobertura e-ARQ/RDC? Atualize [`acervo/EARQ_RDC.md`](acervo/EARQ_RDC.md).

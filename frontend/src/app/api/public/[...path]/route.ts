@@ -24,6 +24,8 @@ const ALLOW: { method: string; prefix: string }[] = [
   { method: "GET", prefix: "v1/atlas/ttdd" },
   { method: "GET", prefix: "v1/atlas/workflows" },
   { method: "GET", prefix: "v1/atlas/modelos" },
+  // Organograma funcional da TTDD (ADR 029): só leitura, sem rascunhos.
+  { method: "GET", prefix: "v1/atlas/organograma" },
   // Acervo (ADRs 036 e 038): normas publicadas e a consulta pública ao
   // acervo ostensivo (busca, fichas, documentos liberados e exposições).
   { method: "GET", prefix: "v1/acervo/publico/" },

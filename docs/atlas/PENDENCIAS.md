@@ -2,6 +2,9 @@
 
 Para: quem for continuar o Atlas (desenvolvimento e gestão documental).
 
+Como a TTDD e os procedimentos se encaixam no Acervo e no e-ARQ:
+[acervo/DOMINIO.md](../acervo/DOMINIO.md) §§6–7 e [ADR 045](../adr/045-linha-de-base-arquivistica.md).
+
 Este documento registra o que **ficou combinado para depois**: decisões
 provisórias, que dependem das entrevistas nos departamentos, e débitos
 técnicos conhecidos. Cada item diz o que mudar, por quê, onde fica no código

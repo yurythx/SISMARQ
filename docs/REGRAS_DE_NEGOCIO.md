@@ -6,7 +6,8 @@ Referência funcional da plataforma. Serve para quem **implanta e administra**
 `backend/internal`. Como programar um módulo está em
 [GUIDE_DESENVOLVEDOR.md](GUIDE_DESENVOLVEDOR.md) e
 [GUIDE_MODULOS.md](GUIDE_MODULOS.md). Como implantar está em
-[DEPLOY.md](DEPLOY.md).
+[DEPLOY.md](DEPLOY.md). Acervo, TTDD e procedimentos (Lei 10.301, Decreto
+10.278, e-ARQ): [acervo/README.md](acervo/README.md).
 
 ---
 
@@ -764,6 +765,28 @@ compartilhados, e o administrador vê tudo. Para empresas independentes, use
   arquivo), `atlas.assistente.consulta` (sem o texto) e as alterações de
   IA (`ia.conexao.*`, `ia.uso.alterado` — nunca a chave).
 
+### Acervo (unidades de arquivamento, digitais, busca)
+
+Texto completo da regra e da ordem de trabalho:
+[acervo/DOMINIO.md](acervo/DOMINIO.md) e [acervo/IAM.md](acervo/IAM.md).
+Espelho federal: [acervo/EARQ_RDC.md](acervo/EARQ_RDC.md) (ADR 045).
+
+- **Unidade de arquivamento** é o documento de arquivo (caixa, pasta,
+  processo…), classificada pela TTDD do Atlas (porta; o Acervo não importa
+  o Atlas). Número `UA-AAAA-NNNNNN`. Não se apaga.
+- **Travas da Lei 10.301** no domínio e no banco: permanente ineliminável
+  (arts. 20 e 42), bloqueio judicial, destinação da série, edital de 30
+  dias. Nenhuma permissão as contorna.
+- **Prazos** gravados em `situacao` e recalculados (escrita, worker
+  diário, carga da TTDD pela tela). A conta “data-limite final + condição”
+  espera a amostra da Superintendência (homologação C1).
+- **Digitais:** origem `SCAN` (DPI do Decreto 10.278) ou `NATO_DIGITAL`
+  (sem DPI). PDF/A-2b, XMP, SHA-256, object lock. `pades=AUSENTE` até
+  certificado (ADR 040). Pasta de trabalho (`files`) não é o repositório.
+- **Busca** só pela API (nunca Typesense no browser). `/arquivo` = só
+  ostensivo; autenticado = escopo. SIC `2.0.03.02` para o restante.
+- **SEI** recusado no domínio até existir API (ADR 042). Trâmite já
+  ingressa processo encerrado.
 
 ---
 

@@ -79,6 +79,16 @@ Todo código desenvolvido na plataforma deve obedecer estritamente aos 5 pilares
   ```
 - **Ninguém concede o que não possui**: o IAM recusa (403) criar perfil, lotar ou mapear grupo do AD com permissões que o administrador não tem, e só quem tem acesso total concede o papel `nexus-admin`.
 
+### 3.4. Domínio do Arquivo Público (Acervo, Atlas, TTDD)
+
+Antes de alterar prazos, eliminação, digitais, busca, TTDD ou
+procedimentos, leia [`docs/acervo/DOMINIO.md`](acervo/DOMINIO.md) e o
+[ADR 045](adr/045-linha-de-base-arquivistica.md). Checklist e-ARQ/RDC-Arq:
+[`docs/acervo/EARQ_RDC.md`](acervo/EARQ_RDC.md). Não inventar PAdES, cliente
+SEI, códigos CONARQ 01–07 nem homologação C1–C4 “bateu”. Plug-in Arquivos
+≠ repositório permanente do Acervo. Atlas não importa Acervo; colaboração
+só por porta em `internal/app`.
+
 ---
 
 ## 📑 4. Transparência e Lei de Acesso à Informação (LAI)

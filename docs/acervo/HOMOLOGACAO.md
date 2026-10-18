@@ -4,9 +4,11 @@ Para: Superintendência de Arquivo Público e a equipe que desenvolve o
 SISMARQ. Órgão piloto: **SEMAD**. Decisões da Fase 0:
 [FASE0.md](FASE0.md) e [ADR 043](../adr/043-fase0-decisoes-institucionais.md).
 
-O código das Fases 1 a 6 está no repositório (ADRs 032 a 043). Esta
-página é o que **não se fecha no git**: a conferência com a lei, a TTDD
-e os Anexos. Sem ela o sistema oficial não está pronto (art. 62).
+O código das Fases 1 a 6 está no repositório (ADRs 032 a 044). Mapa de
+domínio para PRs: [DOMINIO.md](DOMINIO.md) e [EARQ_RDC.md](EARQ_RDC.md)
+([ADR 045](../adr/045-linha-de-base-arquivistica.md)). Esta página é o que
+**não se fecha no git**: a conferência com a lei, a TTDD e os Anexos. Sem
+ela o sistema oficial não está pronto (art. 62).
 
 Na VM, o compose `migrate` precisa estar em **goose ≥ 157** (origem SCAN/NATO_DIGITAL
 e remoção do catálogo/blog PaperMoon) **antes** de `make homolog-acervo` /
