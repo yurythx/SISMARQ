@@ -1,7 +1,7 @@
 package application_test
 
-// CÃÂ³digo gerado por scripts/genfault.py a partir da interface Repository do
-// domÃÂ­nio. NÃÂ£o edite ÃÂ  mÃÂ£o: regenere se a interface mudar.
+// Código gerado por scripts/genfault.py a partir da interface Repository do
+// domínio. Não edite à mão: regenere se a interface mudar.
 
 import (
 	"context"
@@ -18,12 +18,12 @@ import (
 
 type innerRepo = domain.Repository
 
-var errBoom = errors.New("falha simulada no repositÃÂ³rio")
+var errBoom = errors.New("falha simulada no repositório")
 
-// faultRepo envolve o repositÃÂ³rio real: na chamada failAt devolve erro; depois
-// da chamada poisonAt "envenena" a transaÃÂ§ÃÂ£o (a instruÃÂ§ÃÂ£o SQL seguinte Ã¢ÂÂ do
-// repositÃÂ³rio, do outbox ou da auditoria Ã¢ÂÂ falha). noTx marca veneno em
-// leitura fora de transaÃÂ§ÃÂ£o, onde nÃÂ£o hÃÂ¡ instruÃÂ§ÃÂ£o seguinte na mesma conexÃÂ£o.
+// faultRepo envolve o repositório real: na chamada failAt devolve erro; depois
+// da chamada poisonAt "envenena" a transação (a instrução SQL seguinte — do
+// repositório, do outbox ou da auditoria — falha). noTx marca veneno em
+// leitura fora de transação, onde não há instrução seguinte na mesma conexão.
 type faultRepo struct {
 	inner                   innerRepo
 	calls, failAt, poisonAt int
