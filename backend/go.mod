@@ -2,7 +2,7 @@ module github.com/yurythx/sismarq
 
 go 1.26.0
 
-toolchain go1.26.8
+toolchain go1.26.9
 
 require (
 	github.com/alicebob/miniredis/v2 v2.39.0
