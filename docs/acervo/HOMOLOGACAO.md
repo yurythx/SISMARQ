@@ -86,7 +86,8 @@ humanos. O seed `RD-HOM-SCAN` / `RD-HOM-NATO` é conferido também por
 substitui o envio pela tela. Como rodar a suíte:
 [DIGITALIZACAO.md](DIGITALIZACAO.md) (seção Testes automatizados).
 IAM: [IAM.md](IAM.md). CONARQ 01–07: importar em Atualizar TTDD
-quando a tabela oficial estiver em mãos (o Atlas já avisa o art. 26).
+quando a tabela oficial estiver em mãos (o Atlas já avisa o art. 26);
+roteiro: [atlas/ATUALIZAR.md](../atlas/ATUALIZAR.md).
 RIPD: [RIPD_MODELO.md](../RIPD_MODELO.md) — o DPO preenche; não inventar.
 
 ## 4. O que a Fase 0 já fechou

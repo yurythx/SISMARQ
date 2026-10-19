@@ -5,7 +5,8 @@ departamentos.
 
 > O que ficou para depois (siglas a confirmar, cruzamento da TTDD com o
 > cadastro de unidades, lacunas, débitos técnicos) está em
-> [Alterações planejadas](PENDENCIAS.md).
+> [Alterações planejadas](PENDENCIAS.md). Como republicar um fluxo ou
+> recarregar a TTDD: [ATUALIZAR.md](ATUALIZAR.md).
 
 ## 1. Objetivo
 
@@ -13,12 +14,14 @@ Validar com cada departamento **como os processos tramitam de verdade** e
 **padronizar os documentos** que eles produzem, antes de publicar os
 procedimentos no Atlas (consulta interna, site público e assistente).
 
-O ponto de partida são **92 rascunhos** gerados a partir da Tabela de
+O ponto de partida são **92 fluxos** gerados a partir da Tabela de
 Temporalidade (TTDD): 28 dos processos mais comuns de cada secretaria
 (primeira leva) e 64 das subfunções que ainda não tinham fluxo (segunda
-leva). Eles são
-**hipóteses**: etapas, setores, prazos e documentos têm de ser confirmados
-ou corrigidos nas entrevistas.
+leva). Em homologação eles estão **publicados na consulta** (`/procedimentos`
+e Atlas), junto com os três modelos da migration, para a equipe poder
+consultar. Continuam sendo **hipóteses**: etapas, setores, prazos e
+documentos têm de ser confirmados ou corrigidos nas entrevistas (nova
+versão + homologar).
 
 ## 2. Como funciona no sistema
 
@@ -41,10 +44,11 @@ Regras:
 
 Passo a passo:
 
-1. **Importar os rascunhos** (já feito em produção). Em Atlas → Importar,
-   envie `deploy/atlas/rascunhos-procedimentos.json` e
-   `rascunhos-procedimentos-2.json` com **"Importar como rascunho"**
-   marcado (já vem marcado), clique em **Simular**, confira e **Aplique**.
+1. **Os 92 fluxos já estão na consulta** (seed `deploy/homolog/seed-procedimentos.sql`,
+   gerado por `deploy/atlas/gerar-sql-publicacao.mjs`). Entrevistas não
+   voltam o homologado a rascunho: use **Nova versão** (rascunho) e
+   homologue de novo depois da entrevista. Passo a passo da republicação e
+   da carga da TTDD: [ATUALIZAR.md](ATUALIZAR.md).
 2. **Preparar a entrevista pela secretaria.** No início do Atlas, em
    **Procedimentos por secretaria**, abra a secretaria. A página mostra:
    - os procedimentos dela agrupados pela função da TTDD (em geral, o

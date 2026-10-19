@@ -598,7 +598,8 @@ compartilhados, e o administrador vê tudo. Para empresas independentes, use
     novas, alteradas (antes → depois), revogadas e restabelecidas e os
     procedimentos afetados, sem gravar — e **aplicar** só o arquivo
     simulado (hash), depois de confirmar; auditado. Pelo servidor:
-    `make ttdd-impacto` / `make ttdd-aplicar` (mesmas regras);
+    `make ttdd-impacto` / `make ttdd-aplicar` (mesmas regras). Roteiro:
+    `docs/atlas/ATUALIZAR.md`;
   - série que sai da tabela fica **revogada** (data e edição do Diário
     Oficial), nunca apagada: some da consulta, da árvore, da exportação e
     do assistente, mas abre pelo código com o aviso; só são revogadas
@@ -678,7 +679,10 @@ compartilhados, e o administrador vê tudo. Para empresas independentes, use
   função, registro, pendências) fica registrada pelo código e é imutável; a
   primeira leva o rascunho a em validação; homologar exige a série vigente,
   publica, substitui as demais versões e avisa; homologado não volta a
-  rascunho (revisão = nova versão). Roteiro: `docs/atlas/PLANO_DE_VALIDACAO.md`.
+  rascunho (revisão = nova versão). Roteiro:
+  `docs/atlas/PLANO_DE_VALIDACAO.md`. Operação (nova versão, lote, carga
+  da TTDD, o que a sync da VM não sobrescreve):
+  `docs/atlas/ATUALIZAR.md`.
 - **Avisos de nova versão (ADR 027):** quem segue o fluxo (opt-in, pelo
   código) e quem está lotado (manual ou grupo do AD) nas unidades das etapas
   recebe o aviso da nova versão do procedimento; quem segue um procedimento

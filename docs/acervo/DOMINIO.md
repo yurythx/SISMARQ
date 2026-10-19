@@ -204,7 +204,8 @@ no plug-in Arquivos.
 ## 6. TTDD (Atlas)
 
 ADRs [017](../adr/017-ttdd-oficial.md), [019](../adr/019-vigencia-da-ttdd-e-versoes.md),
-[022](../adr/022-atualizar-ttdd-pela-tela.md).
+[022](../adr/022-atualizar-ttdd-pela-tela.md). Operação (tela, PDF, `make`,
+VM): [atlas/ATUALIZAR.md](../atlas/ATUALIZAR.md).
 
 Hierarquia duplex `N.0.FF.SS.II`: órgão → função → subfunção → série.
 Carga oficial: **9 órgãos, 41 funções, 134 subfunções, 1.686 séries**
@@ -237,7 +238,8 @@ está no produto; só o relatório de impacto da carga.
 
 [ADR 028](../adr/028-validacao-dos-procedimentos.md). Procedimento **não** é
 unidade de arquivamento: é o fluxo (etapas, peças, transições, SLA)
-classificado numa série vigente.
+classificado numa série vigente. Republicar ou recarregar a TTDD:
+[atlas/ATUALIZAR.md](../atlas/ATUALIZAR.md).
 
 `RASCUNHO` → `EM_VALIDACAO` → `HOMOLOGADO`. CHECK: ativo só se homologado.
 Importação padrão = rascunho. Homologado não volta; revisão = nova versão

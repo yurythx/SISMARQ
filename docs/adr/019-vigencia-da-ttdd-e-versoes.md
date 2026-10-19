@@ -59,7 +59,8 @@ duas versões vigentes ou nenhuma.
 ## Consequências
 
 - Ao publicar nova TTDD: `make ttdd-impacto`, revisar, `make ttdd-aplicar`
-  e, para cada procedimento afetado, publicar uma nova versão.
+  e, para cada procedimento afetado, publicar uma nova versão. Roteiro
+  operacional: `docs/atlas/ATUALIZAR.md`.
 - O histórico começa na migration 000135: mudanças anteriores não foram
   registradas.
 - O link de uma versão desativada deixa de abrir na consulta pública

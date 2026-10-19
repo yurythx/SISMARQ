@@ -4,6 +4,7 @@ Para: quem for continuar o Atlas (desenvolvimento e gestão documental).
 
 Como a TTDD e os procedimentos se encaixam no Acervo e no e-ARQ:
 [acervo/DOMINIO.md](../acervo/DOMINIO.md) §§6–7 e [ADR 045](../adr/045-linha-de-base-arquivistica.md).
+Como republicar um fluxo ou recarregar a TTDD: [ATUALIZAR.md](ATUALIZAR.md).
 
 Este documento registra o que **ficou combinado para depois**: decisões
 provisórias, que dependem das entrevistas nos departamentos, e débitos
@@ -12,7 +13,9 @@ e como saber que terminou. Ao concluir um item, risque-o (ou apague-o) no
 mesmo commit da mudança.
 
 Registrado em 2026-10-05. O estado do Atlas nessa data:
-- **Procedimentos:** 3 publicados e 92 rascunhos (duas levas, ADR 028).
+- **Procedimentos:** 95 homologados na consulta de homologação (3 da
+  migration + 92 da carga); as entrevistas ainda geram nova versão
+  (ADR 028, [ATUALIZAR.md](ATUALIZAR.md)).
 - **Siglas:** provisórias no cadastro de unidades.
 - **Organograma da TTDD:** publicado (ADR 029).
 - **Modelos de documento:** nenhum na biblioteca.

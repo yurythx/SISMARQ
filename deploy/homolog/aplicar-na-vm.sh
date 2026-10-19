@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# Homologação na VM: branding, organograma, TTDD, caixas SEMAD, digitais e
-# conferência automática. Não faz git pull. Migrations: o compose `migrate`
-# (scripts/deploy.sh --no-pull) precisa ter rodado antes.
+# Homologação na VM: branding, organograma, TTDD, procedimentos Atlas,
+# caixas SEMAD, digitais e conferência automática. Não faz git pull.
+# Migrations: o compose `migrate` (scripts/deploy.sh --no-pull) precisa ter
+# rodado antes. seed-procedimentos.sql só insere código novo (docs/atlas/ATUALIZAR.md).
 set -euo pipefail
 cd /root/Projetos/SISMARQ
 DB_USER=$(grep -E '^DB_USER=' .env | cut -d= -f2)
@@ -31,6 +32,10 @@ fi
 if [ -f deploy/ttdd/ttdd.sql ] && [ -f deploy/ttdd/carga.sql ]; then
   echo "== ttdd"
   cat deploy/ttdd/ttdd.sql deploy/ttdd/carga.sql | docker compose exec -T postgres psql -q -v ON_ERROR_STOP=1 -v aplicar=1 -U "$DB_USER" -d "$DB_NAME"
+fi
+if [ -f deploy/homolog/seed-procedimentos.sql ]; then
+  echo "== procedimentos Atlas (consulta pública)"
+  psql -q < deploy/homolog/seed-procedimentos.sql
 fi
 echo "== seed acervo"
 psql < deploy/homolog/seed-acervo.sql

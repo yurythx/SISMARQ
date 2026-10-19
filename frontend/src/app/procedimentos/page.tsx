@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 
 /** Procedimentos homologados do Atlas, abertos ao público (ADR 026). */
 export default async function ProcedimentosPublicosPage() {
-  const lista = await publicGetOr<Workflow[]>("atlas/workflows?page_size=100", [], 300);
+  const lista = await publicGetOr<Workflow[]>("atlas/workflows?page_size=200", [], 300);
   return (
     <PublicShell>
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-6 py-12">

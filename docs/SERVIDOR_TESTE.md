@@ -135,6 +135,7 @@ carregado antes dos testes de IA — vale verificar o que mais roda nele.
 - Conferir: `make ttdd-impacto` (não grava). Nova publicação: pela tela
   (Atlas → Tabela de Temporalidade → Atualizar TTDD — ADR 022) ou pelo
   servidor ("Atlas — TTDD oficial" em [DEPLOY.md](DEPLOY.md), ADR 019).
+  Roteiro: [atlas/ATUALIZAR.md](atlas/ATUALIZAR.md).
 
 ## Segurança pendente
 

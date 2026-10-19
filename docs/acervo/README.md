@@ -5,6 +5,7 @@ Documentação de domínio para **implementar ou alterar** o Arquivo Público no
 | Documento | Para quê |
 |---|---|
 | [DOMINIO.md](DOMINIO.md) | Regras de negócio: unidade de arquivamento, prazos, ritos, digitais, busca, TTDD, procedimentos |
+| [atlas/ATUALIZAR.md](../atlas/ATUALIZAR.md) | Republicar fluxo homologado e recarregar a TTDD (tela, PDF, servidor) |
 | [EARQ_RDC.md](EARQ_RDC.md) | Espelho do governo federal (e-ARQ Brasil v2, RDC-Arq) e lacunas para a Fase 8 |
 | [TTDD_API.md](TTDD_API.md) | Contrato HTTP da TTDD (art. 45) para protocolo, SEI futuro e outros sistemas |
 | [HOMOLOGACAO.md](HOMOLOGACAO.md) | C1–C6 com a Superintendência (não fecha no git) |

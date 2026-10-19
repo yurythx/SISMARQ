@@ -80,7 +80,10 @@ Mapeamento AD: [IAM.md](acervo/IAM.md) — só com o CN real do grupo; não
 invente membros sem portaria.
 
 Atualizar código na VM **sem** `git pull` do GitHub `main`:
-`deploy/homolog/sincronizar-vm.sh` (ou `.ps1` no Windows).
+`deploy/homolog/sincronizar-vm.sh` (ou `.ps1` no Windows). A sync recarrega
+a TTDD e só **insere** procedimentos com código ainda inexistente; para
+mudar fluxo já publicado ou aplicar nova TTDD pela gestão, ver
+[atlas/ATUALIZAR.md](atlas/ATUALIZAR.md).
 
 Volume (item 0.10 da Fase 0): ainda **sem** metros lineares. Na VM, conferir disco
 sem inventar número:

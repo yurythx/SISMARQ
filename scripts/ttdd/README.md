@@ -13,6 +13,9 @@ make ttdd-impacto                           # relatório do que mudaria (não gr
 make ttdd-aplicar                           # mesmo relatório + gravação (servidor)
 ```
 
+Gestão pela tela, procedimentos afetados e o que a sync da VM não
+sobrescreve: [docs/atlas/ATUALIZAR.md](../../docs/atlas/ATUALIZAR.md).
+
 ## Como os dados são obtidos
 
 1. **`extrair.mjs`** — lê o PDF com o pdf.js e grava cada fragmento de texto

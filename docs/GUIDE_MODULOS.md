@@ -223,7 +223,9 @@ export default function FinanceiroPage() {
    implementa `Indexer`. Teste `Documents` mostrando o que entra e o que
    fica de fora, e inclua-o na matriz de falhas.
 10. **Acervo e Atlas (ADR 045).** Regras da Lei 10.301, digitais e TTDD
-    estão em [`docs/acervo/DOMINIO.md`](acervo/DOMINIO.md). Não misturar
+    estão em [`docs/acervo/DOMINIO.md`](acervo/DOMINIO.md). Republicar
+    fluxo ou recarregar a TTDD: [`docs/atlas/ATUALIZAR.md`](atlas/ATUALIZAR.md).
+    Não misturar
     pasta de trabalho (`files`) com PDF/A WORM; não consultar Typesense do
     browser; não inventar PAdES/SEI/CONARQ. Se a regra mudar, atualize o
     domínio no mesmo commit.

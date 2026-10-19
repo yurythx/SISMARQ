@@ -44,7 +44,8 @@ publicação da CCPAD.
 ## Consequências
 
 - A gestão atualiza a TTDD sem acesso ao servidor; o comando continua para
-  quem opera pela linha de comando.
+  quem opera pela linha de comando. Roteiro operacional (procedimentos e
+  TTDD): `docs/atlas/ATUALIZAR.md`.
 - Limite de 10 MB por arquivo (a tabela inteira tem ~600 KB).
 - Funções e subfunções que saem da tabela continuam cadastradas (só as
   séries são revogadas).

@@ -163,6 +163,12 @@ derivado do banco, e o worker o reconstrói sozinho depois da restauração.
 `<dir>/config/secrets` antes de restaurar. Os backups ficam no mesmo disco —
 copie-os para fora do servidor.
 
+## Atlas — procedimentos e TTDD
+
+Como **republicar um fluxo** (nova versão / importação; o seed da VM não
+sobrescreve código já gravado) e como **atualizar a TTDD** (tela, PDF ou
+`make ttdd-aplicar`): [docs/atlas/ATUALIZAR.md](atlas/ATUALIZAR.md).
+
 ## Atlas — TTDD oficial
 
 As migrations criam o modelo e corrigem as séries usadas pelos

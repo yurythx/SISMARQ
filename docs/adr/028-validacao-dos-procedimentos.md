@@ -63,6 +63,8 @@ ainda não validado apareceria como fluxo oficial.
    - `docs/atlas/PLANO_DE_VALIDACAO.md` traz o roteiro de entrevista, o
      checklist de padronização dos documentos e o checklist antes de
      homologar.
+   - `docs/atlas/ATUALIZAR.md` traz como republicar um fluxo já homologado
+     e como recarregar a TTDD (tela, PDF ou servidor).
 
 7. **Também pela tela:** o cadastro e a nova versão de procedimento
    vêm marcados "Salvar como rascunho" (desmarcado, publica direto). Assim, um
