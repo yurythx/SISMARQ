@@ -35,6 +35,9 @@ up: ## Sobe todos os serviços em modo produção
 deploy: ## git pull + gera .env/chave na 1ª vez + build + sobe e espera healthy
 	./scripts/deploy.sh
 
+iam-administradores: ## Mapeia o grupo do AD de administradores da plataforma (acesso total)
+	$(COMPOSE_PROD) exec -T postgres sh -c 'psql -q -v ON_ERROR_STOP=1 -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"' < deploy/iam/administradores-ad.sql
+
 prod-seed-admin: ## Cria/reseta o admin local dentro do container (sem Go no host)
 	$(COMPOSE_PROD) run --rm --no-deps --entrypoint ./seedadmin backend-api
 
