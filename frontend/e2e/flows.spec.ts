@@ -20,23 +20,30 @@ test.describe("Fluxos críticos", () => {
   test("Kernel: desativar um plug-in tira do menu e bloqueia a tela; reativar devolve", async ({ page }) => {
     await asAdmin(page);
     const menu = page.getByRole("navigation", { name: "Menu principal" });
-    await expect(menu.getByRole("link", { name: /Blog/ })).toBeVisible();
-
     await page.goto("/configuracao/modulos");
     const card = moduleCard(page, /^Blog/);
     const toggle = card.getByRole("switch");
-    await expect(toggle).toBeChecked();
+    // Pré-condição: Blog ligado (uma tentativa anterior que falhou no meio
+    // não pode derrubar as seguintes).
+    if (!(await toggle.isChecked())) {
+      await toggle.click();
+      await expect(toggle).toBeChecked();
+    }
+    await expect(menu.getByRole("link", { name: /Blog/ })).toBeVisible();
+
     await toggle.click();
     await expect(toggle).not.toBeChecked();
     await expect(menu.getByRole("link", { name: /Blog/ })).toHaveCount(0);
 
-    await page.goto("/blog");
+    // A gestão do Blog (/gestao/blog) é a tela do módulo; /blog é a página
+    // pública do site.
+    await page.goto("/gestao/blog");
     await expect(page.getByRole("heading", { name: /está desativado/ })).toBeVisible();
 
     await page.goto("/configuracao/modulos");
     await moduleCard(page, /^Blog/).getByRole("switch").click();
     await expect(moduleCard(page, /^Blog/).getByRole("switch")).toBeChecked();
-    await page.goto("/blog");
+    await page.goto("/gestao/blog");
     await expect(page.getByRole("heading", { name: "Blog & comunicados" })).toBeVisible();
   });
 
