@@ -391,9 +391,11 @@ jobs:
           script_stop: true
           script: |
             echo "🚀 Iniciando Continuous Deployment do SISMARQ..."
-            cd /root/Projetos/Projeto-Nexus
+            cd /opt/sismarq
+            # o servidor segue o git: alteração local aborta em vez de ser apagada
+            test -z "$(git status --porcelain)"
             git fetch origin main
-            git reset --hard origin/main
+            git merge --ff-only origin/main
             # Segredo novo (ADR 031): gera a chave do Typesense se o .env do
             # servidor ainda não tem — sem ela o compose não sobe.
             if ! grep -q '^TYPESENSE_API_KEY=.' .env || grep -q '^TYPESENSE_API_KEY=dev-change-this' .env; then

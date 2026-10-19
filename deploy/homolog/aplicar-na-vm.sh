@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 # Homologação na VM: branding, organograma, TTDD, procedimentos Atlas,
-# caixas SEMAD, digitais e conferência automática. Não faz git pull.
+# caixas SEMAD, digitais e conferência automática. Não faz git pull
+# (quem atualiza o código é deploy/homolog/remoto-deploy.sh).
 # Migrations: o compose `migrate` (scripts/deploy.sh --no-pull) precisa ter
 # rodado antes. seed-procedimentos.sql só insere código novo (docs/atlas/ATUALIZAR.md).
 set -euo pipefail
-cd /root/Projetos/SISMARQ
+cd "$(dirname "$0")/../.."
 DB_USER=$(grep -E '^DB_USER=' .env | cut -d= -f2)
 DB_NAME=$(grep -E '^DB_NAME=' .env | cut -d= -f2)
 DB_USER=${DB_USER:-nexus}

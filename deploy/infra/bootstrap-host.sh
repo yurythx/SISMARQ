@@ -3,7 +3,7 @@
 set -euo pipefail
 export DEBIAN_FRONTEND=noninteractive
 PUBLIC_HOST="${1:-192.168.1.52}"
-APP_DIR=/root/Projetos/SISMARQ
+APP_DIR=/opt/sismarq
 
 apt-get update
 apt-get install -y curl wget git ca-certificates gnupg ufw fail2ban

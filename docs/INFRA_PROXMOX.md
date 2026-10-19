@@ -79,11 +79,28 @@ Login local (`make prod-seed-admin` na VM) funciona mesmo se o SSO falhar.
 Mapeamento AD: [IAM.md](acervo/IAM.md) — só com o CN real do grupo; não
 invente membros sem portaria.
 
-Atualizar código na VM **sem** `git pull` do GitHub `main`:
-`deploy/homolog/sincronizar-vm.sh` (ou `.ps1` no Windows). A sync recarrega
-a TTDD e só **insere** procedimentos com código ainda inexistente; para
-mudar fluxo já publicado ou aplicar nova TTDD pela gestão, ver
-[atlas/ATUALIZAR.md](atlas/ATUALIZAR.md).
+**Instalação na VM (desde 2026-10-19):** clone do git em `/opt/sismarq`,
+seguindo o `main` do GitHub. A cópia antiga (`/root/Projetos/SISMARQ`, sem
+histórico) ficou guardada como `/root/Projetos/SISMARQ.antigo-<data>`.
+
+- **HTTPS:** `https://192.168.1.52`, com o Caddy como única entrada.
+- **SSO:** client `sismarq` no realm `rondonopolis`.
+- **Administradores e equipes pelo AD:** `make iam-administradores` e
+  `make iam-arquivo-protocolo` (`deploy/iam/`).
+- **Backup diário:** às 02:30, em `/root/backups/nexus` (7 dias; log em
+  `/var/log/nexus-backup.log`). Fica no mesmo disco: copie para fora.
+
+**Publicar uma versão:** commit e push no `main`, depois
+`deploy/homolog/sincronizar-vm.sh` (ou `.ps1` no Windows).
+
+- O script recusa publicar com alterações não commitadas, ou com a sua
+  cópia diferente do `origin/main`. No servidor, recusa se houver alteração
+  local.
+- Na VM, ele faz `git merge --ff-only`, `scripts/deploy.sh` e
+  `aplicar-na-vm.sh`.
+- A sync recarrega a TTDD e só **insere** procedimentos com código ainda
+  inexistente. Para mudar um fluxo já publicado ou aplicar uma nova TTDD
+  pela gestão, ver [atlas/ATUALIZAR.md](atlas/ATUALIZAR.md).
 
 Volume (item 0.10 da Fase 0): ainda **sem** metros lineares. Na VM, conferir disco
 sem inventar número:

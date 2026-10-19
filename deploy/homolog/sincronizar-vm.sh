@@ -1,36 +1,28 @@
 #!/usr/bin/env bash
-# Leva o working tree local à VM de homologação e sobe a stack **sem**
-# git pull (o GitHub main ainda pode estar com a marca Nexus).
+# Publica na VM o que está no main do GitHub (deploy rastreável pelo git).
+# Antes confere se a sua cópia não tem nada fora do GitHub: o que não foi
+# commitado e enviado não vai para o servidor.
 #
 #   HOST=192.168.1.52 bash deploy/homolog/sincronizar-vm.sh
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 HOST="${HOST:-192.168.1.52}"
-REMOTE="${REMOTE:-/root/Projetos/SISMARQ}"
+REMOTE="${REMOTE:-/opt/sismarq}"
 USER="${SSHUSER:-root}"
 KEY="${SSH_KEY:-$HOME/.ssh/sismarq_deploy}"
 SSH=(ssh -o BatchMode=yes)
-SCP=(scp -o BatchMode=yes)
-if [ -f "$KEY" ]; then
-  SSH+=(-i "$KEY")
-  SCP+=(-i "$KEY")
-fi
+[ -f "$KEY" ] && SSH+=(-i "$KEY")
 
 cd "$ROOT"
-tar --exclude-vcs-ignores --exclude=.git \
-    --exclude=node_modules --exclude=frontend/node_modules \
-    --exclude=.next --exclude=frontend/.next \
-    --exclude=.terraform --exclude='*.tfstate' --exclude='*.tfstate.*' \
-    --exclude=terraform.tfvars --exclude=secrets.yml \
-    --exclude=inventory.ini --exclude=.env \
-    --exclude=backend/api --exclude=backend/worker \
-    --exclude=backend/coverage --exclude=frontend/coverage --exclude=coverage \
-    -cf - . | "${SSH[@]}" "$USER@$HOST" "mkdir -p '$REMOTE' && cd '$REMOTE' && tar xf -"
+git fetch -q origin main
+if [ -n "$(git status --porcelain)" ]; then
+  echo "Há alterações não commitadas — faça commit e push antes de publicar:" >&2
+  git status --short >&2
+  exit 1
+fi
+if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
+  echo "Sua cópia não está igual ao origin/main — envie (push) ou atualize antes de publicar." >&2
+  exit 1
+fi
 
-"${SSH[@]}" "$USER@$HOST" bash -s <<EOF
-set -euo pipefail
-cd '$REMOTE'
-export COMPOSE_PARALLEL_LIMIT=1
-bash scripts/deploy.sh --no-pull $HOST
-bash deploy/homolog/aplicar-na-vm.sh
-EOF
+"${SSH[@]}" "$USER@$HOST" "cd '$REMOTE' && git fetch -q origin main && git merge --ff-only -q origin/main && bash deploy/homolog/remoto-deploy.sh '$HOST' </dev/null"
