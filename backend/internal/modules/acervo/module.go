@@ -76,7 +76,7 @@ func New(deps modkit.Deps, ttdd domain.TTDD) *Module {
 func (m *Module) Manifest() kernel.Manifest {
 	return kernel.Manifest{
 		Key:            Key,
-		Name:           "Acervo — Gestão Arquivística",
+		Name:           "Acervo",
 		Description:    "Unidades de arquivamento nas três idades (Lei 10.301/2019): classificação pela TTDD, prazos de guarda, localização física, bloqueio judicial, eliminação, recolhimento ao Arquivo Público, instruções normativas, arquivos privados de interesse público, digitalização, busca e consulta pública do acervo.",
 		DefaultEnabled: true,
 		DependsOn:      []string{"atlas"},

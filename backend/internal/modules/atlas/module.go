@@ -54,7 +54,7 @@ func (m *Module) Service() *application.Service { return m.svc }
 func (m *Module) Manifest() kernel.Manifest {
 	return kernel.Manifest{
 		Key:            Key,
-		Name:           "Atlas — Procedimentos e Temporalidade",
+		Name:           "Atlas",
 		Description:    "Procedimentos canônicos de processo (padrão SEI), Tabela de Temporalidade (TTDD) oficial e assistente sobre fluxos e TTDD.",
 		DefaultEnabled: true,
 		Public:         true,
