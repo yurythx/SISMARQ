@@ -50,17 +50,19 @@ test.describe("Fluxos críticos", () => {
   test("Blog: rascunho, publicação e listagem", async ({ page }) => {
     await asAdmin(page);
     const title = uniq("Comunicado E2E");
-    await page.goto("/blog");
-    await page.getByRole("button", { name: /Nova publicação/ }).click();
-    const dialog = page.getByRole("dialog", { name: "Nova publicação" });
-    await dialog.getByLabel("Título *").fill(title);
-    await dialog.getByLabel("Resumo").fill("Resumo do comunicado");
-    await dialog.getByLabel("Conteúdo em Markdown").fill("## Aviso\n\nTexto **importante**.");
-    await dialog.getByRole("button", { name: "Salvar" }).click();
+    // Gestão em /gestao/blog; a criação é uma página (/gestao/blog/novo) com
+    // o editor rico, não mais um diálogo.
+    await page.goto("/gestao/blog");
+    await page.getByRole("link", { name: /Nova publicação/ }).click();
+    await expect(page).toHaveURL(/\/gestao\/blog\/novo$/);
+    await page.getByLabel("Título *").fill(title);
+    await page.getByLabel("Resumo").fill("Resumo do comunicado");
+    await page.getByLabel("Conteúdo em Markdown").fill("Texto importante do comunicado.");
+    await page.getByRole("button", { name: "Salvar" }).click();
 
-    await expect(page).toHaveURL(/\/blog\/[a-z0-9-]+$/);
+    await expect(page).toHaveURL(/\/gestao\/blog\/[a-z0-9-]+$/);
     await expect(page.getByRole("heading", { name: title, level: 1 })).toBeVisible();
-    await expect(page.getByText("Rascunho")).toBeVisible();
+    await expect(page.getByText("Rascunho", { exact: true })).toBeVisible();
     await page.getByRole("button", { name: /^Publicar$/ }).click();
     await expect(page.getByRole("button", { name: /Despublicar/ })).toBeVisible();
     await expect(page.getByText("importante")).toBeVisible();
