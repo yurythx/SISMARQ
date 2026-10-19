@@ -10,6 +10,8 @@ declare module "next-auth" {
     error?: string;
     /** "keycloak" (SSO/AD) ou "local" (fallback RS256). */
     provider?: string;
+    /** Vencimento do access token (ms epoch) — ver SessionKeepAlive. */
+    expiresAt?: number;
     user?: {
       id?: string;
       /** Roles do token — só exibição; autorização vem de /api/v1/me. */

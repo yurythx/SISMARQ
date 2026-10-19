@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 
+import { SessionKeepAlive } from "@/components/auth/SessionKeepAlive";
 import { DashboardShell } from "@/components/layout/DashboardShell";
 import { SWRProvider } from "@/lib/api/SWRProvider";
 import { authOptions } from "@/lib/auth/options";
@@ -54,6 +55,7 @@ export default async function ProtectedLayout({ children }: { children: ReactNod
       >
         {children}
       </DashboardShell>
+      <SessionKeepAlive />
     </SWRProvider>
   );
 }

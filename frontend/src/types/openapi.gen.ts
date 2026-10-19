@@ -2407,6 +2407,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/auth/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Renovar o token da sessão local (inatividade; teto LOCAL_AUTH_SESSION_MAX) */
+        post: operations["postAuthRefresh"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/blog/admin/posts": {
         parameters: {
             query?: never;
@@ -12556,6 +12573,37 @@ export interface operations {
                 content?: never;
             };
             401: components["responses"]["Unauthorized"];
+        };
+    };
+    postAuthRefresh: {
+        parameters: {
+            query?: never;
+            header?: {
+                /**
+                 * @description Chave única por operação lógica (recomenda-se um UUID gerado no cliente), escopada ao usuário autenticado. Reenviar a mesma requisição com a mesma chave reproduz a resposta original em vez de reexecutar a operação — ver a nota de Idempotência na descrição geral da API.
+                 * @example 3f2b9e0a-6d34-4e77-9c3e-2b6f8e6b6a3d
+                 */
+                "X-Idempotency-Key"?: components["parameters"]["IdempotencyKey"];
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sucesso — payload em `data`. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Envelope"] & {
+                        data?: components["schemas"]["LocalauthLoginResponse"];
+                    };
+                };
+            };
+            401: components["responses"]["Unauthorized"];
+            422: components["responses"]["ValidationError"];
+            429: components["responses"]["TooManyRequests"];
         };
     };
     getBlogAdminPosts: {

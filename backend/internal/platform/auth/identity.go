@@ -8,6 +8,7 @@ import (
 	"context"
 	"slices"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -54,6 +55,9 @@ type Identity struct {
 	Roles    []string // roles de realm + client (Keycloak) ou users.roles (local)
 	Groups   []string // grupos do Active Directory (via mapper de grupo do Keycloak)
 	Source   Source
+	// AuthTime é o instante do login com senha — só nos tokens locais
+	// (zero no Keycloak, que controla a própria sessão SSO).
+	AuthTime time.Time
 
 	// Preenchidos pelo middleware do IAM (internal/platform/iam) depois
 	// da verificação do token.

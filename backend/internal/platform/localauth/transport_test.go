@@ -122,6 +122,7 @@ func testSigner(t *testing.T) *auth.LocalSigner {
 		Enabled:       true,
 		PrivateKeyPEM: string(pem.EncodeToMemory(block)),
 		TokenTTL:      time.Hour,
+		SessionMax:    12 * time.Hour,
 	}
 	signer, err := auth.NewLocalSigner(cfg)
 	if err != nil {

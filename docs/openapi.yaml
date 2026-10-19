@@ -13408,6 +13408,35 @@ paths:
             summary: Encerra a sessão (registra na trilha de auditoria)
             tags:
                 - auth
+    /api/v1/auth/refresh:
+        post:
+            operationId: postAuthRefresh
+            parameters:
+                - $ref: '#/components/parameters/IdempotencyKey'
+            responses:
+                "200":
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: '#/components/schemas/Envelope'
+                                    - properties:
+                                        data:
+                                            $ref: '#/components/schemas/LocalauthLoginResponse'
+                                      type: object
+                    description: Sucesso — payload em `data`.
+                    x-sismarq-generated: true
+                "401":
+                    $ref: '#/components/responses/Unauthorized'
+                "422":
+                    $ref: '#/components/responses/ValidationError'
+                "429":
+                    $ref: '#/components/responses/TooManyRequests'
+            security:
+                - bearerAuth: []
+            summary: Renovar o token da sessão local (inatividade; teto LOCAL_AUTH_SESSION_MAX)
+            tags:
+                - auth
     /api/v1/blog/admin/posts:
         get:
             description: Publicações de qualquer estado que quem pede gerencia (blog:manage no escopo).
@@ -20040,32 +20069,32 @@ servers:
     - description: Mesma origem (produção, atrás de um reverse proxy)
       url: /
 tags:
-    - description: 'Acervo — Gestão Arquivística. Plug-in — Unidades de arquivamento nas três idades (Lei 10.301/2019): classificação pela TTDD, prazos de guarda, localização física, bloqueio judicial, eliminação, recolhimento ao Arquivo Público, instruções normativas, arquivos privados de interesse público, digitalização, busca e consulta pública do acervo. Depende de: atlas.'
+    - description: 'Acervo. Plug-in — Unidades de arquivamento nas três idades (Lei 10.301/2019): classificação pela TTDD, prazos de guarda, localização física, bloqueio judicial, eliminação, recolhimento ao Arquivo Público, instruções normativas, arquivos privados de interesse público, digitalização, busca e consulta pública do acervo. Depende de: atlas.'
       name: acervo
     - name: administracao
-    - description: Atlas — Procedimentos e Temporalidade. Plug-in — Procedimentos canônicos de processo (padrão SEI), Tabela de Temporalidade (TTDD) oficial e assistente sobre fluxos e TTDD.
+    - description: Atlas. Plug-in — Procedimentos canônicos de processo (padrão SEI), Tabela de Temporalidade (TTDD) oficial e assistente sobre fluxos e TTDD.
       name: atlas
     - description: Auditoria. Núcleo — Registro transacional e imutável de operações com encadeamento de hash SHA-256.
       name: audit
     - description: |
         Login local por usuário/senha — um caminho ADICIONAL ao Keycloak, nunca um substituto (ver ADR 003-local-auth-rsa-hardening.md). Sem autenticação prévia, por definição.
       name: auth
-    - description: Blog. Plug-in — Publicações institucionais, artigos e comunicados.
+    - description: Blog. Plug-in — Comunicados e notícias do Arquivo Público (rascunho, publicação e arquivo).
       name: blog
     - name: branding
-    - description: Agenda. Plug-in — Eventos corporativos e reserva de salas sem conflito de horário.
+    - description: Agenda. Plug-in — Eventos do Arquivo Público e reserva de salas sem conflito de horário; agenda pública em /eventos.
       name: calendar
-    - description: Catálogo de Serviços. Plug-in — Central pública de serviços institucionais.
+    - description: Catálogo de Serviços. Plug-in — Carta de serviços do Arquivo Público no site institucional (/servicos).
       name: catalog
-    - description: Contato. Plug-in — Formulário público institucional com rate limit dedicado.
+    - description: Contato. Plug-in — Formulário público do Arquivo Público (SIC/contato) com rate limit dedicado.
       name: contact
-    - description: Diretório. Plug-in — Consulta de pessoas e setores com base nos dados sincronizados do AD.
+    - description: Diretório. Plug-in — Pessoas e setores da Superintendência e das unidades, a partir do Active Directory.
       name: directory
-    - description: Egress. Plug-in — Webhooks de saída assíncronos e assinados, com proteção anti-SSRF (n8n, Zabbix, Grafana).
+    - description: Egress. Plug-in — Webhooks de saída assinados (n8n, Zabbix, Grafana e automações do município), com proteção anti-SSRF.
       name: egress
     - description: Módulo Modelo. Plug-in — Blueprint de referência para novos plugins (desativado por padrão).
       name: example
-    - description: Arquivos. Plug-in — Gestão de pastas e arquivos sobre MinIO com permissões por grupo/perfil.
+    - description: Arquivos. Plug-in — Pastas de trabalho da Superintendência no MinIO (ACL por perfil, grupo AD ou unidade). Distinto do acervo digital.
       name: files
     - name: ia
     - description: IAM & Usuários. Núcleo — Identidades, sessões, RBAC multi-escopo (Entidades, Unidades, Departamentos) e mapeamento de grupos do AD.
@@ -20074,20 +20103,20 @@ tags:
     - description: |
         Consentimento (Lei 13.709/2018) e direitos do titular (art. 18): cada usuário só consulta, aceita, exporta ou solicita a exclusão do PRÓPRIO dado — não há leitura de terceiros. Inclui a rota pública de consentimento anônimo para visitantes não autenticados.
       name: lgpd
-    - description: 'Mercúrio. Plug-in — Chat em tempo real: canais globais, salas departamentais mapeadas via AD e mensagens diretas.'
+    - description: 'Mercúrio. Plug-in — Chat em tempo real da Superintendência: canais institucionais, salas por unidade (AD) e mensagens diretas.'
       name: mercurio
     - description: |
         Métricas operacionais consumidas pelo painel de Monitoramento do frontend (contagem do Transactional Outbox). Restrito a `audit:read` — mesmo dado operacional interno, sem justificar uma permissão dedicada só pra si.
       name: monitoring
     - name: notificacoes
     - name: plataforma
-    - description: Busca Global. Plug-in — Busca unificada sobre os módulos ativos (Blog, Wiki, Arquivos, Catálogo, Diretório, Trâmite).
+    - description: Busca Global. Plug-in — Busca unificada sobre os módulos ativos (Blog, Wiki, Arquivos, Catálogo, Diretório, Trâmite, Acervo).
       name: search
-    - description: Signum. Plug-in — Assinatura eletrônica com cerimônia de reautenticação e hash de integridade SHA-256.
+    - description: Signum. Plug-in — Assinatura eletrônica com reautenticação e hash SHA-256 (integridade; PAdES/ICP-Brasil conforme ADR vigente).
       name: signum
     - description: Health, readiness e métricas — sem autenticação.
       name: system
-    - description: 'Trâmite. Plug-in — Processos administrativos numerados com controle de sigilo e assinatura via Signum. Depende de: signum.'
+    - description: 'Trâmite. Plug-in — Processos administrativos numerados da administração municipal, com sigilo e assinatura via Signum. Depende de: signum.'
       name: tramite
     - description: |
         Transparência ativa (LAI art. 8º, LC 131/2009) — dados de interesse público agregados, sem dado pessoal, servidos SEM autenticação em JSON/CSV/XML. Rate-limited por IP.
@@ -20096,5 +20125,5 @@ tags:
       name: users
     - description: Emissão de ticket para notificações em tempo real.
       name: websocket
-    - description: Wiki. Plug-in — Base de conhecimento em árvore Markdown colaborativa com histórico de revisões.
+    - description: Wiki. Plug-in — Manuais e procedimentos internos do Arquivo Público em Markdown, com histórico de revisões.
       name: wiki

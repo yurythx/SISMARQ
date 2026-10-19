@@ -135,7 +135,14 @@ type LocalAuthConfig struct {
 	// fornecer este valor: PEM é multi-linha e não cabe bem numa variável
 	// de ambiente comum.
 	PrivateKeyPEM string
-	TokenTTL      time.Duration
+	// TokenTTL é a vida de cada token e, por isso, o prazo de
+	// inatividade: o frontend renova o token (POST /auth/refresh) só
+	// enquanto o usuário está usando o sistema.
+	TokenTTL time.Duration
+	// SessionMax é o teto absoluto de uma sessão local, contado do login
+	// com senha — as renovações param aí e a senha é pedida de novo.
+	// 0 = sem teto.
+	SessionMax time.Duration
 }
 
 // RedisConfig aponta para o Redis usado como backplane do WebSocket
@@ -486,6 +493,7 @@ func Load() (*Config, error) {
 			Enabled:       l.boolVal("LOCAL_AUTH_ENABLED", false),
 			PrivateKeyPEM: l.secret("LOCAL_AUTH_PRIVATE_KEY", false, ""),
 			TokenTTL:      l.durationVal("LOCAL_AUTH_TOKEN_TTL", time.Hour),
+			SessionMax:    l.durationVal("LOCAL_AUTH_SESSION_MAX", 12*time.Hour),
 		},
 		APIRateLimit: RateLimitConfig{
 			WindowSeconds: l.intVal("API_RATE_LIMIT_WINDOW_SECONDS", false, 60),

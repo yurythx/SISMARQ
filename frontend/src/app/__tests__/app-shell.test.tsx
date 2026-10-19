@@ -28,6 +28,7 @@ vi.mock("@/components/layout/DashboardShell", () => ({
     </div>
   ),
 }));
+vi.mock("@/components/auth/SessionKeepAlive", () => ({ SessionKeepAlive: () => null }));
 vi.mock("@/components/monitoring/PlatformMonitoringDashboard", () => ({ PlatformMonitoringDashboard: () => <p>painel</p> }));
 vi.mock("@/components/settings/BrandingSettingsForm", () => ({ BrandingSettingsForm: () => <p>branding</p> }));
 

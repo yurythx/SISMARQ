@@ -85,6 +85,9 @@ type failingIssuer struct{}
 func (failingIssuer) IssueToken(auth.LocalAccount) (string, time.Time, error) {
 	return "", time.Time{}, errDown
 }
+func (failingIssuer) RenewToken(auth.LocalAccount, time.Time) (string, time.Time, error) {
+	return "", time.Time{}, errDown
+}
 
 func account(t *testing.T) *Account {
 	return &Account{ID: uuid.New(), Username: "ana", PasswordHash: mustHash(t, "Senha-Forte-123!"), Active: true}

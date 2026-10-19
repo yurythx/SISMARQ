@@ -4,6 +4,7 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
+	"errors"
 	"fmt"
 	"time"
 
@@ -52,7 +53,16 @@ type localClaims struct {
 	Name              string   `json:"name"`
 	Roles             []string `json:"roles"`
 	Groups            []string `json:"groups"`
+	// AuthTime é o instante do login com senha (claim OIDC "auth_time"),
+	// preservado a cada renovação — é dele que se mede o teto absoluto da
+	// sessão (LOCAL_AUTH_SESSION_MAX).
+	AuthTime *jwt.NumericDate `json:"auth_time,omitempty"`
 }
+
+// ErrSessionTooOld recusa renovar um token cuja sessão (contada do login
+// com senha) já passou do teto absoluto: a renovação estende a sessão
+// enquanto há uso, mas não para sempre.
+var ErrSessionTooOld = errors.New("auth: local session exceeded its maximum lifetime")
 
 // LocalSigner assina e verifica os tokens do login local com um par de
 // chaves RSA (RS256) PRÓPRIO — nunca compartilhado com o Keycloak/SSO, nem
@@ -65,6 +75,7 @@ type localClaims struct {
 type LocalSigner struct {
 	privateKey *rsa.PrivateKey
 	tokenTTL   time.Duration
+	sessionMax time.Duration // 0 = sem teto absoluto
 }
 
 // NewLocalSigner analisa cfg.PrivateKeyPEM e monta um LocalSigner pronto
@@ -93,7 +104,7 @@ func NewLocalSigner(cfg config.LocalAuthConfig) (*LocalSigner, error) {
 	// (l.durationVal), e um valor negativo/zero passado deliberadamente
 	// (como um teste construindo um token já expirado) deve ser
 	// respeitado, não silenciosamente substituído.
-	return &LocalSigner{privateKey: key, tokenTTL: cfg.TokenTTL}, nil
+	return &LocalSigner{privateKey: key, tokenTTL: cfg.TokenTTL, sessionMax: cfg.SessionMax}, nil
 }
 
 // parseRSAPrivateKeyPEM aceita tanto PKCS1 ("BEGIN RSA PRIVATE KEY") quanto
@@ -126,7 +137,26 @@ func parseRSAPrivateKeyPEM(raw string) (*rsa.PrivateKey, error) {
 // tipo nunca verifica senha, só emite e valida o token resultante.
 func (s *LocalSigner) IssueToken(account LocalAccount) (token string, expiresAt time.Time, err error) {
 	now := time.Now()
+	return s.issue(account, now, now)
+}
+
+// RenewToken emite um token novo para uma sessão local ainda válida
+// (POST /auth/refresh), mantendo o authTime do login original. O
+// vencimento nunca passa de authTime+sessionMax; uma sessão que já chegou
+// ao teto recebe ErrSessionTooOld e o usuário volta a digitar a senha.
+func (s *LocalSigner) RenewToken(account LocalAccount, authTime time.Time) (token string, expiresAt time.Time, err error) {
+	now := time.Now()
+	if s.sessionMax > 0 && !now.Before(authTime.Add(s.sessionMax)) {
+		return "", time.Time{}, ErrSessionTooOld
+	}
+	return s.issue(account, now, authTime)
+}
+
+func (s *LocalSigner) issue(account LocalAccount, now, authTime time.Time) (token string, expiresAt time.Time, err error) {
 	expiresAt = now.Add(s.tokenTTL)
+	if limit := authTime.Add(s.sessionMax); s.sessionMax > 0 && expiresAt.After(limit) {
+		expiresAt = limit
+	}
 	claims := localClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    LocalIssuer,
@@ -140,6 +170,7 @@ func (s *LocalSigner) IssueToken(account LocalAccount) (token string, expiresAt 
 		Name:              account.Name,
 		Roles:             account.Roles,
 		Groups:            account.Groups,
+		AuthTime:          jwt.NewNumericDate(authTime),
 	}
 
 	signed, err := jwt.NewWithClaims(jwt.SigningMethodRS256, claims).SignedString(s.privateKey)
@@ -168,6 +199,12 @@ func (s *LocalSigner) verifyToken(rawToken string) (Identity, error) {
 	if err != nil {
 		return Identity{}, fmt.Errorf("auth: local token verification failed: %w", err)
 	}
+	// Tokens emitidos antes do auth_time existir: o iat é o melhor
+	// substituto (subestima a idade da sessão em no máximo um TTL).
+	authTime := claims.AuthTime
+	if authTime == nil {
+		authTime = claims.IssuedAt
+	}
 
 	return Identity{
 		Subject:  claims.Subject,
@@ -177,5 +214,13 @@ func (s *LocalSigner) verifyToken(rawToken string) (Identity, error) {
 		Roles:    claims.Roles,
 		Groups:   claims.Groups,
 		Source:   SourceLocal,
+		AuthTime: numericTime(authTime),
 	}, nil
+}
+
+func numericTime(d *jwt.NumericDate) time.Time {
+	if d == nil {
+		return time.Time{}
+	}
+	return d.Time
 }

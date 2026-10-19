@@ -5,6 +5,7 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
+	"errors"
 	"testing"
 	"time"
 
@@ -93,6 +94,45 @@ func TestVerifyToken_ExpiredTokenIsRejected(t *testing.T) {
 
 	if _, err := signer.verifyToken(token); err == nil {
 		t.Fatal("expected verification to reject an expired token")
+	}
+}
+
+// A renovação mantém o auth_time do login com senha, nunca vence depois
+// do teto absoluto e é recusada quando a sessão já o atingiu.
+func TestRenewToken_KeepsAuthTimeAndHonorsSessionMax(t *testing.T) {
+	cfg := config.LocalAuthConfig{Enabled: true, PrivateKeyPEM: testRSAKeyPEM(t, 2048), TokenTTL: time.Hour, SessionMax: 8 * time.Hour}
+	signer, err := NewLocalSigner(cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	account := LocalAccount{ID: "user-1", Username: "admin"}
+
+	token, _, err := signer.IssueToken(account)
+	if err != nil {
+		t.Fatal(err)
+	}
+	login, err := signer.verifyToken(token)
+	if err != nil || time.Since(login.AuthTime) > time.Minute {
+		t.Fatalf("login carimba auth_time = agora: %v %v", login.AuthTime, err)
+	}
+
+	authTime := time.Now().Add(-3 * time.Hour).Truncate(time.Second)
+	renewed, exp, err := signer.RenewToken(account, authTime)
+	if err != nil || time.Until(exp) < 59*time.Minute {
+		t.Fatalf("renovação no meio da sessão: exp em %v, %v", time.Until(exp), err)
+	}
+	if id, err := signer.verifyToken(renewed); err != nil || !id.AuthTime.Equal(authTime) {
+		t.Fatalf("auth_time preservado: %v (want %v) %v", id.AuthTime, authTime, err)
+	}
+
+	// A 30 min do teto: o token novo vence no teto, não 1h depois.
+	_, exp, err = signer.RenewToken(account, time.Now().Add(-7*time.Hour-30*time.Minute))
+	if err != nil || time.Until(exp) > 31*time.Minute {
+		t.Fatalf("vencimento limitado ao teto: %v %v", time.Until(exp), err)
+	}
+
+	if _, _, err := signer.RenewToken(account, time.Now().Add(-8*time.Hour)); !errors.Is(err, ErrSessionTooOld) {
+		t.Fatalf("sessão no teto: %v", err)
 	}
 }
 

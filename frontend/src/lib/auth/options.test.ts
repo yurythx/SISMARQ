@@ -32,7 +32,7 @@ function authorize(o: Options) {
   return (c?: Record<string, string>, req?: { headers: Record<string, string> }) => local.options.authorize(c, req);
 }
 
-type JwtParams = { token: JWT; account?: Partial<Account> | null; user?: Partial<User> };
+type JwtParams = { token: JWT; account?: Partial<Account> | null; user?: Partial<User>; trigger?: "signIn" | "update" };
 const jwt = (o: Options, p: JwtParams) => (o.authOptions.callbacks!.jwt as unknown as (p: JwtParams) => Promise<JWT>)(p);
 
 afterEach(() => {
@@ -167,6 +167,49 @@ describe("callback jwt", () => {
     expect(vi.mocked(console.error).mock.calls.every((c) => c.length === 1)).toBe(true);
   });
 
+  it("update() renova o token local perto do vencimento (sessão por inatividade)", async () => {
+    const o = await load();
+    const quase = Date.now() + 5 * 60_000;
+    const f = vi.fn(async () => Response.json({ data: { access_token: jwtOf({ roles: ["nova"] }), expires_at: "2030-01-01T00:00:00Z", user: { id: "u", username: "a", email: "" } }, error: null }));
+    vi.stubGlobal("fetch", f);
+
+    // Leitura comum da sessão (sem trigger) nunca renova.
+    expect((await jwt(o, { token: { provider: "local", accessToken: "velho", accessTokenExpires: quase } })).accessToken).toBe("velho");
+    // Longe do vencimento, nem o update() renova.
+    expect((await jwt(o, { token: { provider: "local", accessToken: "velho", accessTokenExpires: future() }, trigger: "update" })).accessToken).toBe("velho");
+    expect(f).not.toHaveBeenCalled();
+
+    const t = await jwt(o, { token: { provider: "local", accessToken: "velho", accessTokenExpires: quase }, trigger: "update" });
+    expect(t).toMatchObject({ accessTokenExpires: Date.parse("2030-01-01T00:00:00Z"), roles: ["nova"] });
+    expect(t.error).toBeUndefined();
+    const [url, init] = f.mock.calls[0]! as unknown as [string, RequestInit];
+    expect(url).toBe("http://api:8080/api/v1/auth/refresh");
+    expect(init.headers).toMatchObject({ Authorization: "Bearer velho" });
+  });
+
+  it("renovação local recusada ou com falha mantém o token atual até vencer", async () => {
+    const o = await load();
+    const token = { provider: "local", accessToken: "velho", accessTokenExpires: Date.now() + 60_000 };
+    for (const resp of [
+      () => Response.json({ data: null, error: { code: "FORBIDDEN", message: "teto" } }, { status: 403 }),
+      () => Response.json({ data: { access_token: "x", expires_at: "lixo", user: {} }, error: null }),
+      () => { throw new Error("rede"); },
+    ]) {
+      vi.stubGlobal("fetch", vi.fn(async () => resp()));
+      const t = await jwt(o, { token: { ...token }, trigger: "update" });
+      expect(t).toMatchObject({ accessToken: "velho" });
+      expect(t.error).toBeUndefined();
+    }
+  });
+
+  it("update() renova o Keycloak antes de vencer", async () => {
+    const o = await load(KC);
+    vi.stubGlobal("fetch", vi.fn(async () => Response.json({ access_token: "novo", expires_in: 900 })));
+    const t = await jwt(o, { token: { provider: "keycloak", accessToken: "x", accessTokenExpires: Date.now() + 60_000, refreshToken: "r" }, trigger: "update" });
+    expect(t).toMatchObject({ accessToken: "novo" });
+    expect(t.accessTokenExpires).toBeGreaterThan(Date.now() + 10 * 60_000);
+  });
+
   it("login Keycloak sem expires_at não tem vencimento conhecido", async () => {
     const o = await load(KC);
     const t = await jwt(o, { token: {}, account: { provider: "keycloak", access_token: jwtOf({}) } });
@@ -183,5 +226,7 @@ describe("callback session", () => {
     expect(s).toEqual({ expires: "", user: { roles: ["r"], groups: ["g"] }, provider: "local", error: "E" });
     const s2 = await session({ session: { expires: "", user: { name: "A" } }, token: {} });
     expect(s2.user).toEqual({ name: "A", roles: [], groups: [] });
+    // O vencimento (não o token) vai ao navegador para o SessionKeepAlive.
+    expect((await session({ session: { expires: "" }, token: { accessToken: "segredo", accessTokenExpires: 123 } })).expiresAt).toBe(123);
   });
 });

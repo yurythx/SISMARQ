@@ -4,6 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import KeycloakProvider from "next-auth/providers/keycloak";
 
 import { forwardedFor } from "@/lib/api/clientIp";
+import { RENEW_WINDOW_MS } from "@/lib/auth/sessionTiming";
 import { BACKEND_INTERNAL_URL } from "@/lib/env";
 
 // Autenticação do SISMARQ (skill §2):
@@ -72,6 +73,41 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
     console.error("Falha ao renovar o access token do Keycloak");
     return { ...token, error: "RefreshAccessTokenError" };
   }
+}
+
+// Sessão expira por INATIVIDADE, não a uma hora fixa do login: quando
+// faltam menos que isto para o access token vencer e o usuário está
+// usando o sistema, o SessionKeepAlive chama update() do next-auth — o
+// callback `jwt` abaixo recebe trigger "update" e renova o token
+// (Keycloak: refresh_token; local: POST /auth/refresh). Renovar só aí
+// (rota /api/auth/session, que regrava o cookie) e não em toda leitura
+// da sessão é proposital: num Server Component o cookie não pode ser
+// regravado e um refresh_token rotacionado se perderia.
+
+/** Renova o token do login local enquanto ele ainda vale. Recusa
+ * (conta desativada, teto da sessão) ou falha de rede mantêm o token
+ * atual, que segue até o próprio vencimento. */
+async function renewLocalToken(token: JWT): Promise<JWT> {
+  try {
+    const res = await fetch(`${BACKEND_INTERNAL_URL}/api/v1/auth/refresh`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token.accessToken}` },
+      signal: AbortSignal.timeout(5000),
+    });
+    const body: LocalLoginResponse = await res.json();
+    if (!res.ok || !body.data) return token;
+    const expires = new Date(body.data.expires_at).getTime();
+    if (!Number.isFinite(expires)) return token;
+    return { ...token, accessToken: body.data.access_token, accessTokenExpires: expires, error: undefined };
+  } catch {
+    console.error("Falha ao renovar o token do login local");
+    return token;
+  }
+}
+
+function dueForRenewal(token: JWT): boolean {
+  const expires = token.accessTokenExpires;
+  return !token.error && typeof expires === "number" && Date.now() < expires && expires - Date.now() < RENEW_WINDOW_MS;
 }
 
 interface LocalLoginResponse {
@@ -161,7 +197,8 @@ export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
 
   callbacks: {
-    async jwt({ token, account, user }) {
+    async jwt({ token: current, account, user, trigger }) {
+      let token = current;
       if (account?.provider === "keycloak") {
         token.accessToken = account.access_token;
         token.accessTokenExpires = account.expires_at ? account.expires_at * 1000 : undefined;
@@ -174,6 +211,10 @@ export const authOptions: NextAuthOptions = {
         token.refreshToken = undefined;
         token.idToken = undefined;
         token.provider = "local";
+      }
+      if (trigger === "update" && dueForRenewal(token)) {
+        if (token.provider === "local") token = await renewLocalToken(token);
+        else if (token.refreshToken) token = await refreshAccessToken(token);
       }
       if (typeof token.accessToken === "string") {
         const claims = decodeDisplayClaims(token.accessToken);
@@ -195,6 +236,9 @@ export const authOptions: NextAuthOptions = {
       session.user.groups = token.groups ?? [];
       session.provider = token.provider;
       session.error = token.error;
+      // Só o instante (não o token): o SessionKeepAlive decide quando
+      // renovar e quando avisar que a sessão vai expirar.
+      session.expiresAt = token.accessTokenExpires;
       return session;
     },
   },

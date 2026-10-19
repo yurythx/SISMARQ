@@ -116,7 +116,7 @@ export function LoginCard() {
       ) : null}
       {sessionExpired && (
         <p role="alert" className="rounded-lg border border-warning/30 bg-warning/10 px-3 py-2 text-sm text-foreground">
-          Sua sessão expirou por inatividade. Faça login novamente para continuar.
+          Sua sessão expirou. Entre novamente para voltar à página em que estava.
         </p>
       )}
       {failedAttempts >= ATTEMPTS_BEFORE_RATE_LIMIT_WARNING && (

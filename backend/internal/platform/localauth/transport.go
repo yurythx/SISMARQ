@@ -41,9 +41,11 @@ type Penalizer interface {
 
 // Handlers expõe o login local (fallback RS256 — contingência quando o
 // Keycloak está indisponível ou em ambiente isolado).
-// tokenIssuer emite o token do login (implementado por *auth.LocalSigner).
+// tokenIssuer emite e renova o token do login (implementado por
+// *auth.LocalSigner).
 type tokenIssuer interface {
 	IssueToken(account auth.LocalAccount) (string, time.Time, error)
+	RenewToken(account auth.LocalAccount, authTime time.Time) (string, time.Time, error)
 }
 
 type Handlers struct {
@@ -207,6 +209,10 @@ func (h *Handlers) Login(w http.ResponseWriter, r *http.Request) {
 		_ = h.audit.Record(ctx, entry)
 	}
 
+	writeToken(w, account, token, expiresAt)
+}
+
+func writeToken(w http.ResponseWriter, account *Account, token string, expiresAt time.Time) {
 	w.Header().Set("Cache-Control", "no-store")
 	httputil.WriteOK(w, loginResponse{
 		AccessToken: token,
@@ -220,6 +226,61 @@ func (h *Handlers) Login(w http.ResponseWriter, r *http.Request) {
 			Roles:       account.Roles,
 		},
 	})
+}
+
+// Refresh trata POST /api/v1/auth/refresh: troca um token local ainda
+// válido por um novo, sem pedir a senha. É o que faz a sessão expirar por
+// INATIVIDADE (o frontend só renova enquanto o usuário usa o sistema) e
+// não mais a uma hora fixa do login. A conta é relida a cada renovação —
+// desativada, bloqueada ou sem senha local, a renovação é recusada e a
+// sessão acaba no vencimento do token atual; roles alteradas entram no
+// token novo. Passado LOCAL_AUTH_SESSION_MAX do login com senha, recusa
+// (auth.ErrSessionTooOld).
+func (h *Handlers) Refresh(w http.ResponseWriter, r *http.Request) {
+	if h.signer == nil {
+		httputil.WriteError(w, r, h.logger, apperrors.NotFound("local login is not enabled"))
+		return
+	}
+	identity, ok := auth.IdentityFromContext(r.Context())
+	if !ok {
+		httputil.WriteError(w, r, h.logger, apperrors.Unauthorized("authentication required"))
+		return
+	}
+	// O Keycloak renova os próprios tokens (refresh_token do OIDC).
+	if identity.Source != auth.SourceLocal {
+		httputil.WriteError(w, r, h.logger, apperrors.Forbidden("token refresh only applies to local sessions"))
+		return
+	}
+	ctx := r.Context()
+	account, err := h.store.GetByUsername(ctx, identity.Username)
+	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
+		httputil.WriteError(w, r, h.logger, err)
+		return
+	}
+	if err != nil || account.ID.String() != identity.Subject || !account.Active || account.Locked() {
+		httputil.WriteError(w, r, h.logger, apperrors.Forbidden("session can no longer be renewed"))
+		return
+	}
+	token, expiresAt, err := h.signer.RenewToken(auth.LocalAccount{
+		ID:       account.ID.String(),
+		Name:     account.DisplayName,
+		Username: account.Username,
+		Email:    account.Email,
+		Roles:    account.Roles,
+		Groups:   account.Groups,
+	}, identity.AuthTime)
+	if errors.Is(err, auth.ErrSessionTooOld) {
+		httputil.WriteError(w, r, h.logger, apperrors.Forbidden("session reached its maximum lifetime; sign in again"))
+		return
+	}
+	if err != nil {
+		httputil.WriteError(w, r, h.logger, apperrors.Internal(err))
+		return
+	}
+	if err := h.store.TouchLastSeen(ctx, account.ID); err != nil {
+		h.logger.Warn("localauth: falha ao atualizar last_seen_at", slog.Any("error", err))
+	}
+	writeToken(w, account, token, expiresAt)
 }
 
 // fail registra a falha no lockout distribuído, na penalidade do rate
@@ -287,7 +348,9 @@ func RegisterRoutes(r chi.Router, h *Handlers, logger *slog.Logger, limiter http
 	r.With(httpserver.RateLimit(logger, limiter, RateLimitKey)).Post("/auth/login", h.Login)
 }
 
-// RegisterAuthedRoutes monta POST /auth/logout no grupo autenticado.
+// RegisterAuthedRoutes monta POST /auth/logout e POST /auth/refresh no
+// grupo autenticado.
 func RegisterAuthedRoutes(api chi.Router, h *Handlers) {
 	api.Post("/auth/logout", h.Logout)
+	api.Post("/auth/refresh", h.Refresh)
 }

@@ -89,7 +89,7 @@ describe("LoginCard", () => {
   it("reason=session_expired na URL mostra o aviso de sessão expirada", () => {
     searchParams = new URLSearchParams("reason=session_expired");
     render(<LoginCard />);
-    expect(screen.getByText(/sua sessão expirou por inatividade/i)).toBeInTheDocument();
+    expect(screen.getByText(/sua sessão expirou/i)).toBeInTheDocument();
   });
 
   it("depois de várias tentativas malsucedidas, avisa sobre bloqueio temporário", async () => {

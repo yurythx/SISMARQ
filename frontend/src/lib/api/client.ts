@@ -5,6 +5,7 @@
 
 import type { ZodType } from "zod";
 
+import { redirectToLogin } from "@/lib/auth/sessionExpired";
 import { APP_URL } from "@/lib/env";
 import { isProtectedPath } from "@/lib/nav/protected";
 
@@ -86,21 +87,15 @@ async function request<T>(
   // é recusa de negócio com a sessão viva — ex.: senha errada na
   // cerimônia de assinatura do Signum (SIGNUM_REAUTH_FAILED): redirecionar
   // derrubava a sessão por um erro de digitação. RBAC negado usa 403.
-  // Navegação DURA de propósito (location.replace, não router.push):
-  // descarta todo o estado de cliente da tela expirada e reexecuta o
-  // middleware; replace() não deixa a tela morta no histórico do back.
   const onProtected =
     typeof window !== "undefined" && isProtectedPath(window.location.pathname);
 
   const sessionExpired = res.status === 401 && (!json?.error || json.error.code === "UNAUTHORIZED");
   if (sessionExpired && onProtected && window.location.pathname !== "/login") {
-    const target = new URL("/login", window.location.origin);
-    target.searchParams.set("callbackUrl", window.location.pathname + window.location.search);
     // Este 401 só acontece pra quem já tinha uma sessão (o proxy BFF exige
     // token pra sequer tentar a chamada) — sempre "sessão expirou", nunca
-    // "nunca logou" (ver o mesmo aviso em LoginCard.tsx).
-    target.searchParams.set("reason", "session_expired");
-    window.location.replace(target.toString());
+    // "nunca logou".
+    redirectToLogin();
   }
 
   if (json === null) {
