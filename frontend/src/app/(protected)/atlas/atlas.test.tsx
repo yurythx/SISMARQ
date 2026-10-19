@@ -436,7 +436,7 @@ describe("Atlas — procedimento", () => {
     expect(screen.getByText(/Série 2\.0\.02\.00\.07 não encontrada/)).toBeInTheDocument();
     expect(screen.getByText("Opcional")).toBeInTheDocument();
     expect(screen.getByText("Conferência da cópia")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Modelo/ })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /^Modelo \(abre em nova janela\)/ })).toHaveAttribute(
       "href",
       "https://exemplo.gov.br/modelo.docx",
     );
